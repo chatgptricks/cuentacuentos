@@ -30,7 +30,7 @@ const adventure = {
 const relax = {
   patience: ['la semilla', ['paciente', 'del mañana', 'sin prisa'], ['comprobó la tierra y dejó tiempo para que brotara', 'dibujó una marca para recordar cuándo revisar la maceta']],
   listening: ['la canción', ['susurrante', 'del silencio', 'más bajita'], ['cerró los ojos y distinguió un sonido por vez', 'escuchó primero el agua y después las hojas']],
-  rest: ['las nubes', ['tranquilas', 'del descanso', 'sin carrera'], ['guardó el lápiz y miró las nubes desde la manta', 'estiró los brazos y descansó antes de seguir dibujando']],
+  rest: ['las nubes', ['tranquilas', 'del descanso', 'sin carrera'], ['guardó el lápiz y miró las nubes desde la manta', 'relajó el cuerpo y descansó antes de seguir dibujando']],
   sharing: ['la cesta', ['generosa', 'del encuentro', 'compartida'], ['separó las moras en porciones y compartió el peso', 'pidió compañía para repartir las moras y llevar la cesta']],
   mistakes: ['el pétalo', ['diferente', 'del intento', 'sorprendente'], ['convirtió el pétalo distinto en el comienzo de otra flor', 'añadió un pétalo nuevo y conservó su primer dibujo']],
   comparison: ['los pasos', ['propios', 'del paseo', 'tranquilos'], ['dejó pasar la carrera y observó una flor del camino', 'acortó el paseo para disfrutar cada detalle cercano']],
