@@ -16,13 +16,16 @@ Cinco libros en un estante: Aventura, Acción, Relax, Amigos y **Mi familia**. U
 - 18, 36 o 54 páginas, según la duración elegida
 - Cinco estructuras que combinan bloques de apertura, objetivo, dificultad, estrategia, descubrimiento y cierre
 - Los bloques cambian lo que sucede en el cuento, además de los nombres y los escenarios
+- Acción tiene 16 objetivos con causas, pistas y reparaciones propias; los demás libros también varían sus acciones y su vocabulario
 - Cada plan conserva su reparto, objetivo y continuidad hasta el final
 
 Desde **Conoce a los 52 personajes**, la biblioteca abre una galería con las pestañas **Animales (32)** y **Fantasía (20)**. Cada ficha muestra su dibujo, nombre y tipo de personaje; al tocar el dibujo suena un efecto suave. Los sonidos de los nuevos personajes se sintetizan localmente y comparten timbres apropiados: chapoteos, pasos, cantos, ronroneos o magia.
 
 **Explora escenarios y elementos** abre otra galería con **Escenarios (36)** y **Elementos (36)**. Permite conocer todos los lugares y objetos, y escuchar su sonido al tocarlos. Los recursos nuevos amplían las historias: faroles y brújulas para explorar, cometas e instrumentos para jugar, materiales de dibujo y pequeños tesoros para descubrir o cuidar.
 
-**Mi familia** convierte al niño o la niña en protagonista de actividades cotidianas y aventuras pequeñas en compañía. Su creador permite elegir un nombre, seis peinados, seis prendas, cinco tonos de piel y ocho colores favoritos para la ropa. Todas las opciones están disponibles para todos los personajes. Se puede agregar o quitar a papá, mamá, un bebé, un hermano o hermana de edad parecida y un adolescente; cada uno usa el mismo creador, con proporciones acordes a su edad. El protagonista también puede tener un cuento sin familiares añadidos.
+**Mi familia** convierte al niño o la niña en protagonista de actividades cotidianas y aventuras pequeñas con un familiar por cuento. Su creador permite elegir un nombre, seis peinados, seis prendas, cinco tonos de piel y ocho colores favoritos para la ropa. Todas las opciones están disponibles para todos los personajes. Se puede agregar o quitar a papá, mamá, un bebé, un hermano o hermana de edad parecida y un adolescente; cada uno usa el mismo creador, con proporciones acordes a su edad. Antes de generar, se elige un familiar o **Un familiar sorpresa**. La configuración completa se conserva, pero la historia usa solo al protagonista y esa compañía. Si no hay familiares configurados, se añade Dani, hermano o hermana.
+
+Cada objetivo tiene vocabulario ligado a lo que sucede: los sustantivos, calificativos y acciones se eligen antes de escribir las frases. Los calificativos y nombres amplían la redacción; los objetivos, dificultades y soluciones aportan la variedad de trama. La app recuerda los últimos ocho planes de cada libro y busca evitar los tres objetivos más recientes y las combinaciones de bloques repetidas.
 
 Los tiempos son aproximados e incluyen leer, mirar las ilustraciones y detenerse para jugar. Acción incluye la muerte tranquila de un personaje secundario anciano, una despedida explícita, redención y esperanza. La pantalla de preparación lo avisa a la persona adulta.
 
@@ -48,7 +51,11 @@ La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` va
 - `src/world-catalog.js`: los 36 escenarios y 36 elementos, posiciones de atlas, sonidos y compatibilidad narrativa
 - `src/story-engine.js`: selección con semilla y estructuras narrativas
 - `src/story-blocks.js`: objetivos y bloques intercambiables de dificultad, estrategia, descubrimiento y cierre
+- `src/action-plots.js`: 16 mecanismos de Acción y su vocabulario con concordancia gramatical
+- `src/story-language.js`: calificativos y acciones coherentes para cada objetivo de los otros libros
+- `src/story-selection.js`: selección de cuentos nuevos con un historial limitado de planes recientes
 - `src/family-characters.js`: perfiles de la familia y dibujos humanos compuestos con SVG
+- `src/family-story.js`: protagonista y un familiar por historia, conservando la configuración completa
 - `src/app.js`: estante, preparación, portada, lectura y composición de ilustraciones
 - `src/style.css`: interfaz pastel y libro a pantalla completa
 - `src/audio.js`: efectos suaves y música ambiental original sintetizada
@@ -57,6 +64,7 @@ La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` va
 - `scripts/build.mjs`: build y caché offline
 - `scripts/verify-stories.mjs`: variedad, continuidad, gramática estructural y formato de páginas
 - `scripts/verify-family.mjs`: todas las combinaciones de apariencia, familias posibles, nombres y recuperación de datos guardados
+- `scripts/verify-selection.mjs`: ausencia de repetición inmediata, límites del historial y selección acotada
 
 Los prompts exactos y la validación de las ilustraciones están en [docs/art-prompts.md](docs/art-prompts.md). Las estructuras están en [docs/story-structures.md](docs/story-structures.md), y los detalles de audio y PWA en [docs/pwa.md](docs/pwa.md).
 

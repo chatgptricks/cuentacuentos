@@ -117,6 +117,10 @@ body.reading #app{height:100dvh;min-height:100dvh;overflow:hidden}
 .color-swatch.selected{box-shadow:0 0 0 2px #947777}
 .color-swatch .icon{width:19px;height:19px;stroke-width:2.2;filter:drop-shadow(0 1px 2px #51402c80)}
 .family-duration{padding:0 28px 15px;margin-top:5px}
+.family-companion{margin:0 28px 20px;padding:16px;background:#f5eee5;border:1px solid #e6dcca;border-radius:13px}
+.family-companion label{display:block;font-family:var(--serif);font-size:20px;margin-bottom:10px}
+.family-companion select{width:100%;min-height:44px;padding:9px 12px;border:1px solid #cdbbad;border-radius:8px;background:#fffaf2;color:#705b53;font:inherit;font-size:13px}
+.family-companion p{font-size:11px;color:#8a786a;line-height:1.5;margin:10px 0 0}
 .family-duration .duration-options{max-width:440px;margin:auto;flex-wrap:wrap}
 .family-duration legend{width:100%;margin-bottom:13px;font-family:var(--serif);font-size:20px;text-align:center}
 .family-duration .duration-number{height:66px;font-size:25px}
@@ -135,7 +139,7 @@ body.reading #app{height:100dvh;min-height:100dvh;overflow:hidden}
   .character-preview strong{align-self:end;margin-top:0;font-size:24px;grid-column:2}
   .character-preview>span{align-self:start;grid-column:2}.remove-member{justify-self:start;margin-top:0;grid-column:2;padding-left:0}
   .trait-choice{min-height:86px}.swatch-options{gap:11px}.color-swatch{width:37px;height:37px}
-  .family-duration{padding:0 20px 12px}.family-submit{padding:12px 20px max(14px,env(safe-area-inset-bottom))}
+  .family-companion{margin:0 20px 18px}.family-duration{padding:0 20px 12px}.family-submit{padding:12px 20px max(14px,env(safe-area-inset-bottom))}
 }
 @media(max-width:360px){.books-on-shelf{gap:7px;padding:0 9px}.book-family{height:225px}.spine-title{font-size:21px}.book-family .spine-title{font-size:20px}.spine-symbol{width:27px;height:27px}.spine-symbol .icon{width:15px;height:15px}.family-heading h2{font-size:25px}.family-add{gap:5px}.family-add button{padding:7px 9px}}
 :root{--catalog-accent:#708568}

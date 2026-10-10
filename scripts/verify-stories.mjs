@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { BOOKS, CHARACTERS, CHARACTER_ATLASES, CHARACTER_NAMES, SCENES, ITEMS, OBJECTS, WORLD_ATLASES, STORY_BLOCK_COUNTS, generateStory, getCharacter, getScene, getItem } from '../src/story-engine.js';
+import { BOOKS, CHARACTERS, CHARACTER_ATLASES, CHARACTER_NAMES, SCENES, ITEMS, OBJECTS, WORLD_ATLASES, STORY_BLOCK_COUNTS, ACTION_PLOTS, ACTION_ADJECTIVES, generateStory, getCharacter, getScene, getItem } from '../src/story-engine.js';
 import { createDefaultFamily } from '../src/family-characters.js';
 import { SOUND_ALIASES } from '../src/audio.js';
 
@@ -67,6 +67,25 @@ const objectMentions = {
   crystal: /cristal/iu, acorn: /bellota/iu, apple: /manzana/iu, 'honey-jar': /miel/iu,
   teacup: /taza/iu, 'watering-can': /regadera/iu,
 };
+// Check the cause, useful clue and repair of each authored Action mechanism, independently of its metadata.
+const actionMechanisms = {
+  'wind-door': [/viento.*señales/iu, /llave.*marcas/iu, /llave.*cerraron/iu],
+  'guiding-lantern': [/señales.*oscuras/iu, /farol iluminaba las señales/iu, /farol.*orientaron.*señales/iu],
+  'listening-bell': [/notas mezcladas/iu, /nota de flauta.*bienvenida/iu, /flauta.*afinaron/iu],
+  'steady-crossing': [/tabla quedó suelta/iu, /cuerda.*tabla.*anillas/iu, /cuerda.*anillas.*sujetaron la tabla/iu],
+  'tangled-kite': [/cuerda.*enredó/iu, /aflojar.*lazo.*recoger/iu, /aflojaron.*cuerda.*recogieron/iu],
+  'singing-fountain': [/hojas.*agua.*dejaron de cantar/iu, /retirar.*hojas.*gotas/iu, /retiraron.*hojas.*regadera/iu],
+  'seed-labels': [/semillas perdieron sus señales/iu, /forma.*semilla.*dibujo/iu, /semillas.*maceta/iu],
+  'turning-map': [/flechas.*mapa.*confundidas/iu, /brújula.*norte.*mapa/iu, /alinearon el mapa.*brújula/iu],
+  'scattered-puzzle': [/rompecabezas.*señal/iu, /piezas del borde.*marco/iu, /ordenaron los bordes.*armaron/iu],
+  'hidden-colors': [/crayones.*señal/iu, /pincel limpio.*líneas.*manchas/iu, /pincel.*restauraron/iu],
+  'drifting-boat': [/barquito.*alejó/iu, /cuerda.*barquito.*seguro/iu, /barquito.*cuerda.*acercaron/iu],
+  'ribbon-knots': [/ovillos.*anudados/iu, /hilo flojo.*nudo/iu, /aflojaron.*desenredaron.*cesta/iu],
+  'folded-star': [/estrella de papel.*puntas/iu, /farol.*pliegues/iu, /farol.*desplegaron.*estrella de papel/iu],
+  'missing-silences': [/flauta.*tambor.*saludo/iu, /silencio.*tambor.*flauta/iu, /flauta.*tambor.*silencios/iu],
+  'memory-pages': [/recuerdos.*mezclados/iu, /nube.*recuerdos.*historia/iu, /recuerdos.*nube.*crayones/iu],
+  'mixed-deliveries': [/cartas.*equivocados/iu, /mapa.*señales.*cartas/iu, /cartas.*mochila.*mapa/iu],
+};
 
 // Ignore cosmetic choices when measuring narrative variety: a new name alone is not a new plot.
 const escapeRegExp = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -78,10 +97,21 @@ function narrativeOf(story, text = textOf(story)) {
     `${character.article} ${character.label}`,
   ]).filter(description => !description.includes('undefined'));
   let normalized = text;
+  const language = [story.plan.lexicon?.title, story.plan.lexicon?.action, story.plan.action?.subject].filter(Boolean)
+    .flatMap(value => [value, value.replace(/^(?:el|la|los|las|un|una|unos|unas) /iu, '')]);
   for (const value of [...descriptions, ...cast.map(character => character.name), ...placeDescriptions].sort((a, b) => b.length - a.length)) {
     if (normalized.includes(value)) normalized = normalized.replace(new RegExp(escapeRegExp(value), 'gu'), '[personaje/lugar]');
   }
+  for (const value of language.sort((a, b) => b.length - a.length)) {
+    if (normalized.toLocaleLowerCase('es').includes(value.toLocaleLowerCase('es'))) normalized = normalized.replace(new RegExp(escapeRegExp(value), 'giu'), '[lenguaje]');
+  }
   return normalized;
+}
+function actionTitleOf(story, plot) {
+  const action = story.plan.action;
+  const canonicalSubject = plot.subjectLexicon[0].noun;
+  const title = story.title.replace(action.subject, canonicalSubject);
+  return narrativeOf(story, title);
 }
 
 assert.deepEqual(BOOKS.map(book => book.id), ['adventure', 'action', 'relax', 'friends', 'family']);
@@ -162,6 +192,23 @@ assert.equal(getItem('missing'), undefined);
 for (const [bookId, count] of Object.entries({ adventure: 24, relax: 16, friends: 20, family: 20 })) {
   assert.equal(STORY_BLOCK_COUNTS[bookId].goal, count, `${bookId}: the expanded world needs new authored goals, not only additional pictures.`);
 }
+assert.ok(Object.isFrozen(ACTION_PLOTS) && ACTION_PLOTS.length >= 12, 'Action needs many authored goals beyond the wind-door story.');
+assert.equal(STORY_BLOCK_COUNTS.action.goal, ACTION_PLOTS.length);
+assert.equal(new Set(ACTION_PLOTS.map(plot => plot.id)).size, ACTION_PLOTS.length);
+assert.deepEqual(ACTION_PLOTS.map(plot => plot.id).sort(), Object.keys(actionMechanisms).sort());
+assert.ok(Object.isFrozen(ACTION_ADJECTIVES) && ACTION_ADJECTIVES.length === 4);
+for (const plot of ACTION_PLOTS) {
+  assert.ok(Object.isFrozen(plot) && Object.isFrozen(plot.scenes) && Object.isFrozen(plot.objects) && Object.isFrozen(plot.subjectLexicon));
+  assert.ok(plot.scenes.length && plot.scenes.every(id => sceneIds.has(id)));
+  assert.ok(plot.objects.length && plot.objects.every(id => objectIds.has(id)), 'Action objectives use existing atlas resources.');
+  assert.equal(plot.subjectLexicon.length, 3);
+  assert.ok(Object.isFrozen(plot.verbs) && plot.verbs.length === 3 && Object.isFrozen(plot.qualifiers) && plot.qualifiers.length === 4);
+  assert.equal(new Set(plot.subjectLexicon.map(subject => subject.id)).size, plot.subjectLexicon.length);
+  for (const subject of plot.subjectLexicon) {
+    assert.ok(Object.isFrozen(subject) && subject.id && subject.noun);
+    assert.ok(['m', 'f'].includes(subject.gender) && ['s', 'p'].includes(subject.number));
+  }
+}
 assert.equal(new Set(CHARACTERS.map(character => `${character.atlas.sheet ?? 'main'}:${character.atlas.x}:${character.atlas.y}`)).size, 52);
 for (const character of CHARACTERS) {
   const atlas = CHARACTER_ATLASES[character.atlas.sheet ?? 'main'];
@@ -201,12 +248,18 @@ for (const { id: bookId } of BOOKS) {
   const endingPassages = new Set();
   const strategyPassages = new Set();
   const discoveryPassages = new Set();
+  const actionPremises = new Map();
+  const actionResolutions = new Map();
+  const actionTitles = new Map();
+  const actionVocabulary = new Map();
+  const lexicalChoices = new Map();
   const proseContexts = { strategy: new Map(), discovery: new Map() };
   const selectedBlocks = Object.fromEntries(['opening', 'goal', 'obstacle', 'strategy', 'discovery', 'ending'].map(key => [key, new Set()]));
   const range = Object.fromEntries([3, 6, 9].map(duration => [duration, { min: Infinity, max: -Infinity }]));
   stats[bookId] = range;
 
-  for (let seed = 0; seed < 1_000; seed += 1) {
+  const sampleSize = bookId === 'action' ? 2_000 : 1_000;
+  for (let seed = 0; seed < sampleSize; seed += 1) {
     let previousStory;
     for (const duration of [3, 6, 9]) {
       const story = generateStory(bookId, duration, seed);
@@ -242,7 +295,13 @@ for (const { id: bookId } of BOOKS) {
         assert.ok(story.hero.gender === 'm' || story.companion.gender === 'm', 'Plural noun agreements stay valid.');
       } else {
         assert.equal(story.hero.role, 'child', 'The customized child is always the protagonist.');
-        assert.deepEqual(cast.map(character => character.id), createDefaultFamily().members.map(character => character.id));
+        assert.notEqual(story.companion.role, 'child', 'A family story pairs the child with one relative.');
+        assert.deepEqual(cast.map(character => character.id), [story.hero.id, story.companion.id], 'Only the child and chosen relative form this story cast.');
+        assert.deepEqual(story.family, createDefaultFamily(), 'Choosing one relative preserves the complete configured family.');
+        assert.deepEqual(story.family.members.find(member => member.id === story.companion.id), story.companion);
+        for (const member of story.family.members.filter(member => !allowedCast.has(member.id))) {
+          assert.ok(!new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(member.name)}(?![\\p{L}\\p{N}])`, 'u').test(text), 'Relatives outside the chosen pair cannot enter the prose.');
+        }
       }
       assert.ok(story.plan?.blockIds, 'Every story exposes the reusable blocks chosen for its plan.');
       assert.equal(story.plan.world?.destination, story.place.id, 'The plan selects the destination used by the actual story.');
@@ -257,7 +316,43 @@ for (const { id: bookId } of BOOKS) {
       }
       destinations.add(story.plan.world.destination);
       if (bookId === 'family') assert.ok(getScene(story.place.id).tags.includes('family'), 'Family stories select everyday places intended for the child.');
-      if (bookId === 'action') assert.ok(getScene(story.place.id).tags.includes('fortress'), 'The guardian and wind-door arc need a compatible fortress setting.');
+      if (bookId === 'action') {
+        const plot = ACTION_PLOTS.find(plot => plot.id === story.questId);
+        const action = story.plan.action;
+        assert.ok(plot && plot.scenes.includes(story.place.id), 'The Action destination belongs to the selected objective.');
+        assert.equal(story.plan.blockIds.goal, plot.id);
+        assert.equal(action?.plotId, plot.id);
+        const subject = plot.subjectLexicon.find(subject => subject.id === action.subjectId);
+        assert.ok(subject);
+        const adjective = ACTION_ADJECTIVES.find(adjective => adjective.id === action.adjectiveId);
+        const verb = plot.verbs.find(verb => verb.id === action.verbId);
+        assert.ok(action.subject && adjective && verb && action.repairVerb);
+        assert.equal(action.adjective, adjective[`${subject.gender}${subject.number === 'p' ? 'p' : ''}`], 'The adjective agrees with the chosen noun gender and number.');
+        assert.equal(action.verb, verb.past);
+        assert.ok(story.pages[0].paragraphs[0].includes(action.verb.replace(/ (?:de|a)$/u, '')), 'The chosen Action verb changes the actual initial action.');
+        const article = subject.number === 'p' ? subject.gender === 'f' ? 'las' : 'los' : subject.gender === 'f' ? 'la' : 'el';
+        assert.ok(action.subject.startsWith(`${article} ${subject.noun} ${action.adjective} `), 'The selected subject has the right article, noun and adjective.');
+        const nounPhrase = action.subject.replace(/^(?:el|la|los|las) /u, '');
+        assert.ok(story.title.includes(action.subject) && text.toLocaleLowerCase('es').includes(nounPhrase.toLocaleLowerCase('es')), 'The same noun, adjective and complement appear in title and prose, including correct al/del contractions.');
+        assert.ok(!/(?<![\p{L}\p{N}])(?:de el|a el)(?![\p{L}\p{N}])/u.test(text), 'Masculine subjects use del/al after the preposition.');
+        assert.deepEqual(action.goalObjects, plot.objects);
+        assert.equal(action.resolutionStage, 4);
+      } else {
+        const lexicon = story.plan.lexicon;
+        assert.ok(lexicon && lexicon.nounId && lexicon.modifierId && lexicon.verbId && lexicon.title && lexicon.action, 'The selected language is recorded with the story plan.');
+        assert.ok(text.toLocaleLowerCase('es').includes(lexicon.title.toLocaleLowerCase('es')), 'The full selected noun and modifier must appear in the actual short story.');
+        assert.ok(text.includes(lexicon.action), 'The selected coherent verb phrase must be used in the prose.');
+        if (duration === 3) {
+          if (!lexicalChoices.has(story.questId)) lexicalChoices.set(story.questId, { modifiers: new Map(), verbs: new Map(), contexts: new Map() });
+          const choices = lexicalChoices.get(story.questId);
+          choices.modifiers.set(lexicon.modifierId, lexicon.title);
+          choices.verbs.set(lexicon.verbId, lexicon.action);
+          if (!choices.contexts.has(lexicon.modifierId)) choices.contexts.set(lexicon.modifierId, new Map());
+          const verbs = choices.contexts.get(lexicon.modifierId);
+          const action = lexicon.action.replace(new RegExp(escapeRegExp(lexicon.title.replace(/^(?:el|la|los|las|un|una|unos|unas) /iu, '')), 'giu'), '[objeto]');
+          verbs.set(lexicon.verbId, action);
+        }
+      }
       for (const key of Object.keys(selectedBlocks)) {
         assert.equal(typeof story.plan.blockIds[key], 'string');
         assert.ok(story.plan.blockIds[key].length > 0);
@@ -297,6 +392,7 @@ for (const { id: bookId } of BOOKS) {
         assert.equal(story.variantId, previousStory.variantId);
         assert.deepEqual(story.plan, previousStory.plan, 'Reading time cannot change the chosen narrative blocks.');
         assert.deepEqual(story.characters, previousStory.characters);
+        assert.deepEqual(story.family, previousStory.family);
         assert.ok(story.wordCount > previousStory.wordCount + 150);
       }
       previousStory = story;
@@ -311,8 +407,27 @@ for (const { id: bookId } of BOOKS) {
         assert.ok(story.pages.slice(0, deathIndex).some(page => page.characters.includes('owl')));
         assert.ok(story.pages.slice(deathIndex).every(page => !page.characters.includes('owl')), 'The guardian cannot reappear alive after his death.');
         assert.ok(text.indexOf('respirar tres veces') < text.indexOf('Olmo murió'));
-        assert.ok(text.indexOf('Olmo murió') < text.indexOf('giraron la llave'));
+        const repairIndex = duration * story.plan.action.resolutionStage + (duration === 3 ? 1 : duration === 6 ? 3 : 5);
+        assert.ok(deathIndex < repairIndex, 'The goal is repaired after the guardian farewell.');
+        assert.ok(story.pages[repairIndex].characters.includes(story.hero.id) && story.pages[repairIndex].characters.includes(story.companion.id));
+        for (const id of story.plan.action.goalObjects) {
+          assert.ok(story.pages.slice(0, duration).some(page => page.objects.includes(id)), `${story.questId}: the objective's resource must appear in its initial conflict.`);
+          assert.ok(story.pages.slice(duration * 2, duration * 3).some(page => page.objects.includes(id)), `${story.questId}: the guardian's clue must illustrate the objective's resource.`);
+          assert.ok(story.pages.slice(duration * 4, duration * 5).some(page => page.objects.includes(id) && objectMentions[id].test(page.paragraphs[0])), `${story.questId}: the repair must use its resource in both prose and illustration.`);
+        }
         assert.ok(story.pages.slice(duration * 3, duration * 4).every(page => !page.characters.includes('owl')));
+        if (duration === 3) {
+          actionMechanisms[story.questId].forEach((mechanism, index) => assert.ok(mechanism.test(paragraphs[[1, 6, 13][index]]), `${story.questId}: its cause, clue and repair must stay connected in the shortest story.`));
+          if (!actionVocabulary.has(story.questId)) actionVocabulary.set(story.questId, { subjects: new Set(), adjectives: new Set(), verbs: new Map() });
+          const vocabulary = actionVocabulary.get(story.questId);
+          vocabulary.subjects.add(story.plan.action.subjectId);
+          vocabulary.adjectives.add(story.plan.action.adjectiveId);
+          vocabulary.verbs.set(story.plan.action.verbId, story.plan.action.verb);
+          for (const [collection, passage] of [[actionPremises, paragraphs[0]], [actionResolutions, paragraphs[13]], [actionTitles, actionTitleOf(story, ACTION_PLOTS.find(plot => plot.id === story.questId))]]) {
+            if (!collection.has(story.questId)) collection.set(story.questId, new Set());
+            collection.get(story.questId).add(narrativeOf(story, passage));
+          }
+        }
       } else {
         assert.ok(!text.includes('murió'), 'The other books do not add a death plot.');
       }
@@ -358,7 +473,7 @@ for (const { id: bookId } of BOOKS) {
   for (const [key, ids] of Object.entries(selectedBlocks)) {
     assert.equal(ids.size, STORY_BLOCK_COUNTS[bookId][key], `${bookId}: every ${key} block must be reachable.`);
   }
-  assert.ok(quests.size >= (bookId === 'action' ? 1 : 8), `${bookId}: substantive goals/activities must be reachable.`);
+  assert.equal(quests.size, STORY_BLOCK_COUNTS[bookId].goal, `${bookId}: substantive goals/activities must be reachable.`);
   assert.ok(variants.size >= 5, `${bookId}: obstacles must vary independently of the goal.`);
   if (bookId !== 'family') assert.ok(heroes.size >= 4 && companions.size >= 3, 'Cast selection must vary.');
   if (['adventure', 'relax', 'friends'].includes(bookId)) {
@@ -369,11 +484,26 @@ for (const { id: bookId } of BOOKS) {
   if (bookId === 'action') {
     assert.ok(!heroes.has('owl') && !companions.has('owl'), 'Olmo is reserved for his permanent guardian arc.');
     assert.deepEqual([...new Set([...heroes, ...companions])].sort(), [...characterIds].filter(id => id !== 'owl').sort(), 'All other characters must be reachable in Action.');
-    assert.deepEqual([...destinations].sort(), SCENES.filter(scene => scene.tags.includes('fortress')).map(scene => scene.id).sort(), 'Every compatible Action setting must be reachable.');
+    assert.deepEqual([...destinations].sort(), [...new Set(ACTION_PLOTS.flatMap(plot => plot.scenes))].sort(), 'Every compatible Action setting must be reachable.');
+    for (const [label, collection] of [['premise', actionPremises], ['resolution', actionResolutions], ['title', actionTitles]]) {
+      assert.equal(collection.size, ACTION_PLOTS.length);
+      const demonstrated = new Set([...collection.values()].map(passages => [...passages].sort()[0]));
+      assert.ok(demonstrated.size >= 12, `Action needs at least twelve distinct authored ${label}s after removing cosmetic choices.`);
+    }
+    for (const plot of ACTION_PLOTS) {
+      const vocabulary = actionVocabulary.get(plot.id);
+      assert.deepEqual([...vocabulary.subjects].sort(), plot.subjectLexicon.map(subject => subject.id).sort(), `${plot.id}: every coherent noun must appear in real stories.`);
+      assert.deepEqual([...vocabulary.adjectives].sort(), ACTION_ADJECTIVES.map(adjective => adjective.id).sort());
+      assert.deepEqual([...vocabulary.verbs.keys()].sort(), plot.verbs.map(verb => verb.id).sort());
+      assert.equal(new Set(vocabulary.verbs.values()).size, 3, 'Action verb IDs must select three genuinely different authored phrases.');
+    }
   }
-  if (bookId === 'family') assert.deepEqual([...destinations].sort(), SCENES.filter(scene => scene.tags.includes('family')).map(scene => scene.id).sort(), 'Family activities must reach all everyday settings available to them.');
+  if (bookId === 'family') {
+    assert.deepEqual([...destinations].sort(), SCENES.filter(scene => scene.tags.includes('family')).map(scene => scene.id).sort(), 'Family activities must reach all everyday settings available to them.');
+    assert.deepEqual([...companions].sort(), createDefaultFamily().members.slice(1).map(member => member.id).sort(), 'A surprise companion can be any configured relative.');
+  }
   assert.ok(uniqueStories.size >= 750, 'Procedural choices should produce different combinations.');
-  assert.ok(uniqueNarratives.size >= 900, `${bookId}: cosmetic changes alone cannot count as new narratives (${uniqueNarratives.size}/1,000).`);
+  assert.ok(uniqueNarratives.size >= sampleSize * 0.9, `${bookId}: cosmetic changes alone cannot count as new narratives (${uniqueNarratives.size}/${sampleSize}).`);
   assert.ok(openingPassages.size >= 6, `${bookId}: different openings must change the actual prose.`);
   assert.ok(endingPassages.size >= 6, `${bookId}: different endings must change the actual prose.`);
   assert.ok(strategyPassages.size >= 4, `${bookId}: strategies must change what the characters actually do.`);
@@ -383,6 +513,16 @@ for (const { id: bookId } of BOOKS) {
     const demonstrated = [...contexts.values()].filter(choices => choices.size === expected &&
       new Set([...choices.values()].map(passages => [...passages].sort()[0])).size === expected);
     assert.ok(demonstrated.length >= 3, `${bookId}: each ${key} needs distinct prose with the same goal and obstacle, across multiple plans.`);
+  }
+  if (bookId !== 'action') {
+    assert.equal(lexicalChoices.size, STORY_BLOCK_COUNTS[bookId].goal);
+    for (const [goalId, choices] of lexicalChoices) {
+      assert.equal(choices.modifiers.size, 3, `${bookId}/${goalId}: all three coherent modifiers must reach the actual text.`);
+      assert.equal(choices.verbs.size, 3, `${bookId}/${goalId}: all three coherent verb phrases must reach the actual text.`);
+      assert.equal(new Set(choices.modifiers.values()).size, 3, 'Changing a modifier ID must change the full noun phrase.');
+      assert.equal(new Set(choices.verbs.values()).size, 3, 'Changing a verb ID must change an authored action.');
+      assert.ok([...choices.contexts.values()].some(verbs => verbs.size === 3 && new Set(verbs.values()).size === 3), `${bookId}/${goalId}: all three verb choices must change an actual phrase with the same noun and modifier.`);
+    }
   }
 }
 

@@ -205,7 +205,7 @@ for (const goal of FAMILY_GOALS) {
 
 export const STORY_BLOCK_COUNTS = Object.freeze({
   adventure: Object.freeze({ opening: 6, goal: ADVENTURE_GOALS.length, obstacle: 8, strategy: 4, discovery: 6, ending: 6 }),
-  action: Object.freeze({ opening: 6, goal: 1, obstacle: ACTION_THREATS.length, strategy: 4, discovery: 6, ending: 6 }),
+  action: Object.freeze({ opening: 6, goal: 16, obstacle: ACTION_THREATS.length, strategy: 4, discovery: 6, ending: 6 }),
   relax: Object.freeze({ opening: 6, goal: RELAX_GOALS.length, obstacle: 5, strategy: 4, discovery: 6, ending: 6 }),
   friends: Object.freeze({ opening: 6, goal: FRIEND_GOALS.length, obstacle: 6, strategy: 4, discovery: 6, ending: 6 }),
   family: Object.freeze({ opening: 6, goal: FAMILY_GOALS.length, obstacle: 6, strategy: 4, discovery: 6, ending: 6 }),

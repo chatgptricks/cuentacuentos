@@ -1,4 +1,5 @@
-import { BOOKS, CHARACTERS, CHARACTER_ATLASES, generateStory } from './story-engine.js';
+import { BOOKS, CHARACTERS, CHARACTER_ATLASES } from './story-engine.js';
+import { generateFreshStory, normalizeStoryHistory, rememberStory } from './story-selection.js';
 import { SCENES, ITEMS, WORLD_ATLASES, getScene, getItem } from './world-catalog.js';
 import { HAIRSTYLES, OUTFITS, SKIN_TONES, FAVORITE_COLORS, FAMILY_ROLES, createDefaultFamily, createFamilyMember, normalizeFamily, renderHuman } from './family-characters.js';
 import { unlockAudio, playSound, setSoundEnabled, getSoundEnabled, stopSounds, startAmbient, stopAmbient, setMusicEnabled, getMusicEnabled } from './audio.js';
@@ -13,7 +14,7 @@ const palettes = {
   family: { color: '#d8b8bb', ink: '#79515b', icon: 'home', hero: 'family-child', scene: 'garden', copy: 'Tú protagonizas las pequeñas aventuras de tu familia.', note: 'Tu personaje y tu familia en cada cuento' },
 };
 const sounds = { human: 'Un saludo con campanitas', fox: 'Un saludo del zorro', mouse: '¡Pip, pip!', rabbit: 'Un saltito de conejo', bear: 'Un ronroneo de oso', knight: 'La campanita del caballero', wizard: 'Un poquito de magia', dragon: 'Un dragoncito contento', owl: '¡Uuuh, uuuh!', forest: 'El bosque susurra', castle: 'Suena el castillo', lake: 'El agua canta', garden: 'Un jardín con vida' };
-const state = { screen: 'home', story: null, displayPages: null, page: 0, duration: Number(readSetting('cc-duration', '3')), bookId: 'adventure', family: readFamily(), editingRole: 'child', flip: null, observer: null, renderTimer: null, wakeLock: null };
+const state = { screen: 'home', story: null, displayPages: null, page: 0, duration: Number(readSetting('cc-duration', '3')), bookId: 'adventure', family: readFamily(), companionRole: readSetting('cc-family-companion', 'auto'), recentStories: readStoryHistory(), editingRole: 'child', flip: null, observer: null, renderTimer: null, wakeLock: null };
 if (![3, 6, 9].includes(state.duration)) state.duration = 3;
 let installPrompt = null;
 let toastTimer;
@@ -22,6 +23,11 @@ function readSetting(key, fallback) { try { return localStorage.getItem(key) ?? 
 function saveSetting(key, value) { try { localStorage.setItem(key, value); } catch {} }
 function readFamily() { try { return normalizeFamily(JSON.parse(readSetting('cc-family', 'null'))); } catch { return createDefaultFamily(); } }
 function saveFamily() { saveSetting('cc-family', JSON.stringify(state.family)); }
+function readStoryHistory() {
+  const history = normalizeStoryHistory(readSetting('cc-story-history', '[]'));
+  if (history.length) return history;
+  try { return rememberStory(history, JSON.parse(readSetting('cc-last-story', 'null'))); } catch { return history; }
+}
 const iconPaths = {
   book: '<path d="M12 6C9 3 5 3 2 4v14c4-1 7 0 10 2m0-14c3-3 7-3 10-2v14c-4-1-7 0-10 2V6Z"/>',
   volume: '<path d="m11 4-6 5H2v6h3l6 5V4Z"/><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/>',
@@ -93,12 +99,12 @@ function getLastStory() {
     if (s.characters != null && !Array.isArray(s.characters)) return null;
     if (s.bookId === 'family') {
       if (!Array.isArray(s.characters) || !s.characters.length || s.hero.id !== 'family-child') return null;
-      const family = normalizeFamily({ members: s.characters });
-      if (!s.pages.every(page => page.characters.every(id => family.members.some(person => person.id === id)))) return null;
-      s.family = family;
-      s.characters = family.members;
-      s.hero = family.members[0];
-      s.companion = family.members.find(person => person.id === s.companion?.id) || null;
+      const cast = normalizeFamily({ members: s.characters }).members;
+      if (!s.pages.every(page => page.characters.every(id => cast.some(person => person.id === id)))) return null;
+      s.family = normalizeFamily(s.family || { members: cast });
+      s.characters = cast;
+      s.hero = cast[0];
+      s.companion = cast.find(person => person.id === s.companion?.id) || null;
     }
     return s;
   } catch { return null; }
@@ -172,11 +178,14 @@ function renderFamilySetup() {
   const member = state.family.members.find(person => person.role === state.editingRole) || state.family.members[0];
   state.editingRole = member.role;
   const missing = FAMILY_ROLES.filter(role => !state.family.members.some(person => person.role === role.id));
+  const relatives = state.family.members.filter(person => person.role !== 'child');
+  if (!relatives.some(person => person.role === state.companionRole)) state.companionRole = 'auto';
   dialog.className = 'family-dialog';
   dialog.innerHTML = `<button class="icon-button dialog-close" data-action="close-dialog" aria-label="Cerrar">${icon('close')}</button>
     <div class="family-heading"><span class="eyebrow">MI FAMILIA</span><h2 id="dialog-title">Esta vez, <em>tú eres protagonista.</em></h2><p>Crea tu personaje y elige quién comparte el cuento contigo.</p></div>
     <section class="family-roster" aria-label="Personajes de tu familia"><div class="family-tabs">${state.family.members.map(person => `<button type="button" class="family-tab ${person.role === member.role ? 'selected' : ''}" data-action="family-edit" data-role="${person.role}" aria-pressed="${person.role === member.role}">${humanSprite(person)}<span>${escape(person.name)}<small>${person.role === 'child' ? 'Protagonista' : escape(FAMILY_ROLES.find(role => role.id === person.role)?.label)}</small></span></button>`).join('')}</div>
-    ${missing.length ? `<div class="family-add"><span>Añadir al cuento</span>${missing.map(role => `<button type="button" data-action="family-add" data-role="${role.id}">+ ${escape(role.label)}</button>`).join('')}</div>` : ''}</section>
+    ${missing.length ? `<div class="family-add"><span>Añadir a mi familia</span>${missing.map(role => `<button type="button" data-action="family-add" data-role="${role.id}">+ ${escape(role.label)}</button>`).join('')}</div>` : ''}</section>
+    <div class="family-companion"><label for="story-companion">¿Con quién será el cuento?</label><select id="story-companion"><option value="auto" ${state.companionRole === 'auto' ? 'selected' : ''}>${relatives.length ? 'Un familiar sorpresa' : 'Dani · Hermano o hermana'}</option>${relatives.map(person => `<option value="${person.role}" ${state.companionRole === person.role ? 'selected' : ''}>${escape(person.name)} · ${escape(person.label)}</option>`).join('')}</select><p>${relatives.length ? 'Cada historia será una aventura entre tu personaje y un familiar.' : 'Añadiremos a Dani para compartir esta historia. Puedes personalizar otro familiar arriba.'}</p></div>
     <section class="character-editor" aria-label="Personalizar personaje">
       <div class="character-preview"><div id="family-preview-art">${humanSprite(member)}</div><strong id="family-preview-name">${escape(member.name)}</strong><span>${member.role === 'child' ? 'El personaje principal' : escape(FAMILY_ROLES.find(role => role.id === member.role)?.label)}</span>${member.role !== 'child' ? `<button type="button" class="remove-member" data-action="family-remove" data-role="${member.role}">Quitar del cuento</button>` : ''}</div>
       <div class="character-options"><label class="name-field" for="character-name">Nombre<input id="character-name" name="character-name" type="text" value="${escape(member.name)}" maxlength="24" autocomplete="off" placeholder="¿Cómo se llama?"></label>
@@ -240,7 +249,7 @@ async function generate() {
   try {
     await unlockAudio();
     await new Promise(resolve => setTimeout(resolve, 350));
-    state.story = generateStory(state.bookId, state.duration, undefined, { family: state.family });
+    state.story = generateFreshStory(state.bookId, state.duration, { family: state.family, companionRole: state.companionRole }, state.recentStories);
     document.querySelector('#loading-message').textContent = 'Preparando las páginas y sus ilustraciones…';
     const sheets = new Set((state.story.characters || [state.story.hero, state.story.companion]).filter(character => character && character.kind !== 'human').map(character => CHARACTER_ATLASES[character.atlas.sheet || 'main'].file));
     for (const page of state.story.pages) {
@@ -253,6 +262,9 @@ async function generate() {
     }
     await Promise.all([...sheets].map(file => `./art/${file}`).map(src => { const img = new Image(); img.src = src; return img.decode().catch(() => {}); }));
     await new Promise(resolve => setTimeout(resolve, 650));
+    if (state.bookId === 'family') { state.family = state.story.family; saveFamily(); }
+    state.recentStories = rememberStory(state.recentStories, state.story);
+    saveSetting('cc-story-history', JSON.stringify(state.recentStories));
     saveSetting('cc-last-story', JSON.stringify(state.story));
     saveSetting('cc-last-page', '0');
     state.page = 0;
@@ -495,6 +507,7 @@ dialog.addEventListener('input', e => {
 });
 dialog.addEventListener('change', e => {
   if (e.target.name === 'duration') state.duration = Number(e.target.value);
+  if (e.target.id === 'story-companion') { state.companionRole = e.target.value; saveSetting('cc-family-companion', state.companionRole); }
   if (e.target.id === 'character-name') {
     state.family = normalizeFamily(state.family); saveFamily();
     const member = state.family.members.find(person => person.role === state.editingRole);

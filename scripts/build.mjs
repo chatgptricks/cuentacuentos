@@ -89,7 +89,7 @@ for (const [filename, columns, rows] of atlases) {
   if (!width || !height || width * rows !== height * columns || png[24] !== 8 || png[25] !== 6 || png[28] !== 0) throw new Error(`${filename}: atlas needs square, non-interlaced 8-bit RGBA cells`);
   validateTransparency(png, filename, width, height, columns, rows);
 }
-for (const filename of ['character-catalog.js', 'world-catalog.js', 'story-engine.js', 'story-blocks.js', 'family-characters.js', 'app.js', 'audio.js', 'style.css']) await readFile(path.join(root, 'src', filename));
+for (const filename of ['character-catalog.js', 'world-catalog.js', 'story-engine.js', 'story-blocks.js', 'story-language.js', 'story-selection.js', 'action-plots.js', 'family-characters.js', 'family-story.js', 'app.js', 'audio.js', 'style.css']) await readFile(path.join(root, 'src', filename));
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 await cp(path.join(root, 'public'), dist, { recursive: true });

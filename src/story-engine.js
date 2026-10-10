@@ -1,8 +1,11 @@
+import { ACTION_PLOTS, realizeActionPlot, actionDiscovery } from './action-plots.js';
+export { ACTION_PLOTS, ACTION_ADJECTIVES } from './action-plots.js';
 import { SCENES } from './world-catalog.js';
 export { SCENES, ITEMS, OBJECTS, WORLD_ATLASES, getScene, getItem } from './world-catalog.js';
 import { CHARACTERS, CHARACTER_NAMES, getCharacter } from './character-catalog.js';
 export { CHARACTERS, CHARACTER_ATLASES, CHARACTER_NAMES, getCharacter } from './character-catalog.js';
-import { normalizeFamily } from './family-characters.js';
+import { prepareFamilyStory, familyStoryMoment } from './family-story.js';
+import { applyStoryLanguage } from './story-language.js';
 import { STRATEGY_BLOCKS, OPENING_BLOCKS, DISCOVERY_BLOCKS, ENDING_BLOCKS, ADVENTURE_GOALS, ADVENTURE_OBSTACLES, ACTION_THREATS, RELAX_GOALS, RELAX_OBSTACLES, FRIEND_GOALS, FAMILY_GOALS, SOCIAL_OBSTACLES } from './story-blocks.js';
 export { STORY_BLOCK_COUNTS } from './story-blocks.js';
 
@@ -85,11 +88,12 @@ function selectBlocks(random, goals, obstacles) {
   return { opening, goal, obstacle, strategy, discovery, ending, strategyIndex: STRATEGY_BLOCKS.indexOf(strategy) };
 }
 
-function planFor(blocks, place, objects) {
+function planFor(blocks, place, objects, lexicon) {
   return {
     version: 1,
     blockIds: Object.fromEntries(['opening', 'goal', 'obstacle', 'strategy', 'discovery', 'ending'].map(key => [key, blocks[key].id])),
     world: { destination: place.id, items: [...new Set(objects)] },
+    ...(lexicon ? { lexicon } : {}),
   };
 }
 
@@ -97,6 +101,8 @@ const collaborativeSentence = method => `${method.startsWith('uno ') ? 'Para ava
 
 function adventure({ random, hero: h, companion: c, duration }) {
   const b = selectBlocks(random, ADVENTURE_GOALS, ADVENTURE_OBSTACLES);
+  const { goal, lexicon } = applyStoryLanguage(random, 'adventure', b.goal);
+  b.goal = goal;
   const place = choose(random, PLACES.filter(location => location.scene !== 'garden'));
   // Indoor and underwater destinations have signs to read, rather than an outdoor arroyo or fallen branch.
   if (!place.tags.includes('outdoors')) b.obstacle = ADVENTURE_OBSTACLES.find(obstacle => obstacle.id === 'faded-sign');
@@ -188,27 +194,39 @@ function adventure({ random, hero: h, companion: c, duration }) {
       p('El viaje había terminado, pero cuidar aquel jardín seguiría siendo una tarea compartida.', both, ['flower'], 'garden'),
     ],
   ];
-  return { title: `${h.name} y ${q.title}`, place, questId: q.id, variantId: o.id, plan: planFor(b, place, q.objects), pages: unfold(stages, duration) };
+  return { title: `${h.name} y ${q.title}`, place, questId: q.id, variantId: o.id, plan: planFor(b, place, q.objects, lexicon), pages: unfold(stages, duration) };
 }
 
 function action({ random, hero: h, companion: c, duration }) {
-  const b = selectBlocks(random, [{ id: 'wind-door' }], ACTION_THREATS);
-  const { obstacle: t, strategy: s, discovery: d, ending: e } = b;
-  const place = choose(random, PLACES.filter(location => location.tags.includes('fortress')));
+  const b = selectBlocks(random, ACTION_PLOTS, ACTION_THREATS);
+  const q = realizeActionPlot(b.goal, random);
+  const { strategy: s, discovery: d, ending: e } = b;
+  const place = choose(random, PLACES.filter(location => q.scenes.includes(location.id)));
   const guardian = { ...getCharacter('owl'), name: 'Olmo', atlas: { ...getCharacter('owl').atlas } };
   const both = [h.id, c.id];
-  const p = (text, characters = both, objects = [], scene = place.scene) => illustrated(
-    ['castle', 'clouds'].includes(place.id) ? text : text.replaceAll('castillo', place.id === 'underwater-palace' ? 'palacio' : 'lugar'),
-    scene, characters, objects,
-  );
-  const key = choose(random, ['una llave de cobre', 'una llave de cristal', 'una llave de madera']);
-  const discoveryLines = {
-    'tiny-test': 'Olmo mostró con una caja cómo una vuelta pequeña de llave cerraba la puerta.',
-    'new-angle': 'Olmo señaló desde su ventana la cerradura que no habían visto desde el patio.',
-    'leftover-surprise': 'Olmo encontró entre sus cosas una llave que todavía podía cerrar aquella puerta.',
-    'remembered-idea': 'Olmo contó cómo había cerrado aquella puerta cuando el viento sorprendió al castillo.',
-    'shared-question': 'Olmo escuchó sus preguntas y explicó por qué aquella puerta necesitaba una llave especial.',
-    'notice-pattern': 'Olmo enseñó las marcas de la cerradura para reconocer cuánto debía girar la llave.',
+  const p = (text, characters = both, objects = [], scene = place.scene) => illustrated(text, scene, characters, objects);
+  // Side obstacles adapt their route to a town, grove or shoreline without inventing a tower there.
+  const localize = text => {
+    let line = text.replaceAll('castillo', ['underwater-palace', 'clouds'].includes(place.id) ? 'palacio' : place.id === 'castle' ? 'castillo' : 'lugar')
+      .replaceAll('la entrada de la torre', 'el rincón de Olmo').replaceAll('la torre', 'el rincón de Olmo');
+    if (!place.tags.includes('fortress')) line = line
+      .replaceAll('las cortinas', 'las decoraciones')
+      .replaceAll('los pasillos', 'los caminos').replaceAll('el pasillo', 'el camino')
+      .replaceAll('del pasillo', 'del camino').replaceAll('por los pasillos', 'por los caminos')
+      .replaceAll('del patio', 'del lugar').replaceAll('por el patio', 'por el lugar').replaceAll('el patio', 'el rincón')
+      .replaceAll('las ventanas', 'las señales').replaceAll('una ventana', 'un rincón abierto');
+    return line;
+  };
+  const t = { ...b.obstacle };
+  for (const key of ['arrival', 'obstacle', 'detail', 'battle']) t[key] = localize(t[key]);
+  t.methods = t.methods.map(localize);
+  const openingTags = {
+    'unexpected-message': 'sin leer una nota',
+    'morning-discovery': 'durante una mañana tranquila',
+    'rainy-afternoon': 'antes de preguntar cómo hacerlo',
+    'small-celebration': 'al preparar una pequeña celebración',
+    'forgotten-question': 'sin resolver una pregunta importante',
+    'helping-turn': 'al intentar ayudar con prisa',
   };
   const endings = {
     'draw-memory': 'En el jardín dibujaron un recuerdo de Olmo junto a sus flores favoritas.',
@@ -220,59 +238,59 @@ function action({ random, hero: h, companion: c, duration }) {
   };
   const stages = [
     [
-      p(`${h.name} ${b.opening.action} y abrió la puerta del viento con prisa.`, [h.id]),
-      p(isUnderwater(place) ? `En un rincón de aire mágico, ${t.arrival[0].toLocaleLowerCase('es')}${t.arrival.slice(1)}` : t.arrival, [], t.objects),
-      p(`${h.name} pidió ayuda a ${c.name} para cerrar la puerta y reparar su error.`),
-      p('Un letrero junto a la puerta avisaba que solo debía abrirse con ayuda del guardián.', []),
-      p(`${c.name}, ${c.article} ${c.label}, había oído el alboroto desde el patio.`, [c.id]),
-      p('El viejo búho Olmo vivía en una torre y conocía los secretos de aquella puerta.', ['owl']),
-      p('Antes de aquel error, el castillo tenía pasillos tranquilos y bancos para descansar.', []),
-      p(`${h.name} comprendió que preguntar primero habría evitado aquel problema tan ruidoso.`, [h.id]),
+      p(`${h.name} ${q.trigger} ${openingTags[b.opening.id]}.`, [h.id], q.objects),
+      p(`${inPlace(place)[0].toUpperCase()}${inPlace(place).slice(1)}, ${q.problem}.`, [], q.objects),
+      p(`${h.name} pidió ayuda a ${c.name} para ${q.goal}${isUnderwater(place) ? ' dentro del aire mágico' : ''}.`),
+      p(q.warning, [], q.objects),
+      p(`${c.name}, ${c.article} ${c.label}, escuchó lo ocurrido y propuso buscar al guardián.`, [c.id]),
+      p('El viejo búho Olmo descansaba cerca y conocía cómo cuidar aquel rincón.', ['owl']),
+      p(q.concern, [], q.objects),
+      p(`${h.name} comprendió que preguntar primero habría ayudado a cuidar lo que quería cambiar.`, [h.id]),
       p('Decidieron buscar al guardián en vez de intentar arreglarlo todo con más prisa.'),
     ],
     [
-      p(`${inPlace(place)[0].toUpperCase()}${inPlace(place).slice(1)}, ${t.obstacle[0].toLocaleLowerCase('es')}${t.obstacle.slice(1)}`, [], t.objects),
+      p(t.arrival, [], t.objects),
       p(collaborativeSentence(t.methods[b.strategyIndex]), both, [t.tool]),
       p(t.battle, both, [t.tool, ...t.objects]),
       p(`Podían usar ${t.toolLabel} para despejar el camino sin hacer daño.`, [], [t.tool]),
-      p(t.detail, [], t.objects),
+      p(t.obstacle, [], t.objects),
       p(s.lesson),
       p(`${h.name} comprobó que ${c.name} estuviera cerca antes de dar el siguiente paso.`),
-      p('Dejaron las cosas apartadas del sendero para que nadie tropezara durante aquella tarea.'),
-      p('Mantener un paso tranquilo les permitió cuidar el castillo mientras avanzaban hacia la torre.'),
+      p('Prepararon un rincón donde la sorpresa pudiera reunirse sin estorbar a las visitas.'),
+      p('Mantener un ritmo tranquilo permitía cuidar el lugar mientras buscaban al viejo guardián.'),
     ],
     [
-      p(discoveryLines[d.id], ['owl', ...both], ['key']),
-      p(`Olmo entregó ${key} a ${h.name} para cerrar la puerta del viento.`, ['owl', h.id], ['key']),
-      p('El guardián aconsejó respirar tres veces y recordar que ser valiente también era reparar errores.', ['owl']),
+      p(actionDiscovery(q, d.id), ['owl', ...both], q.objects),
+      p(q.delivery, ['owl', h.id], q.objects),
+      p('El guardián, muy anciano, aconsejó respirar tres veces y recordó que podían reparar errores.', ['owl']),
       p(`${c.name} acercó una manta al búho, que ya tenía muy poca fuerza.`, [c.id, 'owl'], ['blanket']),
       p(`${h.name} escuchó con atención cada palabra que decía el viejo guardián.`, [h.id, 'owl']),
-      p('Olmo explicó que debían girar la llave despacio hasta escuchar un clic.', ['owl'], ['key']),
-      p('Olmo, un búho muy anciano, tenía un rincón cómodo junto a la ventana.', ['owl']),
+      p(q.rehearsal, ['owl'], q.objects),
+      p('Olmo tenía un rincón cómodo donde descansar mientras compartía sus palabras con las visitas.', ['owl']),
       p('Los tres hicieron una pausa para dejar que el guardián descansara entre sus palabras.', [...both, 'owl']),
-      p(`${h.name} guardó la llave mientras ${c.name} recordaba los pasos del consejo.`, both, ['key']),
+      p(`${h.name} recordó que ${q.fact}.`, both, q.objects),
     ],
     [
       p('Poco después, Olmo murió en paz porque su larga vida había llegado al final.', []),
       p(`${h.name} comprendió que Olmo no volvería a despertar y sintió mucha tristeza.`, [h.id]),
       p(`${c.name} abrazó a ${h.name} y lloraron en compañía, recordando al búho con cariño.`),
-      p('La ventana dejó un rincón tranquilo donde podían quedarse sin apresurar sus sentimientos.', []),
+      p('Aquel rincón tenía espacio para quedarse sin apresurar ninguno de sus sentimientos.', []),
       p(`${c.name} se quedó cerca para acompañar aquella tristeza sin pedir que desapareciera.`, [c.id]),
       p('Echar de menos a Olmo también era una manera de recordar cuánto lo querían.'),
       p(`${h.name} recordó la voz suave del guardián y las cosas que les había enseñado.`, [h.id]),
-      p('La llave seguía en la mochila y el consejo seguía guardado en su memoria.', [], ['key']),
+      p('Lo aprendido seguía en su memoria aunque el guardián ya no pudiera acompañarles.'),
       p('Un abrazo podía ayudarles a seguir cuidándose, aunque todavía sintieran ganas de llorar.'),
     ],
     [
-      p(`En el patio, ${h.name} contó su error y pidió ayuda sin esconder lo ocurrido.`, [h.id]),
-      p('Respiraron tres veces y giraron la llave mientras mantenían cerrada la puerta del viento.', both, ['key']),
-      p(t.end, [], t.objects),
-      p(`${c.name} sostuvo la puerta para que ${h.name} pudiera usar la llave con cuidado.`, both, ['key']),
+      p(`${h.name} pidió colaboración y explicó cómo quería ${q.goal}.`, [h.id], q.objects),
+      p(`Respiraron tres veces, ${q.repairAction}.`, both, q.objects),
+      p(q.outcome, both, q.objects),
+      p(`${c.name} ${q.assist}.`, [c.id], q.objects),
       p('El consejo de Olmo les recordaba que nadie debía hacerlo todo completamente a solas.'),
-      p('Un clic pequeño anunció que la puerta estaba cerrada y el castillo recuperaba la calma.', []),
-      p('Apartaron una silla del camino para poder trabajar sin que nadie tropezara.'),
-      p(`${h.name} miró el letrero antes de tocar el picaporte por segunda vez.`, [h.id]),
-      p('Mantuvieron la puerta cerrada un momento para dejar que la llave hiciera su trabajo.', both, ['key']),
+      p(q.aftercare, both, q.objects),
+      p('Prepararon un sitio cómodo y libre de obstáculos antes de empezar aquella reparación.'),
+      p(`${h.name} reconoció las señales del consejo antes de cambiar otra cosa con prisa.`, [h.id]),
+      p(q.check, both, q.objects),
     ],
     [
       p(endings[e.id], both, ['flower'], 'garden'),
@@ -280,17 +298,23 @@ function action({ random, hero: h, companion: c, duration }) {
       p(e.line, both, [], 'garden'),
       p(`${h.name} dejó una flor junto al banco donde podrían hablar de Olmo.`, [h.id], ['flower'], 'garden'),
       p(`${c.name} recordó que podían pedir compañía en los días alegres y en los tristes.`, [c.id], [], 'garden'),
-      p('Compartieron una cesta de merienda y recuerdos sin pedir que nadie sonriera todavía.', both, ['basket'], 'garden'),
+      p(q.memory, both, q.objects, 'garden'),
       p('El jardín tenía espacio para las lágrimas y también para las pequeñas sonrisas.', [], ['flower'], 'garden'),
-      p('Ayudar a otro vecino sería una forma de continuar la enseñanza del viejo búho.', both, [], 'garden'),
+      p('Ayudar a otra visita sería una forma de continuar la enseñanza del viejo búho.', both, [], 'garden'),
       p('Al marcharse, avanzaron juntos dejando espacio para todos los sentimientos que todavía los acompañaban.', both, [], 'garden'),
     ],
   ];
-  return { title: `${h.name} y la puerta del viento`, place, guardian, questId: 'wind-door', variantId: t.id, plan: planFor(b, place, [t.tool, ...t.objects]), pages: unfold(stages, duration) };
+  const plan = planFor(b, place, [...q.objects, t.tool, ...t.objects]);
+  plan.action = {
+    plotId: q.id, ...q.lexicon, goalObjects: [...q.objects], repairVerb: q.repairVerb, resolutionStage: 4,
+  };
+  return { title: `${h.name} y ${q.title}`, place, guardian, questId: q.id, variantId: t.id, plan, pages: unfold(stages, duration) };
 }
 
 function relax({ random, hero: h, companion: c, duration }) {
   const b = selectBlocks(random, RELAX_GOALS, RELAX_OBSTACLES);
+  const { goal, lexicon } = applyStoryLanguage(random, 'relax', b.goal);
+  b.goal = goal;
   const { goal: f, obstacle: o, strategy: s, discovery: d, ending: e } = b;
   const place = choose(random, PLACES.filter(location => f.scenes.includes(location.scene)));
   const both = [h.id, c.id];
@@ -373,7 +397,7 @@ function relax({ random, hero: h, companion: c, duration }) {
     [
       p(discoveryLines[d.id], both, f.objects),
       p(f.outcome, [], f.objects),
-      p(`${h.name} compartió el descubrimiento con ${c.name} y reconoció lo que había cambiado.`),
+      p(`${h.name} llamó al descubrimiento «${lexicon.title}» y lo compartió con ${c.name}.`),
       p(calmDiscoveryDetails[d.id][0]),
       p(f.practice, both, f.objects),
       p(calmDiscoveryDetails[d.id][1]),
@@ -393,39 +417,26 @@ function relax({ random, hero: h, companion: c, duration }) {
       p('Una enseñanza sencilla podía acompañarlos aunque todavía quedaran muchas cosas por descubrir.'),
     ],
   ];
-  return { title: `${h.name} y ${f.title}`, place, moral: `${f.moral}.`, questId: f.id, variantId: o.id, plan: planFor(b, place, f.objects), pages: unfold(stages, duration) };
+  return { title: `${h.name} y ${f.title}`, place, moral: `${f.moral}.`, questId: f.id, variantId: o.id, plan: planFor(b, place, f.objects, lexicon), pages: unfold(stages, duration) };
 }
 
 const listNames = members => members.length === 1 ? members[0].name : `${members.slice(0, -1).map(member => member.name).join(', ')} y ${members.at(-1).name}`;
 
 function social({ random, hero: h, companion: c, characters, family, duration, bookId }) {
   const isFamily = bookId === 'family';
-  const solo = isFamily && characters.length === 1;
   const singleActor = isFamily && characters.filter(person => person.role !== 'baby').length === 1;
   const b = selectBlocks(random, isFamily ? FAMILY_GOALS : FRIEND_GOALS, SOCIAL_OBSTACLES);
+  const { goal, lexicon } = applyStoryLanguage(random, bookId, b.goal);
+  b.goal = goal;
   const { goal: a, obstacle: o, strategy: s, discovery: d, ending: e } = b;
   const place = choose(random, PLACES.filter(location => a.scenes.includes(location.scene)));
   const cast = isFamily ? characters : [h, c];
-  // Keep illustrations readable while each chosen family member appears through the story.
-  const castForStage = stage => [h.id, ...cast.filter(person => person.id !== h.id).slice(stage % Math.max(1, cast.length - 1), stage % Math.max(1, cast.length - 1) + 2).map(person => person.id)];
+  const castForStage = () => cast.map(person => person.id);
   const p = (text, people = [h.id, ...(c.id !== h.id ? [c.id] : [])], objects = []) => illustrated(text, place.scene, people, objects);
   const phrase = (plural, singular) => singleActor ? singular : plural;
   const conjugateForActor = sentence => singleActor
     ? sentence.replace('habían imaginado', 'había imaginado').replace('No podían', 'No podía').replace(' podían probar ', ' podía probar ')
     : sentence;
-  const participatingFamily = isFamily ? cast.filter(person => person.id !== h.id) : [];
-  const baby = participatingFamily.find(person => person.role === 'baby');
-  const supportiveMember = participatingFamily.find(person => person.role !== 'baby');
-  const preparationMember = baby || supportiveMember;
-  const familyMoment = person => person?.role === 'baby'
-    ? `${person.name} miró los colores mientras ${h.name} preparaba el rincón de la actividad.`
-    : person?.role === 'teen'
-      ? `${person.name} propuso un detalle y dejó que ${h.name} eligiera si usarlo.`
-      : person?.role === 'sibling'
-        ? `${person.name} escuchó el plan de ${h.name} y pidió un turno para participar.`
-        : person
-          ? a.stationary ? `${person.name} se quedó cerca mientras ${h.name} observaba los tesoros en su sitio.` : `${person.name} acercó los materiales que ${h.name} había elegido para su plan.`
-          : undefined;
   const endingKeepsake = singleActor ? a.keepsake
     .replace(/^Recogieron/, 'Recogió').replace(/^Doblaron/, 'Dobló').replace(/^Dibujaron/, 'Dibujó').replace(/^Guardaron/, 'Guardó').replace(/^Dejaron/, 'Dejó')
     .replace(/^Apagaron/, 'Apagó').replace(/^Cerraron/, 'Cerró')
@@ -454,7 +465,7 @@ function social({ random, hero: h, companion: c, characters, family, duration, b
     'tomorrow-plan': `${h.name} eligió una parte del juego que le gustaría probar otra mañana.`,
   };
   const introduction = isFamily
-    ? solo ? `${h.name} eligió jugar a su ritmo y cuidar su propio rincón.` : `Compartirían el plan ${listNames(cast)}.`
+    ? `Compartirían el plan ${listNames(cast)}.`
     : `${h.name} y ${c.name} acordaron preparar la actividad${isUnderwater(place) ? ` ${inPlace(place)}` : ' en compañía'}.`;
   const stages = [
     [
@@ -471,7 +482,7 @@ function social({ random, hero: h, companion: c, characters, family, duration, b
     [
       p(a.materials, [], a.objects),
       p(`${h.name} ${a.task}.`, [h.id], a.objects),
-      p(familyMoment(preparationMember) || (a.stationary ? phrase('Buscaron un lugar cómodo desde donde mirar los tesoros sin tener que empujarse.', 'Buscó un lugar cómodo desde donde mirar los tesoros sin cambiar su sitio.') : phrase('Prepararon un lugar para dejar los materiales al alcance sin tener que empujarse.', 'Preparó un lugar para dejar los materiales al alcance y trabajar con comodidad.')), preparationMember ? [h.id, preparationMember.id] : castForStage(1), a.objects),
+      p(isFamily ? familyStoryMoment(h, c, a, 'prepare') : a.stationary ? 'Buscaron un lugar cómodo desde donde mirar los tesoros sin tener que empujarse.' : 'Prepararon un lugar para dejar los materiales al alcance sin tener que empujarse.', castForStage(1), a.objects),
       p(phrase('Miraron lo disponible antes de decidir si hacía falta traer alguna cosa más.', 'Miró lo disponible antes de decidir si hacía falta traer alguna cosa más.')),
       p(`${h.name} escogió una tarea que podía hacer y pidió cuidado cuando lo necesitó.`, [h.id]),
       p(phrase('Había sitio para trabajar y también para cambiar una idea si aparecía otra mejor.', 'Había sitio para trabajar y también para cambiar una idea si aparecía otra mejor.')),
@@ -492,8 +503,8 @@ function social({ random, hero: h, companion: c, characters, family, duration, b
     ],
     [
       p(`${h.name} empezó a ${o.solution(a)}.`, [h.id], a.objects),
-      p('El primer paso mostró un cambio y algo que todavía necesitaba cuidado.', castForStage(3)),
-      p(isFamily && baby && supportiveMember ? familyMoment(supportiveMember) : phrase('Continuaron sin pedir que todo saliera perfecto al primer intento de aquella idea.', 'Continuó sin pedir que todo saliera perfecto al primer intento de aquella idea.'), isFamily && baby && supportiveMember ? [h.id, supportiveMember.id] : castForStage(3)),
+      p('El primer paso dejó un cambio que todavía necesitaba cuidado.', castForStage(3)),
+      p(isFamily ? familyStoryMoment(h, c, a, 'progress') : 'Continuaron sin pedir que todo saliera perfecto al primer intento de aquella idea.', castForStage(3), a.objects),
       p(a.stationary ? phrase('Ajustaron su lugar de observación y dejaron los tesoros del mar en su sitio.', 'Ajustó su lugar de observación y dejó los tesoros del mar en su sitio.') : phrase('Ajustaron la posición de sus cosas para que el rincón siguiera resultando cómodo.', 'Ajustó la posición de sus cosas para que el rincón siguiera resultando cómodo.'), castForStage(3), a.objects),
       p(`${h.name} reconoció una parte que funcionaba y decidió conservarla en el plan.`, [h.id]),
       p(phrase('Lo que salió distinto podía enseñar algo útil para el siguiente paso.', 'Lo que salió distinto podía enseñar algo útil para el siguiente paso.')),
@@ -504,7 +515,7 @@ function social({ random, hero: h, companion: c, characters, family, duration, b
     [
       p(discoveryLines[d.id], [h.id], a.objects),
       p(a.result, castForStage(4), a.objects),
-      p(phrase('El resultado tenía espacio para distintas maneras de participar.', 'El resultado guardaba sus elecciones y las ideas que había probado.')),
+      p(`${h.name} llamó «${lexicon.title}» al proyecto.`),
       p(d.setup, castForStage(4)),
       p(`${h.name} señaló un detalle que había aparecido al probar de otra manera.`, [h.id], a.objects),
       p(singleActor ? 'Miró el resultado despacio y decidió qué parte quería conservar para otro intento.' : d.follow),
@@ -515,7 +526,7 @@ function social({ random, hero: h, companion: c, characters, family, duration, b
     [
       p(endings[e.id], castForStage(5), a.objects),
       p(endingKeepsake, castForStage(5), a.objects),
-      p(singleActor ? e.line.replace('les gustaba', 'le gustaba').replace('disfrutaban', 'disfrutaba').replace('habían descubierto', 'había descubierto') : e.line, castForStage(5)),
+      p(isFamily ? familyStoryMoment(h, c, a, 'finish') : e.line, castForStage(5), isFamily ? a.objects : []),
       p(phrase('Recogieron el rincón para dejar el camino libre y un sitio para otra idea.', 'Recogió el rincón para dejar el camino libre y un sitio para otra idea.')),
       p(`${h.name} eligió qué recuerdo le gustaría guardar de aquella tarde.`, [h.id]),
       p(phrase('Habían encontrado una forma de disfrutar dejando sitio para ideas y sentimientos diferentes.', 'Había encontrado una forma de disfrutar dejando sitio para sus ideas y sentimientos.')),
@@ -524,7 +535,9 @@ function social({ random, hero: h, companion: c, characters, family, duration, b
       p(phrase('No hacía falta decidir enseguida la próxima actividad para guardar un recuerdo bonito.', 'No hacía falta decidir enseguida la próxima actividad para guardar un recuerdo bonito.')),
     ],
   ];
-  return { title: isFamily ? `${h.name} y ${a.title}` : `${h.name} y ${c.name}: ${a.title}`, place, questId: a.id, variantId: o.id, plan: planFor(b, place, a.objects), ...(isFamily ? { family } : {}), pages: unfold(stages, duration) };
+  const plan = planFor(b, place, a.objects, lexicon);
+  if (isFamily) plan.family = { companionRole: c.role };
+  return { title: `${h.name} y ${c.name}: ${a.title}`, place, questId: a.id, variantId: o.id, plan, ...(isFamily ? { family } : {}), pages: unfold(stages, duration) };
 }
 
 const GENERATORS = { adventure, action, relax, friends: social, family: social };
@@ -536,8 +549,9 @@ export function generateStory(bookId, duration = 3, seed, options = {}) {
   if (![3, 6, 9].includes(minutes)) throw new RangeError('Choose a reading duration of 3, 6 or 9 minutes.');
   const storySeed = seed === undefined ? freshSeed() : String(seed);
   const random = randomFromSeed(`${bookId}:${storySeed}`);
-  const family = bookId === 'family' ? normalizeFamily(options?.family) : undefined;
-  const cast = family ? { hero: family.members[0], companion: choose(random, family.members.slice(1).length ? family.members.slice(1) : family.members), characters: family.members } : makeCast(bookId, random);
+  const familyCast = bookId === 'family' ? prepareFamilyStory(options?.family, { companionRole: options?.companionRole, random }) : undefined;
+  const family = familyCast?.family;
+  const cast = familyCast || makeCast(bookId, random);
   const story = GENERATORS[bookId]({ random, ...cast, family, duration: minutes, bookId });
   const id = `${bookId}-${minutes}-${encodeURIComponent(storySeed)}`;
   const pages = story.pages.map((page, index) => ({ id: `${id}-page-${index + 1}`, ...page }));
