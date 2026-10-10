@@ -200,15 +200,15 @@ for (const goals of coveredGoals) assert.equal(goals.size, STORY_BLOCK_COUNTS.fa
 
 const family = createDefaultFamily();
 const originalStory = generateStory('family', 3, 'names-and-clothes', { family });
-family.members[0].name = 'Álex';
+family.members[0].name = 'Inés';
 family.members[0].color = colorIds.find(id => id !== family.members[0].color);
 const customizedStory = generateStory('family', 3, 'names-and-clothes', { family });
-assert.equal(customizedStory.hero.name, 'Álex');
-assert.ok(textOf(customizedStory).includes('Álex') && customizedStory.title.includes('Álex'));
+assert.equal(customizedStory.hero.name, 'Inés');
+assert.ok(textOf(customizedStory).includes('Inés') && customizedStory.title.includes('Inés'));
 assert.notEqual(renderHuman(originalStory.hero), renderHuman(customizedStory.hero));
 assert.deepEqual(customizedStory.plan, originalStory.plan, 'Changing clothes or a name keeps the selected plot.');
 customizedStory.hero.name = 'Mutado';
-assert.equal(generateStory('family', 3, 'names-and-clothes', { family }).hero.name, 'Álex');
+assert.equal(generateStory('family', 3, 'names-and-clothes', { family }).hero.name, 'Inés');
 
 console.log(`Verified ${checkedAppearances.toLocaleString('en-US')} appearance combinations across all roles and ${checkedStories.toLocaleString('en-US')} stories across all 32 family compositions, including three-part names.`);
 console.log('Inclusive customization, safe restored profiles/SVG, chosen identities, child-only families, determinism, and stable longer stories: passed.');

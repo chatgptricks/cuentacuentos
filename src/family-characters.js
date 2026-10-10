@@ -40,12 +40,12 @@ export const FAVORITE_COLORS = freezeOptions([
 ]);
 
 export const FAMILY_ROLES = freezeOptions([
-  { id: 'child', label: 'Protagonista', defaultName: 'Alex', ageGroup: 'child' },
+  { id: 'child', label: 'Protagonista', defaultName: 'Sam', ageGroup: 'child' },
   { id: 'dad', label: 'Papá', defaultName: 'Papá', ageGroup: 'adult' },
   { id: 'mom', label: 'Mamá', defaultName: 'Mamá', ageGroup: 'adult' },
   { id: 'baby', label: 'Bebé', defaultName: 'Bebé', ageGroup: 'baby' },
   { id: 'sibling', label: 'Hermano o hermana', defaultName: 'Dani', ageGroup: 'child' },
-  { id: 'teen', label: 'Adolescente', defaultName: 'Sam', ageGroup: 'teen' },
+  { id: 'teen', label: 'Adolescente', defaultName: 'Noa', ageGroup: 'teen' },
 ]);
 
 const ROLE_DEFAULTS = Object.freeze({
