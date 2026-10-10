@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "Cuentacuentos",
+  "short_name": "Cuentacuentos",
+  "description": "Un pequeño libro de cuentos para compartir en familia. Cuatro mundos, una nueva historia cada vez.",
+  "lang": "es",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#f6efe5",
+  "background_color": "#f6efe5",
+  "categories": ["books", "education", "kids"],
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

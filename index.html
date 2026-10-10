@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f6efe5" />
+    <meta name="description" content="Una pequeña biblioteca de cuentos que nunca son iguales. Aventuras ilustradas para leer cerquita, de 3, 6 o 9 minutos." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Cuentacuentos" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" href="./icons/icon-192.png" />
+    <link rel="stylesheet" href="./src/style.css" />
+    <title>Cuentacuentos · Un momento juntos</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script src="./vendor/page-flip.browser.js"></script>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

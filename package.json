@@ -1,0 +1,12 @@
+{
+  "name": "cuentacuentos",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cuentos procedurales ilustrados para leer juntos",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/serve.mjs",
+    "test": "node scripts/verify-stories.mjs"
+  }
+}
