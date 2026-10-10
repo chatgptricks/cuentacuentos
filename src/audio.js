@@ -8,6 +8,35 @@ const MAX_VOICES = 4;
 const voices = new Set();
 const lastPlayed = new Map();
 
+/** Shared, gentle effects give characters, places and objects sound without loading files. */
+export const SOUND_ALIASES = Object.freeze({
+  human: 'bell',
+  hedgehog: 'rustle', raccoon: 'rustle', beaver: 'rustle', badger: 'rustle',
+  deer: 'hoof', giraffe: 'hoof', zebra: 'hoof',
+  otter: 'splash', seal: 'splash', octopus: 'splash',
+  wolf: 'howl', lynx: 'purr', lion: 'purr', tiger: 'purr',
+  elephant: 'trumpet', monkey: 'chatter', panda: 'bear', koala: 'bear',
+  penguin: 'bird', flamingo: 'bird', parrot: 'bird', peacock: 'bird',
+  dolphin: 'whistle', whale: 'whale',
+  unicorn: 'magicsteps', merlin: 'wizard', elf: 'fairy', 'good-witch': 'wizard',
+  'wise-elder': 'bell', princess: 'castle', king: 'castle', 'royal-knight': 'knight',
+  'wise-grandmother': 'bell', goblin: 'pluck', gnome: 'pluck', mermaid: 'watersong',
+  phoenix: 'fairy', yeti: 'dragon', pegasus: 'magicsteps', 'tree-spirit': 'forest',
+  waterfall: 'river', 'bamboo-grove': 'forest', 'desert-oasis': 'lake', 'snowy-valley': 'mountain',
+  'flower-field': 'meadow', mangrove: 'river', 'coral-reef': 'watersong', 'mushroom-grove': 'forest',
+  library: 'page', bakery: 'basket', workshop: 'basket', greenhouse: 'garden',
+  playground: 'hoof', orchard: 'garden', windmill: 'cloud', harbor: 'boat',
+  'crystal-cave': 'cave', 'floating-island': 'clouds', 'enchanted-tower': 'wizard',
+  'star-observatory': 'fairy', 'moon-garden': 'fairy', 'rainbow-bridge': 'magicsteps',
+  'underwater-palace': 'watersong', 'giant-tree': 'forest',
+  lantern: 'castle', compass: 'knight', map: 'page', telescope: 'pluck',
+  'magnifying-glass': 'key', backpack: 'blanket', rope: 'yarn', boots: 'hoof',
+  kite: 'cloud', drum: 'drum', flute: 'flute', paintbrush: 'feather',
+  crayons: 'rustle', puzzle: 'pluck', pinwheel: 'umbrella', 'paper-star': 'fairy',
+  shell: 'watersong', pearl: 'bell', crystal: 'key', acorn: 'seed',
+  apple: 'basket', 'honey-jar': 'pluck', teacup: 'castle', 'watering-can': 'splash',
+});
+
 let context;
 let master;
 let limiter;
@@ -308,6 +337,129 @@ const effects = {
       noise(voice, { at: 0.08, duration: 0.92, frequency: 2100, endFrequency: 900, volume: 0.022, attack: 0.18, release: 0.33 });
     },
   },
+  rustle: {
+    duration: 0.92,
+    draw(voice) {
+      [0, 0.28, 0.57].forEach(at => {
+        noise(voice, { at, duration: 0.22, frequency: 780, endFrequency: 320, volume: 0.032, attack: 0.06, release: 0.08 });
+        tone(voice, { at: at + 0.04, duration: 0.16, frequency: 340, endFrequency: 260, type: 'triangle', volume: 0.021, attack: 0.025, release: 0.065 });
+      });
+    },
+  },
+  hoof: {
+    duration: 0.92,
+    draw(voice) {
+      [0, 0.22, 0.49, 0.7].forEach((at, index) => {
+        tone(voice, { at, duration: 0.14, frequency: index % 2 ? 235 : 280, endFrequency: 100, type: 'triangle', volume: 0.041, attack: 0.008, release: 0.06 });
+        noise(voice, { at, duration: 0.09, frequency: 470, endFrequency: 240, volume: 0.019, attack: 0.008, release: 0.035 });
+      });
+    },
+  },
+  purr: {
+    duration: 1.15,
+    draw(voice) {
+      tone(voice, { duration: 0.94, frequency: 135, endFrequency: 112, type: 'triangle', volume: 0.044, vibrato: 5, vibratoRate: 17, attack: 0.14, release: 0.3 });
+      tone(voice, { at: 0.1, duration: 0.83, frequency: 203, endFrequency: 168, volume: 0.021, vibrato: 3, vibratoRate: 17, attack: 0.14, release: 0.29 });
+    },
+  },
+  howl: {
+    duration: 1.48,
+    draw(voice) {
+      tone(voice, { duration: 1.27, frequency: 245, bend: [[0.25, 365], [0.65, 350], [1, 230]], volume: 0.049, attack: 0.2, release: 0.36, vibrato: 3, vibratoRate: 5 });
+      tone(voice, { at: 0.03, duration: 1.19, frequency: 490, bend: [[0.25, 730], [0.65, 700], [1, 460]], volume: 0.01, attack: 0.22, release: 0.35 });
+    },
+  },
+  trumpet: {
+    duration: 1.14,
+    draw(voice) {
+      tone(voice, { duration: 0.9, frequency: 230, bend: [[0.35, 410], [0.72, 320], [1, 200]], type: 'triangle', volume: 0.043, attack: 0.12, release: 0.25 });
+      tone(voice, { at: 0.04, duration: 0.82, frequency: 460, endFrequency: 400, volume: 0.014, attack: 0.13, release: 0.24 });
+    },
+  },
+  chatter: {
+    duration: 0.93,
+    draw(voice) {
+      [0, 0.19, 0.41, 0.66].forEach((at, index) => {
+        tone(voice, { at, duration: 0.17, frequency: index % 2 ? 540 : 690, bend: [[0.45, 900], [1, 480]], type: 'triangle', volume: 0.033, attack: 0.025, release: 0.07 });
+      });
+    },
+  },
+  bird: {
+    duration: 1.07,
+    draw(voice) {
+      [0, 0.24, 0.61].forEach((at, index) => {
+        tone(voice, { at, duration: 0.23, frequency: 890 + index * 140, bend: [[0.45, 1450 + index * 110], [1, 860 + index * 80]], volume: 0.031, attack: 0.035, release: 0.09 });
+      });
+    },
+  },
+  splash: {
+    duration: 1.1,
+    draw(voice) {
+      noise(voice, { duration: 0.68, frequency: 920, endFrequency: 330, volume: 0.045, attack: 0.12, release: 0.24 });
+      [0.17, 0.43, 0.72].forEach((at, index) => {
+        tone(voice, { at, duration: 0.2, frequency: 570 + index * 110, endFrequency: 240, volume: 0.032, attack: 0.015, release: 0.09 });
+      });
+    },
+  },
+  whistle: {
+    duration: 1.05,
+    draw(voice) {
+      tone(voice, { duration: 0.35, frequency: 720, bend: [[0.6, 1320], [1, 940]], volume: 0.033, attack: 0.055, release: 0.11 });
+      tone(voice, { at: 0.49, duration: 0.37, frequency: 920, bend: [[0.4, 1450], [1, 760]], volume: 0.03, attack: 0.055, release: 0.13 });
+    },
+  },
+  whale: {
+    duration: 1.6,
+    draw(voice) {
+      tone(voice, { duration: 1.37, frequency: 115, bend: [[0.35, 170], [0.7, 145], [1, 92]], volume: 0.043, attack: 0.24, release: 0.4, vibrato: 2, vibratoRate: 4 });
+      tone(voice, { at: 0.1, duration: 1.24, frequency: 230, endFrequency: 185, volume: 0.015, attack: 0.25, release: 0.39 });
+      noise(voice, { at: 0.25, duration: 0.9, frequency: 360, endFrequency: 200, volume: 0.017, attack: 0.2, release: 0.32 });
+    },
+  },
+  magicsteps: {
+    duration: 1.3,
+    draw(voice) {
+      [523.25, 659.25, 783.99].forEach((pitch, index) => {
+        const at = index * 0.25;
+        tone(voice, { at, duration: 0.15, frequency: 235, endFrequency: 110, type: 'triangle', volume: 0.028, attack: 0.008, release: 0.065 });
+        bell(voice, pitch, at + 0.04, 0.59, 0.023);
+      });
+    },
+  },
+  pluck: {
+    duration: 1.01,
+    draw(voice) {
+      [392, 523.25, 440].forEach((pitch, index) => {
+        tone(voice, { at: index * 0.21, duration: 0.42, frequency: pitch, endFrequency: pitch * 0.97, type: 'triangle', volume: 0.032, attack: 0.013, release: 0.2 });
+      });
+    },
+  },
+  watersong: {
+    duration: 1.42,
+    draw(voice) {
+      noise(voice, { duration: 1.1, frequency: 550, endFrequency: 310, volume: 0.029, attack: 0.23, release: 0.34 });
+      [523.25, 659.25, 783.99].forEach((pitch, index) => bell(voice, pitch, 0.11 + index * 0.23, 0.68, 0.025));
+    },
+  },
+  drum: {
+    duration: 0.9,
+    draw(voice) {
+      [0, 0.3, 0.58].forEach((at, index) => {
+        tone(voice, { at, duration: 0.22, frequency: index === 1 ? 205 : 160, endFrequency: 74, type: 'triangle', volume: 0.046, attack: 0.009, release: 0.1 });
+        noise(voice, { at, duration: 0.11, frequency: 520, endFrequency: 180, volume: 0.018, attack: 0.012, release: 0.05 });
+      });
+    },
+  },
+  flute: {
+    duration: 1.46,
+    draw(voice) {
+      [523.25, 587.33, 659.25].forEach((pitch, index) => {
+        const at = index * 0.36;
+        tone(voice, { at, duration: 0.48, frequency: pitch, volume: 0.036, attack: 0.09, release: 0.16, vibrato: 1.5, vibratoRate: 5 });
+        tone(voice, { at, duration: 0.44, frequency: pitch * 2, volume: 0.007, attack: 0.1, release: 0.15 });
+      });
+    },
+  },
   forest: {
     duration: 1.4,
     draw(voice) {
@@ -510,6 +662,8 @@ const effects = {
 
 /** Returns false if muted, unsupported, too rapid, or the id is unknown. */
 export async function playSound(id) {
+  if (typeof id !== 'string') return false;
+  if (Object.prototype.hasOwnProperty.call(SOUND_ALIASES, id)) id = SOUND_ALIASES[id];
   if (!Object.prototype.hasOwnProperty.call(effects, id)) return false;
   const effect = effects[id];
   if (!soundEnabled || !effect || !(await unlockAudio()) || !soundEnabled) return false;
@@ -740,6 +894,7 @@ export function stopAmbient() {
  * resumes AudioContext by itself, so a saved preference cannot cause autoplay.
  */
 export function startAmbient(bookId) {
+  if (bookId === 'family') bookId = 'relax';
   if (!Object.prototype.hasOwnProperty.call(compositions, bookId) || !musicEnabled || !context || context.state !== 'running') return false;
   if (typeof document !== 'undefined' && document.hidden) return false;
   if (ambient?.id === bookId) return true;

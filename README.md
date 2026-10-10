@@ -4,19 +4,29 @@ Una biblioteca infantil para leer juntos en el teléfono o el iPad, en español 
 
 **App:** https://chatgptricks.github.io/cuentacuentos/
 
-Cuatro libros en un estante: Aventura, Acción, Relax y Amigos. Mamá o papá elige 3, 6 o 9 minutos y genera un cuento con su propia portada. Cada página tiene una oración corta y una pequeña ilustración compuesta con piezas reutilizables. La lectura llena la pantalla; en iPad horizontal se muestran dos páginas con el lomo en el centro. Los controles flotan en los márgenes y las ilustraciones tienen sonidos al tocarlas.
+Cinco libros en un estante: Aventura, Acción, Relax, Amigos y **Mi familia**. Una persona adulta elige 3, 6 o 9 minutos y genera un cuento con su propia portada. Cada página tiene una oración corta y una pequeña ilustración compuesta con piezas reutilizables. La lectura llena la pantalla; en iPad horizontal se muestran dos páginas con el lomo en el centro. Los controles flotan en los márgenes y las ilustraciones tienen sonidos al tocarlas.
 
 ## Catálogo y cuentos
 
-- 12 personajes, con nombres, género gramatical y sonidos
-- 12 lugares de acuarela
-- 12 elementos que se combinan con personajes y lugares
+- 52 personajes: 32 animales y 20 de fantasía, con nombres, género gramatical y sonidos
+- Se conservan los 12 personajes originales y se suman 24 animales y 16 personajes de fantasía
+- 36 escenarios de acuarela: los 12 originales y 24 nuevos de naturaleza, pueblos y fantasía
+- 36 elementos: los 12 originales y 24 nuevos de exploración, creación y pequeños tesoros
+- 124 recursos del catálogo que participan en el texto y en las ilustraciones
 - 18, 36 o 54 páginas, según la duración elegida
-- Cuatro estructuras distintas y planes coherentes que conservan personajes, lugares, objetivo y objetos hasta el final
+- Cinco estructuras que combinan bloques de apertura, objetivo, dificultad, estrategia, descubrimiento y cierre
+- Los bloques cambian lo que sucede en el cuento, además de los nombres y los escenarios
+- Cada plan conserva su reparto, objetivo y continuidad hasta el final
+
+Desde **Conoce a los 52 personajes**, la biblioteca abre una galería con las pestañas **Animales (32)** y **Fantasía (20)**. Cada ficha muestra su dibujo, nombre y tipo de personaje; al tocar el dibujo suena un efecto suave. Los sonidos de los nuevos personajes se sintetizan localmente y comparten timbres apropiados: chapoteos, pasos, cantos, ronroneos o magia.
+
+**Explora escenarios y elementos** abre otra galería con **Escenarios (36)** y **Elementos (36)**. Permite conocer todos los lugares y objetos, y escuchar su sonido al tocarlos. Los recursos nuevos amplían las historias: faroles y brújulas para explorar, cometas e instrumentos para jugar, materiales de dibujo y pequeños tesoros para descubrir o cuidar.
+
+**Mi familia** convierte al niño o la niña en protagonista de actividades cotidianas y aventuras pequeñas en compañía. Su creador permite elegir un nombre, seis peinados, seis prendas, cinco tonos de piel y ocho colores favoritos para la ropa. Todas las opciones están disponibles para todos los personajes. Se puede agregar o quitar a papá, mamá, un bebé, un hermano o hermana de edad parecida y un adolescente; cada uno usa el mismo creador, con proporciones acordes a su edad. El protagonista también puede tener un cuento sin familiares añadidos.
 
 Los tiempos son aproximados e incluyen leer, mirar las ilustraciones y detenerse para jugar. Acción incluye la muerte tranquila de un personaje secundario anciano, una despedida explícita, redención y esperanza. La pantalla de preparación lo avisa a la persona adulta.
 
-La generación es local y procedural: no usa un servicio de IA en cada lectura. Los cuentos, las ilustraciones y los sonidos funcionan sin conexión tras la primera carga completa. La app guarda el último cuento y la página de lectura en ese dispositivo. No hay cuentas ni un backend.
+La generación es local y procedural: no usa un servicio de IA en cada lectura. Los cuentos, las ilustraciones y los sonidos funcionan sin conexión tras la primera carga completa. La app guarda la familia, el último cuento y la página de lectura en ese dispositivo. No hay cuentas ni un backend.
 
 ## Desarrollo
 
@@ -28,11 +38,17 @@ npm run build
 npm run dev
 ```
 
-La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` copia las fuentes y recursos a `dist` y crea un service worker con una versión calculada a partir del contenido. El workflow de GitHub Actions ejecuta las pruebas, compila y publica `dist` en GitHub Pages al subir cambios a `main`.
+La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` valida las cuadrículas y la transparencia de los 16 atlas, comprueba que las ilustraciones nuevas no crucen los bordes de sus celdas, copia las fuentes y recursos a `dist` y crea un service worker con una versión calculada a partir del contenido.
+
+**Siempre desplegar las mejoras solicitadas a producción**, tras pasar `npm test`, `npm run build` y la revisión visual. El usuario ya autorizó ese despliegue. El workflow [.github/workflows/pages.yml](.github/workflows/pages.yml) ejecuta las pruebas, compila y publica `dist` en GitHub Pages al subir cambios a `main`; también permite ejecución manual. Comprueba que termine correctamente y verifica la app publicada. Esta preferencia está recogida en [AGENTS.md](AGENTS.md).
 
 ## Archivos
 
-- `src/story-engine.js`: catálogo, selección con semilla y estructuras narrativas
+- `src/character-catalog.js`: los 52 personajes, sus nombres y el registro compartido de atlas
+- `src/world-catalog.js`: los 36 escenarios y 36 elementos, posiciones de atlas, sonidos y compatibilidad narrativa
+- `src/story-engine.js`: selección con semilla y estructuras narrativas
+- `src/story-blocks.js`: objetivos y bloques intercambiables de dificultad, estrategia, descubrimiento y cierre
+- `src/family-characters.js`: perfiles de la familia y dibujos humanos compuestos con SVG
 - `src/app.js`: estante, preparación, portada, lectura y composición de ilustraciones
 - `src/style.css`: interfaz pastel y libro a pantalla completa
 - `src/audio.js`: efectos suaves y música ambiental original sintetizada
@@ -40,6 +56,7 @@ La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` co
 - `public/manifest.webmanifest` y `public/icons/`: instalación como PWA
 - `scripts/build.mjs`: build y caché offline
 - `scripts/verify-stories.mjs`: variedad, continuidad, gramática estructural y formato de páginas
+- `scripts/verify-family.mjs`: todas las combinaciones de apariencia, familias posibles, nombres y recuperación de datos guardados
 
 Los prompts exactos y la validación de las ilustraciones están en [docs/art-prompts.md](docs/art-prompts.md). Las estructuras están en [docs/story-structures.md](docs/story-structures.md), y los detalles de audio y PWA en [docs/pwa.md](docs/pwa.md).
 
@@ -49,4 +66,4 @@ En iPhone o iPad, abre la app en Safari, toca Compartir y luego **Añadir a pant
 
 ## Atribuciones
 
-El paso realista de páginas usa [StPageFlip 2.0.7](https://github.com/Nodlik/StPageFlip), incluido localmente bajo licencia MIT en `public/vendor/page-flip.LICENSE.txt`. Todas las acuarelas del catálogo se generaron para este proyecto con imagegen. La música y los efectos se sintetizan localmente con Web Audio; no son grabaciones de animales ni audio de terceros.
+El paso realista de páginas usa [StPageFlip 2.0.7](https://github.com/Nodlik/StPageFlip), incluido localmente bajo licencia MIT en `public/vendor/page-flip.LICENSE.txt`. Todas las acuarelas del catálogo se generaron para este proyecto con imagegen. Los personajes humanos usan dibujos SVG locales de capas reutilizables. La música y los efectos se sintetizan localmente con Web Audio; no son grabaciones de animales ni audio de terceros.

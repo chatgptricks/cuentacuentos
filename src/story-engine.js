@@ -1,296 +1,30 @@
+import { SCENES } from './world-catalog.js';
+export { SCENES, ITEMS, OBJECTS, WORLD_ATLASES, getScene, getItem } from './world-catalog.js';
+import { CHARACTERS, CHARACTER_NAMES, getCharacter } from './character-catalog.js';
+export { CHARACTERS, CHARACTER_ATLASES, CHARACTER_NAMES, getCharacter } from './character-catalog.js';
+import { normalizeFamily } from './family-characters.js';
+import { STRATEGY_BLOCKS, OPENING_BLOCKS, DISCOVERY_BLOCKS, ENDING_BLOCKS, ADVENTURE_GOALS, ADVENTURE_OBSTACLES, ACTION_THREATS, RELAX_GOALS, RELAX_OBSTACLES, FRIEND_GOALS, FAMILY_GOALS, SOCIAL_OBSTACLES } from './story-blocks.js';
+export { STORY_BLOCK_COUNTS } from './story-blocks.js';
+
 /** Offline picture books: choose a coherent plan once, then unfold short illustrated sentences. */
 export const BOOKS = Object.freeze([
   { id: 'adventure', title: 'Aventura', subtitle: 'Un pequeño viaje, un gran descubrimiento', color: '#D9B98F', symbol: '✦' },
   { id: 'action', title: 'Acción', subtitle: 'Valor, cuidado y una nueva oportunidad', color: '#DA9E96', symbol: '♜' },
   { id: 'relax', title: 'Relax', subtitle: 'Fábulas para respirar despacito', color: '#A8BDB1', symbol: '☾' },
   { id: 'friends', title: 'Amigos', subtitle: 'La alegría de hacer cosas juntos', color: '#B7AFCF', symbol: '❀' },
+  { id: 'family', title: 'Mi familia', subtitle: 'Tú protagonizas los cuentos de casa', color: '#D7AD8D', symbol: '♡' },
 ]);
 
-export const CHARACTERS = Object.freeze([
-  { id: 'fox', name: 'Lila', label: 'zorrita', article: 'la', gender: 'f', atlas: { x: 0, y: 0 }, sound: 'fox' },
-  { id: 'mouse', name: 'Tino', label: 'ratón', article: 'el', gender: 'm', atlas: { x: 1, y: 0 }, sound: 'mouse' },
-  { id: 'rabbit', name: 'Nube', label: 'coneja', article: 'la', gender: 'f', atlas: { x: 2, y: 0 }, sound: 'rabbit' },
-  { id: 'bear', name: 'Bruno', label: 'oso', article: 'el', gender: 'm', atlas: { x: 3, y: 0 }, sound: 'bear' },
-  { id: 'knight', name: 'Vera', label: 'caballera', article: 'la', gender: 'f', atlas: { x: 0, y: 1 }, sound: 'knight' },
-  { id: 'wizard', name: 'Luma', label: 'maga', article: 'la', gender: 'f', atlas: { x: 1, y: 1 }, sound: 'wizard' },
-  { id: 'dragon', name: 'Chispa', label: 'dragón', article: 'el', gender: 'm', atlas: { x: 2, y: 1 }, sound: 'dragon' },
-  { id: 'owl', name: 'Olmo', label: 'búho', article: 'el', gender: 'm', atlas: { x: 3, y: 1 }, sound: 'owl' },
-  { id: 'squirrel', name: 'Tila', label: 'ardilla', article: 'la', gender: 'f', atlas: { sheet: 'extra', x: 0, y: 0 }, sound: 'squirrel' },
-  { id: 'frog', name: 'Rita', label: 'rana', article: 'la', gender: 'f', atlas: { sheet: 'extra', x: 1, y: 0 }, sound: 'frog' },
-  { id: 'turtle', name: 'Tula', label: 'tortuga', article: 'la', gender: 'f', atlas: { sheet: 'extra', x: 0, y: 1 }, sound: 'turtle' },
-  { id: 'fairy', name: 'Aura', label: 'hada', article: 'el', gender: 'f', atlas: { sheet: 'extra', x: 1, y: 1 }, sound: 'fairy' },
-].map(character => Object.freeze({ ...character, atlas: Object.freeze(character.atlas) })));
-
-export const OBJECTS = Object.freeze([
-  { id: 'seed', label: 'semilla de luz' }, { id: 'bell', label: 'campanita de luna' },
-  { id: 'drop', label: 'gota cantora' }, { id: 'feather', label: 'pluma de lluvia' },
-  { id: 'key', label: 'llave' }, { id: 'umbrella', label: 'paraguas' },
-  { id: 'cloud', label: 'nube' }, { id: 'yarn', label: 'ovillo de lana' },
-  { id: 'blanket', label: 'manta' }, { id: 'basket', label: 'cesta' },
-  { id: 'flower', label: 'flor' }, { id: 'boat', label: 'barquito' },
-]);
-
-const NAMES = {
-  fox: ['Lila', 'Alba', 'Mora', 'Mila', 'Duna'],
-  mouse: ['Tino', 'Teo', 'Nico', 'Milo', 'Pipo'],
-  rabbit: ['Nube', 'Luna', 'Ada', 'Lola', 'Nina'],
-  bear: ['Bruno', 'Beto', 'Taro', 'Rulo', 'Leo'],
-  knight: ['Vera', 'Inés', 'Cora', 'Eva', 'Sara'],
-  wizard: ['Luma', 'Celia', 'Iris', 'Elia', 'Violeta'],
-  dragon: ['Chispa', 'Tizón', 'Toto', 'Sol', 'Fuego'],
-  owl: ['Olmo', 'Abel', 'Oto', 'Sabio', 'Bú'],
-  squirrel: ['Tila', 'Avellana', 'Canela', 'Nela', 'Pina'],
-  frog: ['Rita', 'Brisa', 'Gota', 'Lina', 'Tina'],
-  turtle: ['Tula', 'Menta', 'Uma', 'Oliva', 'Lenta'],
-  fairy: ['Aura', 'Estela', 'Flora', 'Alina', 'Vela'],
-};
-
-const ALL_CAST = Object.keys(NAMES);
+const ALL_CAST = CHARACTERS.map(character => character.id);
+const ACTION_CAST = ALL_CAST.filter(id => id !== 'owl');
 const CAST = {
   adventure: { heroes: ALL_CAST, companions: ALL_CAST },
-  action: { heroes: ['knight', 'dragon', 'fox', 'rabbit', 'fairy'], companions: ['bear', 'mouse', 'wizard', 'squirrel', 'frog', 'turtle'] },
-  relax: { heroes: ['fox', 'mouse', 'rabbit', 'bear', 'squirrel', 'frog', 'turtle'], companions: ['owl', 'rabbit', 'mouse', 'bear', 'squirrel', 'frog', 'turtle', 'fairy'] },
+  action: { heroes: ACTION_CAST, companions: ACTION_CAST },
+  relax: { heroes: ALL_CAST, companions: ALL_CAST },
   friends: { heroes: ALL_CAST, companions: ALL_CAST },
 };
 
-const PLACES = [
-  { id: 'forest', name: 'Bosque de las Campanillas', scene: 'forest', detail: 'Las hojas redondas del bosque susurraban al pasar una brisa pequeña.' },
-  { id: 'lake', name: 'Lago de la Luna', scene: 'lake', detail: 'La luna se miraba en el lago y pintaba un camino plateado.' },
-  { id: 'castle', name: 'Castillo de las Nubes', scene: 'castle', detail: 'Las torres del castillo parecían tazas enormes con sombreros de colores.' },
-  { id: 'garden', name: 'Jardín de los Abrazos', scene: 'garden', detail: 'Las flores del jardín crecían junto a caminos suaves y bancos pequeños.' },
-  { id: 'beach', name: 'Playa de las Conchitas', article: 'la', scene: 'beach', detail: 'Las olas dejaban conchitas lisas sobre una playa de arena muy suave.' },
-  { id: 'mountain', name: 'Montaña del Eco', article: 'la', scene: 'mountain', detail: 'La montaña respondía al saludo con un eco pequeño y muy amable.' },
-  { id: 'treehouse', name: 'Refugio del Árbol', scene: 'treehouse', detail: 'La casita del árbol tenía ventanas redondas y una escalera de madera.' },
-  { id: 'village', name: 'Pueblito de los Faroles', scene: 'village', detail: 'Las casas pequeñas dejaban un camino ancho entre sus puertas de colores.' },
-  { id: 'meadow', name: 'Prado de las Mariposas', scene: 'meadow', detail: 'Las mariposas visitaban flores pequeñas en un prado lleno de hierba suave.' },
-  { id: 'cave', name: 'Refugio de las Lucecitas', scene: 'cave', detail: 'La cueva brillaba con lucecitas cálidas y tenía una entrada amplia y amable.' },
-  { id: 'river', name: 'Río de los Susurros', scene: 'river', detail: 'El río contaba una canción pequeña mientras pasaba junto a piedras redondas.' },
-  { id: 'clouds', name: 'Reino de las Nubes', scene: 'clouds', detail: 'Las nubes parecían cojines enormes en un reino de caminos suaves y mágicos.' },
-];
-
-const QUESTS = [
-  {
-    id: 'seed', object: 'la semilla de luz', title: 'la semilla de luz',
-    problem: 'El árbol del jardín había perdido los colores de sus hojas.',
-    wish: 'devolver los colores al árbol',
-    clue: 'La semilla de luz brillaba cuando alguien pedía ayuda con cariño.',
-    discovery: 'Una semilla dorada descansaba entre dos piedras, pequeña como una lenteja.',
-    magic: 'La semilla de luz brilló cuando escuchó aquella petición tan amable.',
-    solution: 'Plantaron la semilla de luz y el árbol recuperó sus colores.',
-  },
-  {
-    id: 'bell', object: 'la campanita de luna', title: 'la campanita de luna',
-    problem: 'Las luciérnagas del jardín habían olvidado el camino hasta su casa.',
-    wish: 'guiar a las luciérnagas hasta casa',
-    clue: 'La campanita de luna sonaba cuando alguien escuchaba con mucha atención.',
-    discovery: 'Una campanita plateada descansaba sobre una hoja, pequeña como una nuez.',
-    magic: 'La campanita de luna respondió con un tilín suave como una estrella.',
-    solution: 'Colgaron la campanita y las luciérnagas siguieron su canción hasta casa.',
-  },
-  {
-    id: 'drop', object: 'la gota cantora', title: 'la gota cantora',
-    problem: 'La fuente del jardín tenía agua, pero había olvidado su canción.',
-    wish: 'devolver la canción a la fuente',
-    clue: 'La gota cantora despertaba cuando alguien compartía una canción sencilla.',
-    discovery: 'Una gota azul temblaba dentro de una hoja, redonda como una canica.',
-    magic: 'La gota cantora respondió con una nota pequeña, clara y alegre.',
-    solution: 'Dejaron la gota en la fuente y el agua volvió a cantar.',
-  },
-  {
-    id: 'feather', object: 'la pluma de lluvia', title: 'la pluma de lluvia',
-    problem: 'Las flores del jardín tenían sed después de tantos días sin lluvia.',
-    wish: 'traer lluvia suave para las flores',
-    clue: 'La pluma de lluvia llamaba nubes cuando alguien cuidaba una flor.',
-    discovery: 'Una pluma azul descansaba sobre una piedra, liviana como un suspiro.',
-    magic: 'La pluma de lluvia se levantó y señaló una pequeña nube blanca.',
-    solution: 'La pluma llamó una nube y una lluvia suave refrescó las flores.',
-  },
-];
-
-const OBSTACLES = [
-  {
-    id: 'bridge', name: 'El puente de las hojas',
-    problem: 'Una tabla suelta detenía el camino sobre un arroyo muy pequeño.',
-    idea: 'buscar una rama firme para sujetar la tabla',
-    detail: 'La rama era larga, pero entre dos manos resultaba fácil moverla.',
-    attempt: 'sujetaron la tabla con una rama desde la orilla',
-    result: 'El puente quedó firme y pudieron cruzar juntos, dando pasos pequeños.',
-    lesson: 'Arreglar un camino también era una manera de avanzar con valentía.',
-  },
-  {
-    id: 'gate', name: 'La puerta enredada',
-    problem: 'Unas ramas enredadas no dejaban abrir una puerta baja del camino.',
-    idea: 'apartar las ramas sin romper sus hojas nuevas',
-    detail: 'Entre las ramas había hojas pequeñas que todavía necesitaban seguir creciendo.',
-    attempt: 'apartaron las ramas una por una, con manos cuidadosas',
-    result: 'La puerta se abrió y las hojas nuevas quedaron a salvo.',
-    lesson: 'Las manos cuidadosas encontraban salidas que la fuerza no podía abrir.',
-  },
-  {
-    id: 'mist', name: 'La niebla de algodón',
-    problem: 'Una niebla suave escondía las señales del camino bajo su manta blanca.',
-    idea: 'esperar en una piedra hasta poder ver las señales',
-    detail: 'El aire empezaba a mover la niebla hacia la parte baja del camino.',
-    attempt: 'esperaron sobre una piedra hasta que apareció la señal',
-    result: 'La niebla dejó libre el camino y pudieron continuar sin perderse.',
-    lesson: 'Esperar un poquito también podía ayudar a llegar bien al destino.',
-  },
-];
-
-const THREATS = [
-  {
-    id: 'whirls', objects: ['cloud'], tool: 'umbrella',
-    arrival: 'Entraron remolinos traviesos que hicieron bailar las sillas y las banderas.',
-    obstacle: 'Los remolinos rodearon el patio, levantando una montaña de hojas secas.',
-    toolLine: 'Un paraguas grande podía apartar aquellos remolinos sin hacerles ningún daño.',
-    battle: 'El paraguas detuvo los remolinos y dejó un camino libre hacia la torre.',
-    detail: 'Los remolinos parecían enormes, pero por dentro solo tenían aire juguetón.',
-    extra: 'Un remolino pequeño quiso esconderse detrás del paraguas para hacer cosquillas.',
-    end: 'Los remolinos se volvieron brisas pequeñas y salieron por las ventanas.',
-  },
-  {
-    id: 'paper', objects: [], tool: 'yarn',
-    arrival: 'Las armaduras de papel empezaron a desfilar por los pasillos del castillo.',
-    obstacle: 'Las armaduras de papel bloquearon el patio haciendo ruido con sus botas.',
-    toolLine: 'Un ovillo de lana podía llamar su atención sin hacerles daño.',
-    battle: 'Las armaduras siguieron el ovillo de lana y dejaron libre el camino.',
-    detail: 'Aquellas armaduras eran ligeras y no podían doblar bien sus rodillas.',
-    extra: 'Una armadura se detuvo a mirar cómo rodaba el ovillo amarillo.',
-    end: 'Las armaduras volvieron a ser adornos de papel, ligeros y quietecitos.',
-  },
-  {
-    id: 'clouds', objects: ['cloud'], tool: 'umbrella',
-    arrival: 'Unas nubes de polvo hicieron estornudar a las cortinas del castillo.',
-    obstacle: 'Las nubes de polvo taparon el patio y jugaron a crecer y encoger.',
-    toolLine: 'El paraguas abierto serviría para empujar el aire con mucho cuidado.',
-    battle: 'El paraguas movió el aire y apartó las nubes del camino.',
-    detail: 'Las nubes hacían cosquillas en las narices, como plumas muy suaves.',
-    extra: 'Una nube diminuta se escondió dentro de una taza junto al patio.',
-    end: 'Las nubes se hicieron pequeñas y quedaron guardadas en una caja.',
-  },
-];
-
-const FABLES = [
-  {
-    id: 'patience', title: 'la semilla sin prisa', scenes: ['garden', 'meadow', 'village', 'treehouse'], objects: ['seed', 'flower'],
-    start: 'quería plantar una semilla y ver una flor esa tarde',
-    setup: 'La semilla esperaba en una maceta con tierra suave y húmeda.',
-    first: 'miró la tierra muchas veces, pero no apareció ninguna hoja',
-    mistake: 'Más agua no haría crecer la semilla antes de tiempo.',
-    lesson: 'Una semilla necesita cariño, luz y tiempo para poder crecer.',
-    change: 'decidió esperar y regar solo cuando la tierra lo necesitara',
-    practice: 'La tierra seguía húmeda, así que la jarrita podía esperar otro día.',
-    care: 'Un cartelito junto a la maceta decía que allí crecía algo pequeño.',
-    later: 'Pasaron varios días tranquilos, con un poquito de cuidado cada mañana.',
-    outcome: 'Una mañana apareció una hojita verde, pequeña como una promesa de flor.',
-    moral: 'Las cosas que crecen necesitan tiempo y cariño',
-    observation: 'Cada planta tenía su propia forma y su propio ritmo para crecer.',
-  },
-  {
-    id: 'listening', title: 'la canción más bajita', scenes: ['lake'], objects: ['drop', 'blanket'],
-    start: 'quería escuchar los sonidos pequeños del lago bajo la luna',
-    setup: 'Una manta esperaba junto al lago, lejos de la orilla del agua.',
-    first: 'cantó tan fuerte que no pudo escuchar los sonidos pequeños',
-    mistake: 'Cantar todavía más fuerte tampoco dejaba escuchar la canción del lago.',
-    lesson: 'Para escuchar algo bajito, podemos dejar un espacio de silencio.',
-    change: 'guardó silencio un momento y prestó atención a su alrededor',
-    practice: 'El agua hizo tres burbujas y una rana respondió desde lejos.',
-    care: 'La manta dejó un rincón cómodo para escuchar sin acercarse al agua.',
-    later: 'Escucharon por turnos, sin gritar cuando descubrían algún sonido nuevo.',
-    outcome: 'Una gota cantó sobre una hoja y los juncos respondieron suavemente.',
-    moral: 'Escuchar con calma nos ayuda a descubrir cosas pequeñas',
-    observation: 'Los juncos rozaban sus hojas y hacían un sonido como papel suave.',
-  },
-  {
-    id: 'rest', title: 'aprende a descansar', scenes: ['garden', 'meadow', 'mountain', 'clouds'], objects: ['cloud', 'blanket'],
-    start: 'quería dibujar todas las nubes antes de que cambiaran de forma',
-    setup: 'Una manta y varios lápices esperaban en un rincón muy tranquilo.',
-    first: 'dibujó deprisa y sintió que la mano empezaba a cansarse',
-    mistake: 'El cielo cambiaba más rápido que el lápiz sobre el papel.',
-    lesson: 'Descansar también forma parte de hacer algo que nos gusta.',
-    change: 'dejó el lápiz y descansó un ratito sobre la manta',
-    practice: 'Los dedos descansaron mientras una mariposa pasó despacio sobre la manta.',
-    care: 'Los lápices quedaron guardados para que ninguno rodara sobre la manta.',
-    later: 'Miraron las nubes sin intentar atraparlas todas dentro de un dibujo.',
-    outcome: 'Una nube parecía un barco y bastó dibujar aquella con alegría.',
-    moral: 'Una pausa puede ayudarnos a disfrutar de nuevo',
-    observation: 'Una nube parecía una cuchara y después se convirtió en montaña.',
-  },
-  {
-    id: 'sharing', title: 'la cesta compartida', scenes: ['forest', 'village', 'meadow'], objects: ['basket'],
-    start: 'quería guardar todas las moras para su propia merienda',
-    setup: 'Una cesta y dos cuencos esperaban junto a las moras maduras.',
-    first: 'llenó la cesta y quiso cargarla sin pedir ninguna ayuda',
-    mistake: 'La cesta pesaba demasiado y el otro cuenco seguía completamente vacío.',
-    lesson: 'Compartir hace más ligera una cesta y más alegre una merienda.',
-    change: 'repartió las moras y pidió ayuda para llevar la cesta',
-    practice: 'Una mora para cada cuenco iba repartiendo la merienda poco a poco.',
-    care: 'Algunas moras maduras quedaron en las ramas para los pájaros del bosque.',
-    later: 'La cesta viajaba entre dos manos y ya no parecía tan pesada.',
-    outcome: 'Los dos cuencos se llenaron y la merienda supo todavía más rica.',
-    moral: 'Cuando compartimos, también crece la alegría',
-    observation: 'Las moras verdes se quedaron en las ramas para poder seguir madurando.',
-  },
-];
-
-const ACTIVITIES = [
-  {
-    id: 'picnic', title: 'la merienda entre flores', scenes: ['garden', 'meadow', 'beach', 'village'], objects: ['blanket', 'basket'],
-    plan: 'preparar una merienda entre unas flores pequeñas',
-    materials: 'La manta, los cuencos y una cesta de fruta estaban listos.',
-    taskHero: 'lavó las frutas antes de empezar a preparar la merienda',
-    taskCompanion: 'extendió la manta para dejar un sitio cómodo donde sentarse',
-    problem: 'Solo había una servilleta y los dos querían usarla para su cuenco.',
-    idea: 'Pusieron los dos cuencos juntos en el centro de la misma servilleta.',
-    detail: 'Los trocitos de fruta parecían un jardín de colores dentro del cuenco.',
-    challenge: 'Una brisa levantó la manta y la cesta ayudó a sujetarla.',
-    result: 'Compartieron frutas y nombres divertidos para las nubes de aquella tarde.',
-    keepsake: 'Guardaron la servilleta doblada como una flor después de su merienda.',
-    variation: 'elegir una fruta para cada color de aquella pequeña merienda',
-  },
-  {
-    id: 'boats', title: 'los barquitos de hojas', scenes: ['garden', 'meadow', 'river'], objects: ['boat', 'flower'],
-    plan: 'hacer barquitos de hojas junto a un charquito pequeño',
-    materials: 'Las hojas caídas y unas flores pequeñas estaban listas para los barquitos.',
-    taskHero: 'eligió hojas grandes para que los barquitos pudieran flotar bien',
-    taskCompanion: 'buscó flores pequeñas para adornar los barquitos de hojas',
-    problem: 'Solo quedaba una flor amarilla y los dos querían ponerla en su barquito.',
-    idea: 'Pusieron sus barquitos juntos para compartir la flor entre los dos.',
-    detail: 'Las hojas parecían barquitos dormidos esperando sobre la superficie del charquito.',
-    challenge: 'Una hoja se dobló y otra hoja más firme ayudó a sostenerla.',
-    result: 'Los barquitos flotaron juntos y compartieron una flor como un pequeño sol.',
-    keepsake: 'Recogieron los barquitos del charquito y guardaron la flor entre dos hojas.',
-    variation: 'elegir un nombre divertido para cada uno de sus barquitos',
-  },
-  {
-    id: 'flowers', title: 'las flores de papel', scenes: ['garden', 'treehouse', 'village', 'meadow'], objects: ['flower', 'basket'],
-    plan: 'hacer flores de papel para decorar una cesta',
-    materials: 'Una cesta y papeles de colores estaban listos sobre el banco.',
-    taskHero: 'dibujó pétalos redondos en un papel de color suave',
-    taskCompanion: 'dobló hojas de papel para ponerlas junto a las flores',
-    problem: 'Solo quedaba un papel amarillo y los dos querían hacer su flor con él.',
-    idea: 'Doblaron el papel por la mitad y compartieron sus dos partes.',
-    detail: 'Cada flor tenía pétalos distintos, pero todas cabían dentro de la cesta.',
-    challenge: 'Un pétalo se dobló y quedó como una flor que saludaba.',
-    result: 'La cesta se llenó de flores diferentes, hechas con sus dos ideas.',
-    keepsake: 'Dejaron la cesta de flores junto al banco para alegrar aquel rincón.',
-    variation: 'inventar un pétalo distinto para cada una de sus flores',
-  },
-  {
-    id: 'blanket', title: 'la casita de manta', scenes: ['garden', 'treehouse', 'village'], objects: ['blanket'],
-    plan: 'hacer una casita de manta en un rincón tranquilo',
-    materials: 'Una manta ligera y dos cojines estaban listos junto al banco.',
-    taskHero: 'extendió una esquina de la manta sobre el banco bajito',
-    taskCompanion: 'colocó los cojines para dejar un rincón cómodo dentro de la casita',
-    problem: 'Los dos querían sentarse en el mismo lado de la casita.',
-    idea: 'Movieron los cojines para dejar dos lugares cómodos, uno junto al otro.',
-    detail: 'La manta dejaba pasar una luz suave, como una nube de tela.',
-    challenge: 'Una esquina se soltó y la acomodaron juntos otra vez sobre el banco.',
-    result: 'La casita tuvo sitio para los dos y para una pequeña merienda.',
-    keepsake: 'Doblaron la manta y guardaron los cojines después de disfrutar su casita.',
-    variation: 'inventar un nombre para su pequeña casita de manta',
-  },
-];
+const PLACES = SCENES;
 
 function randomFromSeed(seed) {
   let value = 2166136261;
@@ -318,14 +52,16 @@ const countWords = text => (text.match(/[\p{L}\p{N}]+(?:[’'-][\p{L}\p{N}]+)*/g
 const toPlace = place => `${place.article === 'la' ? 'a la' : 'al'} ${place.name}`;
 const ofPlace = place => `${place.article === 'la' ? 'de la' : 'del'} ${place.name}`;
 const thePlace = place => `${place.article === 'la' ? 'La' : 'El'} ${place.name}`;
-export const getCharacter = id => CHARACTERS.find(character => character.id === id);
+const inPlace = place => `${place.article === 'la' ? 'en la' : 'en el'} ${place.name}`;
+const isUnderwater = place => place.tags.includes('underwater');
+const openingAt = (name, verb, place) => `${name} ${verb} ${isUnderwater(place) ? 'en un rincón de aire mágico' : inPlace(place)}.`;
 
 function makeCast(bookId, random) {
   const heroId = choose(random, CAST[bookId].heroes);
   // Templates use masculine plural agreement, so each pair contains one masculine noun.
   const companionId = choose(random, CAST[bookId].companions.filter(id => id !== heroId &&
     !(getCharacter(heroId).gender === 'f' && getCharacter(id).gender === 'f')));
-  const copy = id => ({ ...getCharacter(id), name: choose(random, NAMES[id]), atlas: { ...getCharacter(id).atlas } });
+  const copy = id => ({ ...getCharacter(id), name: choose(random, CHARACTER_NAMES[id]), atlas: { ...getCharacter(id).atlas } });
   return { hero: copy(heroId), companion: copy(companionId) };
 }
 
@@ -339,332 +75,479 @@ function unfold(stages, duration) {
   return stages.flatMap(stage => order.map(index => stage[index]));
 }
 
+function selectBlocks(random, goals, obstacles) {
+  const opening = choose(random, OPENING_BLOCKS);
+  const goal = choose(random, goals);
+  const obstacle = choose(random, obstacles);
+  const strategy = choose(random, STRATEGY_BLOCKS);
+  const discovery = choose(random, DISCOVERY_BLOCKS);
+  const ending = choose(random, ENDING_BLOCKS);
+  return { opening, goal, obstacle, strategy, discovery, ending, strategyIndex: STRATEGY_BLOCKS.indexOf(strategy) };
+}
+
+function planFor(blocks, place, objects) {
+  return {
+    version: 1,
+    blockIds: Object.fromEntries(['opening', 'goal', 'obstacle', 'strategy', 'discovery', 'ending'].map(key => [key, blocks[key].id])),
+    world: { destination: place.id, items: [...new Set(objects)] },
+  };
+}
+
+const collaborativeSentence = method => `${method.startsWith('uno ') ? 'Para avanzar, ' : 'Entre los dos '}${method}.`;
+
 function adventure({ random, hero: h, companion: c, duration }) {
-  const quest = choose(random, QUESTS);
-  const obstacle = choose(random, OBSTACLES);
+  const b = selectBlocks(random, ADVENTURE_GOALS, ADVENTURE_OBSTACLES);
   const place = choose(random, PLACES.filter(location => location.scene !== 'garden'));
+  // Indoor and underwater destinations have signs to read, rather than an outdoor arroyo or fallen branch.
+  if (!place.tags.includes('outdoors')) b.obstacle = ADVENTURE_OBSTACLES.find(obstacle => obstacle.id === 'faded-sign');
+  const { goal: q, obstacle: o, strategy: s, discovery: d, ending: e } = b;
   const both = [h.id, c.id];
   const p = (text, characters = both, objects = [], scene = place.scene) => illustrated(text, scene, characters, objects);
+  const discoveryRoutes = {
+    'tiny-test': [`${h.name} probó un sendero corto y encontró una señal del regalo.`, 'Una huella brillante confirmó que aquel sendero pequeño iba en la dirección correcta.'],
+    'new-angle': [`${h.name} miró desde un banco y descubrió el regalo detrás de unas hojas.`, 'Desde abajo parecía una sombra, pero otra mirada mostró su forma verdadera.'],
+    'leftover-surprise': [`${h.name} encontró un hilo olvidado que marcaba el rincón del regalo.`, 'El hilo parecía sobrante, pero seguía hasta un lugar donde alguien había descansado.'],
+    'remembered-idea': [`${h.name} recordó un dibujo del jardín y reconoció el escondite del regalo.`, 'El dibujo mostraba una piedra redonda junto a una hoja con tres puntas.'],
+    'shared-question': [`${h.name} preguntó a un vecino y encontró el regalo siguiendo sus indicaciones.`, 'El vecino conocía aquel rincón y explicó cómo llegar sin pisar flores nuevas.'],
+    'notice-pattern': [`${h.name} siguió unas marcas repetidas hasta descubrir el rincón del regalo.`, 'Cada marca tenía tres rayitas y aparecía cerca de la siguiente curva del sendero.'],
+  };
+  const route = discoveryRoutes[d.id];
+  const endings = {
+    'draw-memory': 'Dibujaron el viaje y marcaron la parte donde una idea pequeña les había ayudado.',
+    'tell-story': 'Contaron su aventura a los vecinos y dejaron un turno para cada pregunta.',
+    'leave-invitation': 'Prepararon una invitación para que otros vecinos descubrieran el sendero sin hacer daño.',
+    'care-corner': 'Cuidaron el banco del jardín y dejaron el regalo donde pudiera seguir ayudando.',
+    'thank-you-note': 'Escribieron una nota para agradecer a quienes habían acompañado algún paso del viaje.',
+    'tomorrow-plan': 'Eligieron otro rincón para visitar mañana y guardaron la cesta hasta entonces.',
+  };
   const stages = [
     [
-      p(`${h.name}, ${h.article} ${h.label}, vivía junto a un jardín lleno de flores y caminos pequeños.`, [h.id], ['flower'], 'garden'),
-      p(quest.problem, [], quest.id === 'feather' ? ['flower'] : [], 'garden'),
-      p(`${h.name} invitó a ${c.name} para buscar ${quest.object} y ${quest.wish}.`, both, [quest.id], 'garden'),
-      p(`${h.name} paseaba cada mañana para saludar a quienes vivían cerca del jardín.`, [h.id], [], 'garden'),
-      p(`${c.name}, ${c.article} ${c.label}, conocía las historias antiguas que contaban los vecinos.`, [c.id], [], 'garden'),
-      p(`Los dos prepararon una cesta con agua y una merienda para compartir durante el viaje.`, both, ['basket'], 'garden'),
-      p(`Una flor inclinó la cabeza cuando ${h.name} pasó despacio junto al banco.`, [h.id], ['flower'], 'garden'),
-      p(`${c.name} recordó que aquel regalo mágico podía ayudar al jardín a recuperar su alegría.`, [c.id], [quest.id], 'garden'),
-      p(`También guardaron una manta ligera para descansar cuando sus pasos necesitaran una pausa.`, both, ['blanket'], 'garden'),
+      p(`${h.name} ${b.opening.adventure}.`, [h.id], ['flower'], 'garden'),
+      p(q.problem, [], q.objects, 'garden'),
+      p(`${h.name} invitó a ${c.name} para buscar ${q.object}.`, both, q.objects, 'garden'),
+      p(`${h.name}, ${h.article} ${h.label}, quiso ${q.wish}.`, [h.id], q.objects, 'garden'),
+      p(`${c.name}, ${c.article} ${c.label}, aceptó ayudar sin decidir todos los pasos.`, [c.id], [], 'garden'),
+      p('Prepararon una cesta con agua y una merienda para descansar durante el viaje.', both, ['basket'], 'garden'),
+      p('El mensaje del problema tenía dibujos sencillos que podían reconocer antes de partir.', [], q.objects, 'garden'),
+      p('Buscar un regalo mágico también pedía cuidar las flores que quedaban en casa.', both, ['flower'], 'garden'),
+      p('Guardaron una manta ligera para hacer una pausa cuando su cuerpo lo necesitara.', both, ['blanket'], 'garden'),
     ],
     [
-      p(`${h.name} y ${c.name} llegaron hasta la entrada ${ofPlace(place)}.`),
-      p(`${h.name} sintió mariposas en la barriga y tomó la mano de ${c.name}.`),
-      p(`Cruzaron juntos la entrada y el jardín quedó atrás mientras empezaba su pequeña aventura.`),
+      p(`${h.name} y ${c.name} llegaron hasta la entrada ${ofPlace(place)}${isUnderwater(place) ? ', donde había aire mágico' : ''}.`),
+      p('El lugar desconocido invitaba a avanzar despacio y mirar las señales del sendero.'),
+      p(`Decidieron ${s.verb} para continuar hacia el regalo.`),
       p(place.detail, [], place.scene === 'clouds' ? ['cloud'] : []),
-      p(`${c.name} miró el camino con atención para elegir dónde dar el próximo paso.`, [c.id]),
-      p(`Estar en compañía hacía que aquel lugar desconocido pareciera un poquito más amable.`),
-      p(`${h.name} descubrió una flor diminuta creciendo al lado de la entrada.`, [h.id], ['flower']),
-      p(`Se detuvieron para mirar el lugar sin dejar que la prisa eligiera por ellos.`),
-      p(`${c.name} apretó aquella mano suavemente para recordar que ninguno caminaría a solas.`),
+      p('Comprobaron dónde podían avanzar sin acercarse a un borde ni tocar flores nuevas.'),
+      p(`${c.name} dejó la cesta en un banco mientras revisaban el próximo tramo.`, [c.id], ['basket']),
+      p('Una señal al comienzo mostraba que el sendero tenía varias curvas pequeñas.', []),
+      p(`${h.name} señaló un rincón cómodo donde podrían esperar si algo les preocupaba.`, [h.id]),
+      p('El camino seguía allí aunque necesitaran pensar un rato antes de dar otro paso.'),
     ],
     [
-      p(obstacle.problem, []),
-      p(`${c.name} propuso ${obstacle.idea} y ${h.name} aceptó intentarlo en compañía.`),
-      p(`Entre los dos ${obstacle.attempt} y el camino volvió a quedar libre.`),
-      p(`${h.name} miró alrededor para comprender qué parte del camino necesitaba más cuidado.`, [h.id]),
-      p(obstacle.detail, []),
-      p(`Trabajaron despacio y se avisaron antes de mover algo para que ambos estuvieran seguros.`),
-      p(`Una pausa les permitió escuchar el aire antes de elegir cómo continuar juntos.`),
-      p(`${c.name} señaló el lugar más cómodo para esperar mientras preparaban su pequeña solución.`, [c.id]),
-      p(`Sus manos hicieron una tarea pequeña que ninguno necesitaba resolver completamente a solas.`),
+      p(o.problem, []),
+      p(collaborativeSentence(o.solutions[b.strategyIndex])),
+      p(o.result),
+      p(`${h.name} explicó qué parte del camino le hacía sentir un poco de preocupación.`, [h.id]),
+      p(o.detail, []),
+      p(s.lesson),
+      p('Se quedaron en un rincón seguro mientras buscaban una forma cuidadosa de continuar.'),
+      p(`${c.name} comprobó que la idea dejara un paso cómodo para ambas personas.`, [c.id]),
+      p('Revisaron el resultado antes de seguir para que ninguna sorpresa los hiciera tropezar.'),
     ],
     [
-      p(obstacle.result),
-      p(quest.clue, [], [quest.id]),
-      p(`${h.name} y ${c.name} siguieron buscando con los ojos atentos y el corazón abierto.`),
-      p(`${h.name} encontró una tablilla con dibujos que contaban cómo despertar el regalo.`, [h.id], [quest.id]),
-      p(`${c.name} escuchó la pista completa antes de decidir qué debían hacer después.`, [c.id]),
-      p(`Comprendieron que la magia también podía empezar con un gesto pequeño de cariño.`),
-      p(obstacle.lesson),
-      p(`Una merienda de la cesta les dio tiempo para recordar todo lo que habían aprendido.`, both, ['basket']),
-      p(`${h.name} guardó la cesta y ${c.name} buscó la próxima señal del sendero.`, both, ['basket']),
+      p(q.clue, [], q.objects),
+      p(route[0], [h.id], q.objects),
+      p(q.discovery, [], q.objects),
+      p(route[1], [], q.objects),
+      p(`${c.name} comprobó la forma dibujada del regalo antes de elegir el próximo sendero.`, [c.id], q.objects),
+      p('Ahora conocían el escondite y también el gesto que podía despertar su magia.', both, q.objects),
+      p('Una tablilla junto al sendero mostraba dibujos de varios objetos mágicos pequeños.', [], q.objects),
+      p('Compararon aquellos dibujos con la pista que habían escuchado antes de empezar.', both, q.objects),
+      p('La búsqueda había cambiado cuando eligieron probar una manera nueva de mirar.'),
     ],
     [
-      p(quest.discovery, [], [quest.id]),
-      p(`${h.name} pidió ayuda, escuchó, cuidó una flor y compartió una canción muy sencilla.`, [h.id], ['flower']),
-      p(`Guardaron ${quest.object} en la cesta y emprendieron el camino de regreso al jardín.`, both, [quest.id, 'basket']),
-      p(`${c.name} se acercó despacio para mirar aquel regalo sin tocarlo todavía.`, [c.id], [quest.id]),
-      p(`${h.name} recordó la pista y buscó una manera amable de despertar aquella magia.`, [h.id], [quest.id]),
-      p(quest.magic, [], [quest.id]),
-      p(`El rincón estaba tranquilo y dejaba escuchar hasta los sonidos más pequeños.`),
-      p(`No hacía falta llevarse todo el lugar para guardar un recuerdo bonito del viaje.`),
-      p(`${c.name} preparó un espacio seguro entre las cosas que llevaba dentro de la cesta.`, [c.id], ['basket']),
+      p(`${h.name} ${q.activation}.`, [h.id], q.objects),
+      p(q.magic, [], q.objects),
+      p(`Guardaron ${q.object} en la cesta y volvieron al jardín para ayudar.`, both, q.objects, 'garden'),
+      p(`${c.name} dejó espacio para que el gesto de cuidado pudiera terminar sin prisa.`, [c.id], q.objects),
+      p('Prepararon un espacio en la cesta para proteger el regalo durante el regreso.', both, [...q.objects, 'basket']),
+      p('El sendero de vuelta resultaba conocido, pero seguía necesitando los mismos pasos cuidadosos.'),
+      p('Esperaron hasta reconocer la respuesta del regalo antes de guardarlo para el viaje.', both, q.objects),
+      p('No necesitaban llevarse todo aquel rincón para conservar un recuerdo bonito de la búsqueda.'),
+      p('Recordaron dónde estaba el banco para hacer una última pausa antes de llegar.'),
     ],
     [
-      p(`${h.name} y ${c.name} volvieron al jardín llevando el regalo y una historia para compartir.`, both, [quest.id], 'garden'),
-      p(quest.solution, both, [quest.id, ...(quest.id === 'feather' ? ['cloud', 'flower'] : [])], 'garden'),
-      p(`Desde aquel día, pedir compañía fue el primer paso de cada nueva aventura del jardín.`, both, [], 'garden'),
-      p(`Sus vecinos se acercaron para escuchar cómo habían cruzado aquel camino tan desconocido.`, both, [], 'garden'),
-      p(`${h.name} contó la prueba y ${c.name} explicó la idea que habían encontrado entre los dos.`, both, [], 'garden'),
-      p(`El jardín recuperó la alegría mientras los dos amigos se abrazaban junto a las flores.`, both, ['flower'], 'garden'),
-      p(`La cesta quedó sobre el banco para dejar el regalo donde pudiera ayudar.`, [], [quest.id, 'basket'], 'garden'),
-      p(`Los dos recordaron que una tarea difícil se volvía más pequeña cuando la compartían.`, both, [], 'garden'),
-      p(`Repartieron la merienda de la cesta y disfrutaron un rato de estar nuevamente en casa.`, both, ['basket'], 'garden'),
+      p(endings[e.id], both, q.objects, 'garden'),
+      p(q.solution, both, q.objects, 'garden'),
+      p(e.line, both, [], 'garden'),
+      p('Los dibujos del viaje podían mostrar las decisiones que les habían permitido seguir.', [], q.objects, 'garden'),
+      p(`${h.name} contó cómo había cambiado el plan al encontrar una dificultad.`, [h.id], [], 'garden'),
+      p(q.detail, both, q.objects, 'garden'),
+      p('El regalo necesitaba un sitio cuidado para seguir ayudando después de aquella aventura.', [], q.objects, 'garden'),
+      p(`${c.name} escuchó las preguntas del jardín y compartió lo que había aprendido.`, [c.id], [], 'garden'),
+      p('El viaje había terminado, pero cuidar aquel jardín seguiría siendo una tarea compartida.', both, ['flower'], 'garden'),
     ],
   ];
-  return { title: `${h.name} y ${quest.title}`, place, questId: quest.id, variantId: obstacle.id, pages: unfold(stages, duration) };
+  return { title: `${h.name} y ${q.title}`, place, questId: q.id, variantId: o.id, plan: planFor(b, place, q.objects), pages: unfold(stages, duration) };
 }
 
 function action({ random, hero: h, companion: c, duration }) {
-  const threat = choose(random, THREATS);
-  const place = choose(random, PLACES.filter(location => ['castle', 'clouds'].includes(location.scene)));
+  const b = selectBlocks(random, [{ id: 'wind-door' }], ACTION_THREATS);
+  const { obstacle: t, strategy: s, discovery: d, ending: e } = b;
+  const place = choose(random, PLACES.filter(location => location.tags.includes('fortress')));
   const guardian = { ...getCharacter('owl'), name: 'Olmo', atlas: { ...getCharacter('owl').atlas } };
   const both = [h.id, c.id];
-  const p = (text, characters = both, objects = [], scene = place.scene) => illustrated(text, scene, characters, objects);
+  const p = (text, characters = both, objects = [], scene = place.scene) => illustrated(
+    ['castle', 'clouds'].includes(place.id) ? text : text.replaceAll('castillo', place.id === 'underwater-palace' ? 'palacio' : 'lugar'),
+    scene, characters, objects,
+  );
   const key = choose(random, ['una llave de cobre', 'una llave de cristal', 'una llave de madera']);
+  const discoveryLines = {
+    'tiny-test': 'Olmo mostró con una caja cómo una vuelta pequeña de llave cerraba la puerta.',
+    'new-angle': 'Olmo señaló desde su ventana la cerradura que no habían visto desde el patio.',
+    'leftover-surprise': 'Olmo encontró entre sus cosas una llave que todavía podía cerrar aquella puerta.',
+    'remembered-idea': 'Olmo contó cómo había cerrado aquella puerta cuando el viento sorprendió al castillo.',
+    'shared-question': 'Olmo escuchó sus preguntas y explicó por qué aquella puerta necesitaba una llave especial.',
+    'notice-pattern': 'Olmo enseñó las marcas de la cerradura para reconocer cuánto debía girar la llave.',
+  };
+  const endings = {
+    'draw-memory': 'En el jardín dibujaron un recuerdo de Olmo junto a sus flores favoritas.',
+    'tell-story': 'En el jardín contaron una enseñanza de Olmo y escucharon otros recuerdos del guardián.',
+    'leave-invitation': 'En el jardín dejaron una invitación para hablar de Olmo cuando alguien lo necesitara.',
+    'care-corner': 'En el jardín prepararon un rincón de flores para recordar al guardián con cariño.',
+    'thank-you-note': 'En el jardín escribieron una nota para agradecer todo lo que Olmo había enseñado.',
+    'tomorrow-plan': 'En el jardín eligieron una tarea de cuidado para continuar las enseñanzas de Olmo.',
+  };
   const stages = [
     [
-      p(`${h.name}, ${h.article} ${h.label}, abrió la puerta del viento con demasiada prisa.`, [h.id]),
-      p(threat.arrival, [], threat.objects),
+      p(`${h.name} ${b.opening.action} y abrió la puerta del viento con prisa.`, [h.id]),
+      p(isUnderwater(place) ? `En un rincón de aire mágico, ${t.arrival[0].toLocaleLowerCase('es')}${t.arrival.slice(1)}` : t.arrival, [], t.objects),
       p(`${h.name} pidió ayuda a ${c.name} para cerrar la puerta y reparar su error.`),
-      p(`Un letrero junto a la puerta avisaba que solo debía abrirse con ayuda del guardián.`, []),
-      p(`${c.name}, ${c.article} ${c.label}, había oído el alboroto desde el otro lado del castillo.`, [c.id]),
-      p(`El viejo búho Olmo vivía en una torre y conocía los secretos de aquella puerta.`, ['owl']),
-      p(`Antes de la prisa, el castillo tenía pasillos tranquilos y un patio lleno de flores.`, [], ['flower']),
-      p(`${h.name} comprendió que mirar primero habría evitado aquel problema tan ruidoso.`, [h.id]),
-      p(`Decidieron pedir consejo en vez de intentar arreglarlo todo con más prisa.`),
+      p('Un letrero junto a la puerta avisaba que solo debía abrirse con ayuda del guardián.', []),
+      p(`${c.name}, ${c.article} ${c.label}, había oído el alboroto desde el patio.`, [c.id]),
+      p('El viejo búho Olmo vivía en una torre y conocía los secretos de aquella puerta.', ['owl']),
+      p('Antes de aquel error, el castillo tenía pasillos tranquilos y bancos para descansar.', []),
+      p(`${h.name} comprendió que preguntar primero habría evitado aquel problema tan ruidoso.`, [h.id]),
+      p('Decidieron buscar al guardián en vez de intentar arreglarlo todo con más prisa.'),
     ],
     [
-      p(threat.obstacle, [], threat.objects),
-      p(`${h.name} y ${c.name} encontraron una forma de avanzar usando ${threat.tool === 'yarn' ? 'un ovillo de lana' : 'un paraguas'}.`, both, [threat.tool]),
-      p(threat.battle, [], [threat.tool, ...threat.objects]),
-      p(threat.detail, [], threat.objects),
-      p(threat.toolLine, [], [threat.tool]),
-      p(`Aquella pequeña batalla necesitaba ideas amables para abrir un camino hasta la torre.`),
-      p(`${h.name} comprobó que ${c.name} estaba cerca antes de dar el siguiente paso.`),
-      p(threat.extra, [], [threat.tool, ...threat.objects]),
-      p(`Avanzaron al mismo ritmo, sin empujarse ni dejar que nadie se quedara atrás.`),
+      p(`${inPlace(place)[0].toUpperCase()}${inPlace(place).slice(1)}, ${t.obstacle[0].toLocaleLowerCase('es')}${t.obstacle.slice(1)}`, [], t.objects),
+      p(collaborativeSentence(t.methods[b.strategyIndex]), both, [t.tool]),
+      p(t.battle, both, [t.tool, ...t.objects]),
+      p(`Podían usar ${t.toolLabel} para despejar el camino sin hacer daño.`, [], [t.tool]),
+      p(t.detail, [], t.objects),
+      p(s.lesson),
+      p(`${h.name} comprobó que ${c.name} estuviera cerca antes de dar el siguiente paso.`),
+      p('Dejaron las cosas apartadas del sendero para que nadie tropezara durante aquella tarea.'),
+      p('Mantener un paso tranquilo les permitió cuidar el castillo mientras avanzaban hacia la torre.'),
     ],
     [
-      p(`Olmo, un búho muy anciano, los recibió junto a la ventana de su torre.`, ['owl']),
+      p(discoveryLines[d.id], ['owl', ...both], ['key']),
       p(`Olmo entregó ${key} a ${h.name} para cerrar la puerta del viento.`, ['owl', h.id], ['key']),
-      p(`El guardián aconsejó respirar tres veces y recordar que ser valiente también era reparar errores.`, ['owl']),
+      p('El guardián aconsejó respirar tres veces y recordar que ser valiente también era reparar errores.', ['owl']),
       p(`${c.name} acercó una manta al búho, que ya tenía muy poca fuerza.`, [c.id, 'owl'], ['blanket']),
       p(`${h.name} escuchó con atención cada palabra que decía el viejo guardián.`, [h.id, 'owl']),
-      p(`Olmo explicó que debían girar la llave despacio hasta escuchar un clic.`, ['owl'], ['key']),
-      p(`El aire de la ventana rozaba suavemente las grandes alas del viejo búho.`, ['owl']),
-      p(`Los tres dejaron un momento de silencio para escuchar aquella brisa pequeña y tranquila.`, [...both, 'owl']),
+      p('Olmo explicó que debían girar la llave despacio hasta escuchar un clic.', ['owl'], ['key']),
+      p('Olmo, un búho muy anciano, tenía un rincón cómodo junto a la ventana.', ['owl']),
+      p('Los tres hicieron una pausa para dejar que el guardián descansara entre sus palabras.', [...both, 'owl']),
       p(`${h.name} guardó la llave mientras ${c.name} recordaba los pasos del consejo.`, both, ['key']),
     ],
     [
-      p(`Poco después, Olmo murió en paz porque su larga vida había llegado al final.`, []),
+      p('Poco después, Olmo murió en paz porque su larga vida había llegado al final.', []),
       p(`${h.name} comprendió que Olmo no volvería a despertar y sintió mucha tristeza.`, [h.id]),
       p(`${c.name} abrazó a ${h.name} y lloraron en compañía, recordando al búho con cariño.`),
-      p(`La ventana dejó un rincón tranquilo donde podían quedarse sin apresurar sus sentimientos.`, []),
-      p(`${c.name} se sentó cerca para acompañar aquella tristeza sin pedir que desapareciera.`, [c.id]),
-      p(`Echar de menos a Olmo también era una manera de recordar cuánto lo querían.`),
+      p('La ventana dejó un rincón tranquilo donde podían quedarse sin apresurar sus sentimientos.', []),
+      p(`${c.name} se quedó cerca para acompañar aquella tristeza sin pedir que desapareciera.`, [c.id]),
+      p('Echar de menos a Olmo también era una manera de recordar cuánto lo querían.'),
       p(`${h.name} recordó la voz suave del guardián y las cosas que les había enseñado.`, [h.id]),
-      p(`La llave seguía en la mochila y el consejo seguía guardado en su memoria.`, [], ['key']),
-      p(`Después del abrazo podían seguir cuidándose, aunque todavía sintieran ganas de llorar.`),
+      p('La llave seguía en la mochila y el consejo seguía guardado en su memoria.', [], ['key']),
+      p('Un abrazo podía ayudarles a seguir cuidándose, aunque todavía sintieran ganas de llorar.'),
     ],
     [
       p(`En el patio, ${h.name} contó su error y pidió ayuda sin esconder lo ocurrido.`, [h.id]),
-      p(`Respiraron tres veces y giraron la llave mientras mantenían cerrada la puerta del viento.`, both, ['key']),
-      p(threat.end, [], threat.objects),
+      p('Respiraron tres veces y giraron la llave mientras mantenían cerrada la puerta del viento.', both, ['key']),
+      p(t.end, [], t.objects),
       p(`${c.name} sostuvo la puerta para que ${h.name} pudiera usar la llave con cuidado.`, both, ['key']),
-      p(`El consejo de Olmo les recordaba que nadie debía hacerlo todo completamente a solas.`),
-      p(`Un clic pequeño anunció que la puerta estaba cerrada y el castillo recuperaba la calma.`, []),
-      p(`Apartaron una silla del camino para poder trabajar sin que nadie tropezara.`),
+      p('El consejo de Olmo les recordaba que nadie debía hacerlo todo completamente a solas.'),
+      p('Un clic pequeño anunció que la puerta estaba cerrada y el castillo recuperaba la calma.', []),
+      p('Apartaron una silla del camino para poder trabajar sin que nadie tropezara.'),
       p(`${h.name} miró el letrero antes de tocar el picaporte por segunda vez.`, [h.id]),
-      p(`Mantuvieron la puerta cerrada un momento para dejar que la llave hiciera su trabajo.`, both, ['key']),
+      p('Mantuvieron la puerta cerrada un momento para dejar que la llave hiciera su trabajo.', both, ['key']),
     ],
     [
-      p(`En el jardín prepararon un rincón de flores para recordar al guardián con cariño.`, both, ['flower'], 'garden'),
-      p(`Olmo no volvería, pero su consejo acompañaría cada nueva aventura de los dos amigos.`, both, [], 'garden'),
-      p(`La esperanza crecía cuando alguien reparaba un error y cuidaba de otra persona.`, both, [], 'garden'),
+      p(endings[e.id], both, ['flower'], 'garden'),
+      p('Olmo no volvería, pero su consejo acompañaría cada nueva aventura de los dos amigos.', both, [], 'garden'),
+      p(e.line, both, [], 'garden'),
       p(`${h.name} dejó una flor junto al banco donde podrían hablar de Olmo.`, [h.id], ['flower'], 'garden'),
-      p(`${c.name} recordó que podían pedir compañía tanto en los días alegres como en los tristes.`, [c.id], [], 'garden'),
-      p(`Compartieron una cesta de merienda y recuerdos sin pedir que nadie sonriera todavía.`, both, ['basket'], 'garden'),
-      p(`El jardín tenía espacio para las lágrimas y también para las pequeñas sonrisas.`, [], ['flower'], 'garden'),
-      p(`Ayudar a otro vecino sería una forma de continuar la enseñanza del viejo búho.`, both, [], 'garden'),
-      p(`Al marcharse, ${h.name} y ${c.name} caminaron juntos llevando todos sus sentimientos.` , both, [], 'garden'),
+      p(`${c.name} recordó que podían pedir compañía en los días alegres y en los tristes.`, [c.id], [], 'garden'),
+      p('Compartieron una cesta de merienda y recuerdos sin pedir que nadie sonriera todavía.', both, ['basket'], 'garden'),
+      p('El jardín tenía espacio para las lágrimas y también para las pequeñas sonrisas.', [], ['flower'], 'garden'),
+      p('Ayudar a otro vecino sería una forma de continuar la enseñanza del viejo búho.', both, [], 'garden'),
+      p('Al marcharse, avanzaron juntos dejando espacio para todos los sentimientos que todavía los acompañaban.', both, [], 'garden'),
     ],
   ];
-  return { title: `${h.name} y la puerta del viento`, place, guardian, questId: 'wind-door', variantId: threat.id, pages: unfold(stages, duration) };
+  return { title: `${h.name} y la puerta del viento`, place, guardian, questId: 'wind-door', variantId: t.id, plan: planFor(b, place, [t.tool, ...t.objects]), pages: unfold(stages, duration) };
 }
 
 function relax({ random, hero: h, companion: c, duration }) {
-  const fable = choose(random, FABLES);
-  const place = choose(random, PLACES.filter(location => fable.scenes.includes(location.scene)));
+  const b = selectBlocks(random, RELAX_GOALS, RELAX_OBSTACLES);
+  const { goal: f, obstacle: o, strategy: s, discovery: d, ending: e } = b;
+  const place = choose(random, PLACES.filter(location => f.scenes.includes(location.scene)));
   const both = [h.id, c.id];
   const p = (text, characters = both, objects = []) => illustrated(text, place.scene, characters, objects);
+  const pauseLines = [
+    `${h.name} observó sus movimientos y reconoció qué parte necesitaba una pausa.`,
+    `${h.name} dividió la tarea y dejó los pasos siguientes para después.`,
+    `${h.name} probó parar un instante antes de volver a intentarlo.`,
+    `${h.name} preguntó cómo podía seguir sin que la prisa eligiera todo.`,
+  ];
+  const discoveryLines = {
+    'tiny-test': 'Probaron el consejo en un paso pequeño antes de intentar toda la actividad.',
+    'new-angle': 'Miraron la actividad desde un sitio cómodo y reconocieron un detalle que podían cambiar.',
+    'leftover-surprise': 'Dejaron a un lado lo innecesario y dieron más espacio al gesto de cuidado.',
+    'remembered-idea': 'Recordaron otra tarde tranquila y recuperaron una manera de disfrutar sin hacer una carrera.',
+    'shared-question': 'Preguntaron qué parte se sentía más agradable y cambiaron el plan para cuidarla.',
+    'notice-pattern': 'Reconocieron cuándo aparecía la prisa y prepararon una pausa antes del siguiente paso.',
+  };
+  const calmDiscoveryDetails = {
+    'tiny-test': ['Una prueba pequeña permitía cuidar el gesto antes de intentar toda la actividad.', 'Miraron lo ocurrido y eligieron qué parte pequeña podían volver a practicar.'],
+    'new-angle': ['Un punto de vista distinto permitió reconocer una parte que antes parecía difícil.', 'Ahora veían el intento con más espacio para aprender y menos prisa por terminar.'],
+    'leftover-surprise': ['Dejar una exigencia innecesaria abrió más espacio para disfrutar de lo que hacían.', 'Ya no necesitaban conseguirlo todo de golpe para reconocer un gesto de cuidado.'],
+    'remembered-idea': ['Otra tarde tranquila les había enseñado que no todos los pasos necesitaban una carrera.', 'Recuperaron aquel recuerdo y lo adaptaron a la actividad que ahora tenían cerca.'],
+    'shared-question': ['La pregunta encontró una respuesta sobre cómo cuidar lo que todavía les costaba.', 'Escuchar esa respuesta dejó una manera más amable de continuar con la actividad.'],
+    'notice-pattern': ['Reconocer cuándo aparecía la prisa permitía preparar un gesto de cuidado antes.', 'Notaron una señal pequeña y dejaron un espacio para parar cuando volviera a aparecer.'],
+  };
+  const endings = {
+    'draw-memory': `${h.name} dibujó la enseñanza y dejó un espacio para añadir otra mañana.`,
+    'tell-story': `${h.name} contó lo que había aprendido sin pedir que pareciera una gran hazaña.`,
+    'leave-invitation': `${h.name} invitó a otra persona a disfrutar aquella actividad a su propio ritmo.`,
+    'care-corner': `${h.name} ordenó el rincón y dejó sus cosas listas para volver sin prisa.`,
+    'thank-you-note': `${h.name} agradeció la compañía con una nota que decía cómo se había sentido.`,
+    'tomorrow-plan': `${h.name} decidió qué pequeña parte le gustaría volver a probar otro día.`,
+  };
   const stages = [
     [
-      p(`${h.name}, ${h.article} ${h.label}, llegó ${toPlace(place)} buscando un rincón tranquilo.`, [h.id]),
-      p(`${h.name} ${fable.start}.`, [h.id], fable.objects),
-      p(`${c.name}, ${c.article} ${c.label}, se acercó para compartir aquella pequeña actividad.`, [c.id]),
-      p(fable.setup, [], fable.objects),
-      p(`${h.name} preparó sus cosas, imaginando que todo saldría exactamente como quería.`, [h.id], fable.objects),
-      p(`Los dos eligieron un sitio cómodo donde cada uno tuviera espacio para estar.`),
-      p(place.detail, [], ['garden', 'meadow'].includes(place.scene) ? ['flower'] : place.scene === 'clouds' ? ['cloud'] : []),
-      p(`Una hoja se movía despacio y una hormiga continuaba con su pequeña tarea.`, []),
-      p(`${c.name} no llevaba prisa y dejó un momento para mirar el lugar.`, [c.id]),
+      p(openingAt(h.name, b.opening.relax, place), [h.id]),
+      p(`${h.name} quería ${f.wish}.`, [h.id], f.objects),
+      p(`${c.name} se acercó para compartir aquella actividad${isUnderwater(place) ? ` ${inPlace(place)}` : ' sin decidir todos sus pasos'}.`, [c.id]),
+      p(f.setup, [], f.objects),
+      p(`${h.name}, ${h.article} ${h.label}, imaginó que el resultado llegaría enseguida.`, [h.id], f.objects),
+      p('Eligieron un rincón donde la actividad tuviera espacio y nadie necesitara empujarse.'),
+      p(place.detail, []),
+      p(`${c.name}, ${c.article} ${c.label}, dejó un momento para mirar el lugar.`, [c.id]),
+      p('Una tarde tranquila podía comenzar con ilusión sin convertirse en una carrera.'),
     ],
     [
-      p(`${h.name} ${fable.first}.`, [h.id], fable.objects),
-      p(fable.mistake, [], fable.objects),
-      p(`${c.name} preguntó qué estaba pasando y escuchó la respuesta hasta el final.`, [c.id]),
-      p(`${h.name} comenzó a moverse más deprisa porque el resultado no llegaba como esperaba.`, [h.id], fable.objects),
-      p(`La prisa escondía algunos detalles pequeños que podían ayudar a comprender la dificultad.`),
-      p(`Contarlo en palabras hizo que la preocupación pareciera un poquito menos grande.`),
-      p(`${c.name} se quedó cerca, sin decir que aquello tenía que resultar fácil.`, [c.id]),
-      p(fable.observation, [], fable.objects),
-      p(`${h.name} notó que quería disfrutar, pero empezaba a sentirse ${h.gender === 'f' ? 'incómoda' : 'incómodo'}.`, [h.id]),
+      p(o.line, [h.id], f.objects),
+      p(`${h.name} ${f.first}.`, [h.id], f.objects),
+      p(f.mistake, [], f.objects),
+      p('La idea inicial seguía siendo importante aunque todavía necesitaran aprender cómo conseguirla.'),
+      p(`${c.name} escuchó lo que estaba pasando sin interrumpir ni decidir enseguida.`, [c.id]),
+      p('Contar la dificultad dejaba ver qué gesto necesitaba cambiar antes de volver a probar.'),
+      p(`${h.name} notó una preocupación pequeña y buscó palabras para explicar cómo se sentía.`, [h.id]),
+      p('El resultado podía esperar mientras encontraban una forma más amable de continuar.'),
+      p('No hacía falta esconder aquel intento para poder aprender algo de lo ocurrido.'),
     ],
     [
       p(`${h.name} suspiró y dejó de intentar arreglarlo todo durante un pequeño momento.`, [h.id]),
-      p(`${c.name} respiró despacio y mostró que también se podía parar para pensar.`, [c.id]),
-      p(`Los dos hicieron una pausa sin convertir aquella tarde en una carrera.`),
-      p(`El aire entró suave y salió despacio, mientras los hombros encontraban un poco de descanso.`),
-      p(`${h.name} aflojó las manos y miró otra vez las cosas que tenía cerca.`, [h.id], fable.objects),
-      p(`No necesitaban encontrar una respuesta perfecta antes de escuchar lo que estaba ocurriendo.`),
-      p(`La pausa dejaba un espacio pequeño para pensar sin que la prisa eligiera todo.`),
-      p(`${c.name} acompañó el silencio sin llenar cada momento con una idea nueva.`, [c.id]),
-      p(`Detenerse no borraba la dificultad, pero permitía mirarla desde un lugar más tranquilo.`),
+      p(pauseLines[b.strategyIndex], [h.id]),
+      p('La pausa dejó un espacio para pensar sin convertir la tarde en una carrera.'),
+      p(`${c.name} respiró despacio y mostró que también se podía parar para mirar.`, [c.id]),
+      p('El aire entró suave y salió despacio mientras el cuerpo encontraba un poco de descanso.'),
+      p(s.lesson),
+      p('Las cosas seguían en su sitio y no necesitaban una respuesta perfecta de inmediato.', [], f.objects),
+      p(`${h.name} relajó el cuerpo y miró otra vez lo que tenía cerca.`, [h.id], f.objects),
+      p('Escuchar el silencio permitió reconocer lo que necesitaba tiempo y lo que necesitaba otra idea.'),
     ],
     [
-      p(fable.lesson, [c.id], fable.objects),
-      p(`${h.name} ${fable.change}.`, [h.id], fable.objects),
-      p(`Aprender no pedía hacerlo perfecto al primer intento, sino probar de otra manera.`),
-      p(`${h.name} escuchó la idea y descubrió que tenía sentido para lo que estaba viviendo.`, [h.id]),
-      p(`${c.name} dejó que la otra persona eligiera cómo practicar aquel consejo sencillo.`, [c.id]),
-      p(fable.practice, both, fable.objects),
-      p(`Una idea pequeña podía cambiar la forma de cuidar algo que tenían cerca.`),
-      p(`Los dos podían ayudarse sin decidir cada movimiento por la otra persona.`),
-      p(fable.care, [], fable.objects),
+      p(f.lesson, [c.id], f.objects),
+      p(`${h.name} ${f.change}.`, [h.id], f.objects),
+      p('La idea nueva podía practicarse aunque nadie la recordara perfectamente a cada segundo.'),
+      p('Eligieron un paso pequeño y dejaron que el resultado mostrara cómo continuar.'),
+      p(`${c.name} acompañó aquel intento sin hacer toda la actividad por la otra persona.`, [c.id]),
+      p('La enseñanza cambió un gesto pequeño sin exigir que toda la tarde saliera perfecta.', both, f.objects),
+      p('Comprender la enseñanza no obligaba a olvidar de golpe la preocupación anterior.'),
+      p(`${h.name} preparó sus cosas de nuevo, dejando sitio para un ritmo diferente.`, [h.id], f.objects),
+      p('La actividad todavía importaba y ahora también importaba disfrutar mientras la hacían.'),
     ],
     [
-      p(fable.later, both, fable.objects),
-      p(fable.outcome, [], fable.objects),
-      p(`${h.name} miró a ${c.name} con una sonrisa tranquila y compartió su pequeño descubrimiento.`),
-      p(`A veces aparecía la prisa y otras veces conseguían encontrar una pausa antes.`),
-      p(`${c.name} recordaba que aprender algo nuevo también podía llevar un poquito de tiempo.`, [c.id]),
-      p(`El resultado guardaba algo especial porque habían podido disfrutar sin empujar las cosas.`),
-      p(`${h.name} empezó a reconocer cuándo necesitaba ayuda, tiempo o simplemente un poco de calma.`, [h.id]),
-      p(`Ninguno esperaba que el otro recordara aquella lección perfectamente a cada segundo.`),
-      p(`Quisieron guardar el momento en un dibujo para recordar cómo se habían sentido.`),
+      p(discoveryLines[d.id], both, f.objects),
+      p(f.outcome, [], f.objects),
+      p(`${h.name} compartió el descubrimiento con ${c.name} y reconoció lo que había cambiado.`),
+      p(calmDiscoveryDetails[d.id][0]),
+      p(f.practice, both, f.objects),
+      p(calmDiscoveryDetails[d.id][1]),
+      p('No todos los momentos salían iguales, pero podían reconocer una pausa que les ayudara.'),
+      p(`${c.name} dejó un turno para escuchar cómo se sentía el nuevo intento.`, [c.id]),
+      p('El resultado tenía valor porque habían podido aprender sin empujar las cosas.'),
     ],
     [
-      p(`${h.name} recordó una enseñanza sencilla: ${fable.moral.toLocaleLowerCase('es')}.`, [h.id], fable.objects),
-      p(`${c.name} le dio un abrazo y los dos empezaron a volver a casa despacito.`),
-      p(`Mañana podrían volver a intentarlo, llevando aquella pequeña lección y muchas ganas de cuidarse.`),
-      p(`${thePlace(place)} seguía guardando detalles pequeños que ahora podían ver mejor.`),
-      p(`Compartieron lo que habían aprendido dejando espacio para las palabras de cada uno.`),
-      p(`No necesitaban resolver todavía todas las dificultades que podrían aparecer al día siguiente.`),
-      p(`${h.name} guardó sus cosas con cuidado mientras ${c.name} esperaba sin apurar.`),
-      p(`La calma no había llegado de golpe, sino a través de varios gestos pequeños.`),
-      p(`Aquel momento estaba completo con dos amigos, un recuerdo y un poquito de tranquilidad.`),
+      p(endings[e.id], [h.id], f.objects),
+      p(`${h.name} recordó una enseñanza sencilla: ${f.moral.toLocaleLowerCase('es')}.`, [h.id], f.objects),
+      p(e.line),
+      p('La calma había encontrado sitio a través de varios gestos pequeños de cuidado.'),
+      p(`${c.name} guardó sus cosas sin apresurar los últimos pasos de aquella tarde.`, [c.id]),
+      p('Mañana podían volver a aprender sin exigir que todo saliera igual que hoy.'),
+      p(`${thePlace(place)} guardaba detalles pequeños que ahora podían mirar con más calma.`, []),
+      p('Compartieron lo que habían aprendido dejando espacio para las palabras de cada uno.'),
+      p('Una enseñanza sencilla podía acompañarlos aunque todavía quedaran muchas cosas por descubrir.'),
     ],
   ];
-  const title = fable.id === 'rest' ? `${h.name} ${fable.title}` : `${h.name} y ${fable.title}`;
-  return { title, place, moral: `${fable.moral}.`, questId: fable.id, variantId: fable.id, pages: unfold(stages, duration) };
+  return { title: `${h.name} y ${f.title}`, place, moral: `${f.moral}.`, questId: f.id, variantId: o.id, plan: planFor(b, place, f.objects), pages: unfold(stages, duration) };
 }
 
-function friends({ random, hero: h, companion: c, duration }) {
-  const activity = choose(random, ACTIVITIES);
-  const place = choose(random, PLACES.filter(location => activity.scenes.includes(location.scene)));
-  const both = [h.id, c.id];
-  const p = (text, characters = both, objects = []) => illustrated(text, place.scene, characters, objects);
+const listNames = members => members.length === 1 ? members[0].name : `${members.slice(0, -1).map(member => member.name).join(', ')} y ${members.at(-1).name}`;
+
+function social({ random, hero: h, companion: c, characters, family, duration, bookId }) {
+  const isFamily = bookId === 'family';
+  const solo = isFamily && characters.length === 1;
+  const singleActor = isFamily && characters.filter(person => person.role !== 'baby').length === 1;
+  const b = selectBlocks(random, isFamily ? FAMILY_GOALS : FRIEND_GOALS, SOCIAL_OBSTACLES);
+  const { goal: a, obstacle: o, strategy: s, discovery: d, ending: e } = b;
+  const place = choose(random, PLACES.filter(location => a.scenes.includes(location.scene)));
+  const cast = isFamily ? characters : [h, c];
+  // Keep illustrations readable while each chosen family member appears through the story.
+  const castForStage = stage => [h.id, ...cast.filter(person => person.id !== h.id).slice(stage % Math.max(1, cast.length - 1), stage % Math.max(1, cast.length - 1) + 2).map(person => person.id)];
+  const p = (text, people = [h.id, ...(c.id !== h.id ? [c.id] : [])], objects = []) => illustrated(text, place.scene, people, objects);
+  const phrase = (plural, singular) => singleActor ? singular : plural;
+  const conjugateForActor = sentence => singleActor
+    ? sentence.replace('habían imaginado', 'había imaginado').replace('No podían', 'No podía').replace(' podían probar ', ' podía probar ')
+    : sentence;
+  const participatingFamily = isFamily ? cast.filter(person => person.id !== h.id) : [];
+  const baby = participatingFamily.find(person => person.role === 'baby');
+  const supportiveMember = participatingFamily.find(person => person.role !== 'baby');
+  const preparationMember = baby || supportiveMember;
+  const familyMoment = person => person?.role === 'baby'
+    ? `${person.name} miró los colores mientras ${h.name} preparaba el rincón de la actividad.`
+    : person?.role === 'teen'
+      ? `${person.name} propuso un detalle y dejó que ${h.name} eligiera si usarlo.`
+      : person?.role === 'sibling'
+        ? `${person.name} escuchó el plan de ${h.name} y pidió un turno para participar.`
+        : person
+          ? a.stationary ? `${person.name} se quedó cerca mientras ${h.name} observaba los tesoros en su sitio.` : `${person.name} acercó los materiales que ${h.name} había elegido para su plan.`
+          : undefined;
+  const endingKeepsake = singleActor ? a.keepsake
+    .replace(/^Recogieron/, 'Recogió').replace(/^Doblaron/, 'Dobló').replace(/^Dibujaron/, 'Dibujó').replace(/^Guardaron/, 'Guardó').replace(/^Dejaron/, 'Dejó')
+    .replace(/^Apagaron/, 'Apagó').replace(/^Cerraron/, 'Cerró')
+    .replace(' y dejaron ', ' y dejó ').replace(' y guardaron ', ' y guardó ').replace(' y prepararon ', ' y preparó ').replace(' y doblaron ', ' y dobló ')
+    .replace(' y enrollaron ', ' y enrolló ').replace(' y limpiaron ', ' y limpió ').replace('las habían encontrado', 'las había encontrado') : a.keepsake;
+  const strategyLines = [
+    `${h.name} miró lo disponible y propuso ${o.solution(a)}.`,
+    `${h.name} ordenó los pasos y propuso ${o.solution(a)}.`,
+    `${h.name} eligió probar ${o.solution(a)} antes de continuar.`,
+    `${h.name} pidió ideas para ${o.solution(a)} y eligió un paso.`,
+  ];
+  const discoveryLines = {
+    'tiny-test': `${h.name} comprobó el resultado de ${a.test}.`,
+    'new-angle': `${h.name} cambió de sitio para mirar ${a.focus}.`,
+    'leftover-surprise': `${h.name} aprovechó lo que quedaba para ${a.adapt}.`,
+    'remembered-idea': `${h.name} recordó otro juego y decidió ${a.create}.`,
+    'shared-question': `${h.name} preguntó qué ayudaría a ${a.share}.`,
+    'notice-pattern': `${h.name} comparó ${a.focus} y reconoció cómo continuar.`,
+  };
+  const endings = {
+    'draw-memory': `${h.name} dibujó el momento favorito y guardó el dibujo junto a sus cuentos.`,
+    'tell-story': `${h.name} contó cómo una idea pequeña había cambiado el plan de la tarde.`,
+    'leave-invitation': `${h.name} preparó una invitación para repetir el juego cuando llegara otro día.`,
+    'care-corner': `${h.name} ordenó el rincón para que la próxima actividad encontrara un sitio cómodo.`,
+    'thank-you-note': `${h.name} escribió un agradecimiento por los pequeños gestos de cuidado de aquella tarde.`,
+    'tomorrow-plan': `${h.name} eligió una parte del juego que le gustaría probar otra mañana.`,
+  };
+  const introduction = isFamily
+    ? solo ? `${h.name} eligió jugar a su ritmo y cuidar su propio rincón.` : `Compartirían el plan ${listNames(cast)}.`
+    : `${h.name} y ${c.name} acordaron preparar la actividad${isUnderwater(place) ? ` ${inPlace(place)}` : ' en compañía'}.`;
   const stages = [
     [
-      p(`${h.name}, ${h.article} ${h.label}, invitó a ${c.name} ${toPlace(place)}.`),
-      p(`Querían ${activity.plan}.`, both, activity.objects),
-      p(`Una tarde pequeña tenía espacio para sus dos ideas y muchas ganas de jugar.`),
-      p(`${c.name}, ${c.article} ${c.label}, llegó con una sonrisa para compartir aquella actividad.`, [c.id]),
-      p(`${h.name} explicó su idea y después escuchó la propuesta de su acompañante.`, [h.id]),
-      p(`Eligieron un rincón cómodo donde ninguno tuviera que quedarse mirando desde lejos.`),
-      p(`Las flores seguían creciendo alrededor sin necesitar que nadie organizara una fiesta enorme.`, [], ['flower']),
-      p(`Apartaron unas hojas del camino y dejaron las flores nuevas donde estaban.`),
-      p(`${c.name} agradeció la invitación antes de comenzar a preparar las cosas.`, [c.id]),
+      p(openingAt(h.name, b.opening[bookId], place), [h.id]),
+      p(`${h.name} quería ${a.wish}.`, [h.id], a.objects),
+      p(introduction, castForStage(0)),
+      p(isFamily ? `${h.name} eligió el plan y dejó sitio para cambiar alguna idea.` : `${c.name} había recibido una invitación y llegó con una idea para aportar.`, [isFamily ? h.id : c.id]),
+      p(phrase('Escucharon la propuesta antes de preparar las cosas que iban a necesitar.', 'Miró su propuesta antes de preparar las cosas que iba a necesitar.')),
+      p(phrase('La tarde tenía espacio para distintas ideas y muchas maneras de disfrutar.', 'La tarde tenía espacio para inventar ideas y encontrar maneras de disfrutar.')),
+      p(place.detail, []),
+      p(phrase('Eligieron un rincón cómodo donde nadie tuviera que quedarse mirando desde lejos.', 'Eligió un rincón cómodo donde pudiera moverse sin tropezar con sus cosas.')),
+      p(phrase('Un plan pequeño podía ser especial sin necesitar una celebración enorme.', 'Un plan pequeño podía ser especial sin necesitar una celebración enorme.')),
     ],
     [
-      p(activity.materials, [], activity.objects),
-      p(`${h.name} ${activity.taskHero}.`, [h.id], activity.objects),
-      p(`${c.name} ${activity.taskCompanion}.`, [c.id], activity.objects),
-      p(`Pusieron en el centro lo que iban a usar para poder alcanzarlo sin empujarse.`),
-      p(`${h.name} preguntó antes de tomar algo que estaba junto a ${c.name}.`),
-      p(`Las dos tareas eran distintas, pero ambas ayudaban a preparar algo en compañía.`),
-      p(`Había sitio para trabajar y también para cambiar una idea si aparecía otra mejor.`),
-      p(`Probaron a ${activity.variation}.`, both, activity.objects),
-      p(`Ayudar no era hacer la tarea del otro, sino acercar una mano cuando hiciera falta.`),
+      p(a.materials, [], a.objects),
+      p(`${h.name} ${a.task}.`, [h.id], a.objects),
+      p(familyMoment(preparationMember) || (a.stationary ? phrase('Buscaron un lugar cómodo desde donde mirar los tesoros sin tener que empujarse.', 'Buscó un lugar cómodo desde donde mirar los tesoros sin cambiar su sitio.') : phrase('Prepararon un lugar para dejar los materiales al alcance sin tener que empujarse.', 'Preparó un lugar para dejar los materiales al alcance y trabajar con comodidad.')), preparationMember ? [h.id, preparationMember.id] : castForStage(1), a.objects),
+      p(phrase('Miraron lo disponible antes de decidir si hacía falta traer alguna cosa más.', 'Miró lo disponible antes de decidir si hacía falta traer alguna cosa más.')),
+      p(`${h.name} escogió una tarea que podía hacer y pidió cuidado cuando lo necesitó.`, [h.id]),
+      p(phrase('Había sitio para trabajar y también para cambiar una idea si aparecía otra mejor.', 'Había sitio para trabajar y también para cambiar una idea si aparecía otra mejor.')),
+      p(phrase('Dejaron libre la entrada para que el rincón siguiera siendo cómodo y seguro.', 'Dejó libre la entrada para que el rincón siguiera siendo cómodo y seguro.')),
+      p(phrase('Cada paso tenía valor aunque no terminara siendo la parte más vistosa del plan.', 'Cada paso tenía valor aunque no terminara siendo la parte más vistosa del plan.')),
+      p(phrase('Antes del siguiente paso, comprobaron que podían alcanzar lo necesario sin hacer una carrera.', 'Antes del siguiente paso, comprobó que podía alcanzar lo necesario sin hacer una carrera.')),
     ],
     [
-      p(activity.problem, both, activity.objects),
-      p(`${h.name} explicó lo que quería y ${c.name} escuchó sin interrumpir.`),
-      p(`Después cambiaron los turnos y buscaron una solución que dejara sitio para los dos.`),
-      p(`Los dos guardaron silencio un momento porque aquella idea les hacía mucha ilusión.`),
-      p(`Nadie quería estropear la tarde, aunque al principio sus planes parecieran diferentes.`),
-      p(`Podían preguntar lo que sentía el otro en vez de intentar adivinarlo todo.`),
-      p(`${h.name} apretó un poquito los labios y después recordó que podía usar palabras.`, [h.id]),
-      p(`Una pausa dejó que cada uno encontrara una manera amable de contar su idea.`),
-      p(`Escuchar hizo que el desacuerdo pareciera una tarea pequeña y posible de compartir.`),
+      p(conjugateForActor(o.line), castForStage(2), a.objects),
+      p(strategyLines[b.strategyIndex], [h.id], a.objects),
+      p('La propuesta resolvía la dificultad y dejaba sitio para disfrutar.'),
+      p(`${h.name} explicó qué parte le preocupaba sin esconder las ganas de seguir.`, [h.id]),
+      p(conjugateForActor(a.stationary && o.id === 'small-space' ? 'Cambiar el lugar de observación dejaba espacio sin mover los tesoros del mar.' : o.clue), [], a.objects),
+      p(s.lesson),
+      p(phrase('Una pausa dejó espacio para mirar el problema sin echarle la culpa a nadie.', 'Una pausa dejó espacio para mirar el problema sin regañarse por el intento.')),
+      p(phrase('Podían probar una solución pequeña antes de cambiar todo lo que habían preparado.', 'Podía probar una solución pequeña antes de cambiar todo lo que había preparado.')),
+      p(phrase('Un intento diferente seguía siendo una forma de cuidar el plan que les importaba.', 'Un intento diferente seguía siendo una forma de cuidar el plan que le importaba.')),
     ],
     [
-      p(activity.idea, both, activity.objects),
-      p(`${h.name} preguntó a ${c.name} si aquella solución le dejaba un lugar cómodo.`),
-      p(`Los dos dijeron que sí y volvieron a jugar con el corazón más ligero.`),
-      p(`La idea nueva tenía un poquito de cada uno, aunque no fuera la primera propuesta.`),
-      p(activity.detail, [], activity.objects),
-      p(`Cada uno reconocía algo suyo y algo de su acompañante en lo que estaban preparando.`),
-      p(`No hacía falta ganar el desacuerdo para poder disfrutar de aquella tarde juntos.`),
-      p(activity.challenge, both, activity.objects),
-      p(`Pidieron ayuda cuando la necesitaron y nadie se burló de un pequeño error.`),
+      p(`${h.name} empezó a ${o.solution(a)}.`, [h.id], a.objects),
+      p('El primer paso mostró un cambio y algo que todavía necesitaba cuidado.', castForStage(3)),
+      p(isFamily && baby && supportiveMember ? familyMoment(supportiveMember) : phrase('Continuaron sin pedir que todo saliera perfecto al primer intento de aquella idea.', 'Continuó sin pedir que todo saliera perfecto al primer intento de aquella idea.'), isFamily && baby && supportiveMember ? [h.id, supportiveMember.id] : castForStage(3)),
+      p(a.stationary ? phrase('Ajustaron su lugar de observación y dejaron los tesoros del mar en su sitio.', 'Ajustó su lugar de observación y dejó los tesoros del mar en su sitio.') : phrase('Ajustaron la posición de sus cosas para que el rincón siguiera resultando cómodo.', 'Ajustó la posición de sus cosas para que el rincón siguiera resultando cómodo.'), castForStage(3), a.objects),
+      p(`${h.name} reconoció una parte que funcionaba y decidió conservarla en el plan.`, [h.id]),
+      p(phrase('Lo que salió distinto podía enseñar algo útil para el siguiente paso.', 'Lo que salió distinto podía enseñar algo útil para el siguiente paso.')),
+      p(a.stationary ? phrase('Dejaron los tesoros donde estaban y prepararon un rincón para guardar sus dibujos.', 'Dejó los tesoros donde estaban y preparó un rincón para guardar sus dibujos.') : phrase('Dejaron los materiales que todavía servían en un sitio donde pudieran verlos.', 'Dejó los materiales que todavía servían en un sitio donde pudiera verlos.'), [], a.objects),
+      p(phrase('Ninguna idea tenía que ganar para que la tarde pudiera seguir siendo agradable.', 'Ninguna idea tenía que ser perfecta para que la tarde siguiera siendo agradable.')),
+      p(phrase('Trabajaron a un ritmo cómodo y reservaron un espacio para descansar si hacía falta.', 'Trabajó a un ritmo cómodo y reservó un espacio para descansar si hacía falta.')),
     ],
     [
-      p(activity.result, both, activity.objects),
-      p(`${h.name} y ${c.name} sonrieron al ver lo que habían hecho entre los dos.`),
-      p(`La actividad era sencilla, pero guardaba muchas maneras pequeñas de cuidar su amistad.`),
-      p(`Probaron otra vez cambiando los turnos para descubrir cómo se sentía desde otro lugar.`),
-      p(`${c.name} encontró un detalle nuevo y se lo enseñó a ${h.name}.`),
-      p(`El resultado no tenía que ser perfecto para que ambos pudieran disfrutarlo.`),
-      p(`Una mariposa se posó cerca y los dos dejaron su juego para observarla.`),
-      p(`Miraron sus alas sin intentar atraparla y esperaron a que continuara su camino.`),
-      p(`También podían compartir un momento tranquilo sin hacer nada más que estar cerca.`),
+      p(discoveryLines[d.id], [h.id], a.objects),
+      p(a.result, castForStage(4), a.objects),
+      p(phrase('El resultado tenía espacio para distintas maneras de participar.', 'El resultado guardaba sus elecciones y las ideas que había probado.')),
+      p(d.setup, castForStage(4)),
+      p(`${h.name} señaló un detalle que había aparecido al probar de otra manera.`, [h.id], a.objects),
+      p(singleActor ? 'Miró el resultado despacio y decidió qué parte quería conservar para otro intento.' : d.follow),
+      p(phrase('Una sorpresa pequeña podía formar parte del resultado sin arruinar lo que habían hecho.', 'Una sorpresa pequeña podía formar parte del resultado sin arruinar lo que había hecho.')),
+      p(phrase('Se detuvieron a disfrutar antes de pensar en recoger o empezar otra actividad.', 'Se detuvo a disfrutar antes de pensar en recoger o empezar otra actividad.')),
+      p(phrase('La tarde no necesitaba una tarea nueva para que aquel momento tuviera valor.', 'La tarde no necesitaba una tarea nueva para que aquel momento tuviera valor.')),
     ],
     [
-      p(activity.keepsake, both, activity.objects),
-      p(`${h.name} y ${c.name} se dieron un abrazo y agradecieron aquella tarde compartida.`),
-      p(`La amistad continuó con ellos por el camino, lista para otra actividad pequeña.`),
-      p(`Recogieron el rincón para dejar un camino libre y cómodo junto a las flores.`, both, ['flower']),
-      p(`${h.name} preparó una parte de las cosas y ${c.name} preparó la otra.`),
-      p(`Otro día podrían repetir aquel juego o encontrar una nueva idea para compartir.`),
-      p(`Miraron debajo del banco por si alguna cosa pequeña había quedado olvidada.`),
-      p(`Jugar en compañía había sido escuchar, compartir y dejar espacio para las ideas del otro.`),
-      p(`No hacía falta elegir enseguida la próxima aventura para seguir siendo buenos amigos.`),
+      p(endings[e.id], castForStage(5), a.objects),
+      p(endingKeepsake, castForStage(5), a.objects),
+      p(singleActor ? e.line.replace('les gustaba', 'le gustaba').replace('disfrutaban', 'disfrutaba').replace('habían descubierto', 'había descubierto') : e.line, castForStage(5)),
+      p(phrase('Recogieron el rincón para dejar el camino libre y un sitio para otra idea.', 'Recogió el rincón para dejar el camino libre y un sitio para otra idea.')),
+      p(`${h.name} eligió qué recuerdo le gustaría guardar de aquella tarde.`, [h.id]),
+      p(phrase('Habían encontrado una forma de disfrutar dejando sitio para ideas y sentimientos diferentes.', 'Había encontrado una forma de disfrutar dejando sitio para sus ideas y sentimientos.')),
+      p(phrase('Miraron debajo del banco por si alguna cosa pequeña había quedado olvidada.', 'Miró debajo del banco por si alguna cosa pequeña había quedado olvidada.')),
+      p(phrase('Otro día podrían repetir el juego o encontrar una idea completamente nueva.', 'Otro día podría repetir el juego o encontrar una idea completamente nueva.')),
+      p(phrase('No hacía falta decidir enseguida la próxima actividad para guardar un recuerdo bonito.', 'No hacía falta decidir enseguida la próxima actividad para guardar un recuerdo bonito.')),
     ],
   ];
-  return { title: `${h.name} y ${c.name}: ${activity.title}`, place, questId: activity.id, variantId: activity.id, pages: unfold(stages, duration) };
+  return { title: isFamily ? `${h.name} y ${a.title}` : `${h.name} y ${c.name}: ${a.title}`, place, questId: a.id, variantId: o.id, plan: planFor(b, place, a.objects), ...(isFamily ? { family } : {}), pages: unfold(stages, duration) };
 }
 
-const GENERATORS = { adventure, action, relax, friends };
+const GENERATORS = { adventure, action, relax, friends: social, family: social };
 
-/** A duration includes reading and generous time to look at and touch each illustration. */
-export function generateStory(bookId, duration = 3, seed) {
+/** Duration changes the unfolding, never the plan, cast or family appearance snapshot. */
+export function generateStory(bookId, duration = 3, seed, options = {}) {
   if (!Object.hasOwn(GENERATORS, bookId)) throw new RangeError(`Unknown book: ${bookId}`);
   const minutes = Number(duration);
   if (![3, 6, 9].includes(minutes)) throw new RangeError('Choose a reading duration of 3, 6 or 9 minutes.');
   const storySeed = seed === undefined ? freshSeed() : String(seed);
   const random = randomFromSeed(`${bookId}:${storySeed}`);
-  const { hero, companion } = makeCast(bookId, random);
-  const story = GENERATORS[bookId]({ random, hero, companion, duration: minutes });
+  const family = bookId === 'family' ? normalizeFamily(options?.family) : undefined;
+  const cast = family ? { hero: family.members[0], companion: choose(random, family.members.slice(1).length ? family.members.slice(1) : family.members), characters: family.members } : makeCast(bookId, random);
+  const story = GENERATORS[bookId]({ random, ...cast, family, duration: minutes, bookId });
   const id = `${bookId}-${minutes}-${encodeURIComponent(storySeed)}`;
   const pages = story.pages.map((page, index) => ({ id: `${id}-page-${index + 1}`, ...page }));
   return {
     format: 'picturebook-v2', id, bookId, duration: minutes, seed: storySeed,
-    title: story.title, hero, companion, place: story.place,
+    title: story.title, hero: cast.hero, companion: cast.companion, place: story.place,
+    characters: [...(cast.characters || [cast.hero, cast.companion]), ...(story.guardian ? [story.guardian] : [])],
     ...(story.guardian ? { guardian: story.guardian } : {}),
-    questId: story.questId, variantId: story.variantId,
+    ...(story.family ? { family: story.family } : {}),
+    questId: story.questId, variantId: story.variantId, plan: story.plan,
     ...(story.moral ? { moral: story.moral } : {}),
     createdAt: new Date().toISOString(), pages,
     wordCount: pages.reduce((sum, page) => sum + countWords(page.paragraphs[0]), 0),
