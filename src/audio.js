@@ -1,6 +1,6 @@
 /**
- * Gentle, intentionally synthesized story effects. No recordings, downloads,
- * autoplay or speech: every sound follows a reader's tap.
+ * Short local recordings for familiar sounds, with gentle synthesized effects
+ * for fantasy and loading failures. Playback always follows a reader's tap.
  */
 
 const STORAGE_KEY = 'cuentacuentos:sound';
@@ -8,7 +8,7 @@ const MAX_VOICES = 4;
 const voices = new Set();
 const lastPlayed = new Map();
 
-/** Shared, gentle effects give characters, places and objects sound without loading files. */
+/** Legacy ids remain valid, including ids saved in earlier stories. */
 export const SOUND_ALIASES = Object.freeze({
   human: 'bell',
   hedgehog: 'rustle', raccoon: 'rustle', beaver: 'rustle', badger: 'rustle',
@@ -56,9 +56,120 @@ export const SOUND_ALIASES = Object.freeze({
   'old-trunk': 'key', 'old-photo': 'page', 'spinning-top': 'pluck', 'rag-doll': 'blanket', marbles: 'pluck', 'music-box': 'flute', 'old-glasses': 'key', 'paper-plane': 'feather',
   bicycle: 'bell', helmet: 'knight', lunchbox: 'basket', notebook: 'page', 'float-ring': 'splash', 'new-shoes': 'hoof', chalkboard: 'page', 'pencil-case': 'rustle',
   'worry-box': 'key', 'smooth-stone': 'drop', 'calm-jar': 'watersong', 'hot-water-bottle': 'splash', handkerchief: 'blanket', bandage: 'rustle', thermometer: 'bell', 'flowers-in-glass': 'flower',
-  curtain: 'cloud', 'dripping-tap': 'drop', 'cuckoo-clock': 'bird', 'wind-chime': 'bell', 'window-branch': 'forest', 'creaky-door': 'key', 'dry-leaves': 'rustle', kettle: 'whistle',
+  curtain: 'cloud', 'dripping-tap': 'drop', 'cuckoo-clock': 'cuckoo', 'wind-chime': 'bell', 'window-branch': 'forest', 'creaky-door': 'key', 'dry-leaves': 'rustle', kettle: 'whistle',
   net: 'yarn', bucket: 'splash', shovel: 'rustle', wheelbarrow: 'hoof', broom: 'rustle', ladder: 'knight', sack: 'basket', 'cardboard-box': 'page',
 });
+
+/** Local CC0 recordings; sources and processing are listed in docs/audio-sources.md. */
+export const SOUND_RECORDINGS = Object.freeze({
+  bird: 'bird', owl: 'owl', frog: 'frog', crow: 'crow', 'crow-nest': 'crow',
+  bee: 'bee', cricket: 'cricket', puppy: 'dog', sheepdog: 'dog',
+  kitten: 'purr', 'pirate-cat': 'cat', cow: 'cow', sheep: 'sheep',
+  hen: 'hen', duckling: 'duck', pony: 'horse', foal: 'horse',
+  forest: 'forest', garden: 'forest', meadow: 'forest', treehouse: 'forest',
+  farm: 'cow', 'firefly-field': 'cricket', 'lily-pond': 'frog', 'moon-boat': 'wind',
+  river: 'river', lake: 'river', waterfall: 'river',
+  beach: 'waves', boat: 'rowing', harbor: 'waves',
+  mountain: 'wind', clouds: 'wind', cloud: 'wind', curtain: 'wind',
+  'storm-cloud': 'rain', umbrella: 'rain',
+  rustle: 'leaves', 'dry-leaves': 'leaves',
+  splash: 'splash', drop: 'drop', 'dripping-tap': 'drop',
+  'creaky-door': 'door', 'old-trunk': 'door',
+  page: 'page', 'window-branch': 'window-tap',
+  bell: 'bell', bicycle: 'bell', 'wind-chime': 'chimes',
+  'alarm-clock': 'clock', stopwatch: 'clock',
+  kettle: 'kettle', whistle: 'whistle',
+});
+
+const recordingData = new Map();
+const recordingBuffers = new Map();
+const recordingFailures = new Map();
+const recordingQueue = [];
+let activeLoads = 0;
+let soundEpoch = 0;
+
+function recordingFor(id) {
+  if (typeof id !== 'string') return undefined;
+  // Keep the airy fantasy/animal whistles distinct from a physical toy whistle.
+  if (['bat', 'dolphin', 'train-driver', 'train-station'].includes(id)) return undefined;
+  if (Object.prototype.hasOwnProperty.call(SOUND_RECORDINGS, id)) return SOUND_RECORDINGS[id];
+  const alias = Object.prototype.hasOwnProperty.call(SOUND_ALIASES, id) ? SOUND_ALIASES[id] : undefined;
+  return alias && Object.prototype.hasOwnProperty.call(SOUND_RECORDINGS, alias) ? SOUND_RECORDINGS[alias] : undefined;
+}
+
+function pumpRecordings() {
+  while (activeLoads < 3 && recordingQueue.length) {
+    const { name, resolve } = recordingQueue.shift();
+    activeLoads++;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 4000);
+    fetch(new URL(`../audio/${name}.mp3`, import.meta.url), { signal: controller.signal })
+      .then(response => {
+        if (!response.ok) throw new Error('Recording unavailable');
+        return response.arrayBuffer();
+      })
+      .then(data => {
+        if (!data.byteLength || data.byteLength > 500000) throw new Error('Invalid recording');
+        recordingFailures.delete(name);
+        resolve(data);
+      })
+      .catch(() => {
+        recordingData.delete(name);
+        recordingFailures.set(name, Date.now());
+        resolve(null);
+      })
+      .finally(() => {
+        clearTimeout(timer);
+        activeLoads--;
+        pumpRecordings();
+      });
+  }
+}
+
+function loadRecordingData(name) {
+  if (typeof fetch !== 'function' || typeof AbortController !== 'function') return Promise.resolve(null);
+  if (Date.now() - (recordingFailures.get(name) || 0) < 30000) return Promise.resolve(null);
+  if (!recordingData.has(name)) {
+    recordingData.set(name, new Promise(resolve => recordingQueue.push({ name, resolve })));
+    pumpRecordings();
+  }
+  return recordingData.get(name);
+}
+
+async function loadRecording(name) {
+  if (!context || typeof context.decodeAudioData !== 'function') return null;
+  if (!recordingBuffers.has(name)) {
+    recordingBuffers.set(name, loadRecordingData(name).then(async data => {
+      if (!data) return null;
+      try {
+        // decodeAudioData may detach its input. Keep the fetched bytes for retries.
+        const buffer = await context.decodeAudioData(data.slice(0));
+        return buffer.duration > 0 && buffer.duration < 12 ? buffer : null;
+      } catch {
+        return null;
+      }
+    }).then(buffer => {
+      if (!buffer) recordingBuffers.delete(name);
+      return buffer;
+    }));
+  }
+  return recordingBuffers.get(name);
+}
+
+function boundedRecording(promise, milliseconds = 700) {
+  return new Promise(resolve => {
+    const timer = setTimeout(() => resolve(null), milliseconds);
+    promise.then(value => { clearTimeout(timer); resolve(value); }, () => { clearTimeout(timer); resolve(null); });
+  });
+}
+
+/** Fetch/decode only sounds used by a story. Never resumes audio or starts playback. */
+export async function preloadSounds(ids = []) {
+  if (!Array.isArray(ids) || !soundEnabled) return false;
+  const names = [...new Set(['page', ...ids.map(recordingFor).filter(Boolean)])];
+  const results = await boundedRecording(Promise.all(names.map(name => context ? loadRecording(name) : loadRecordingData(name))), 4500);
+  return Boolean(results?.some(Boolean));
+}
 
 let context;
 let master;
@@ -160,6 +271,7 @@ function disposeVoice(voice, immediate = false) {
 }
 
 export function stopSounds() {
+  soundEpoch++;
   for (const voice of [...voices]) disposeVoice(voice, true);
   lastPlayed.clear();
 }
@@ -264,6 +376,15 @@ function bell(voice, frequency, at = 0, duration = 0.6, volume = 0.045) {
 }
 
 const effects = {
+  cuckoo: {
+    duration: 1.24,
+    draw(voice) {
+      [0, 0.66].forEach(at => {
+        tone(voice, { at, duration: 0.23, frequency: 660, type: 'sine', volume: 0.08, attack: 0.025, release: 0.07 });
+        tone(voice, { at: at + 0.25, duration: 0.28, frequency: 523.25, type: 'sine', volume: 0.07, attack: 0.025, release: 0.1 });
+      });
+    },
+  },
   mouse: {
     duration: 0.52,
     draw(voice) {
@@ -686,18 +807,36 @@ const effects = {
 /** Returns false if muted, unsupported, too rapid, or the id is unknown. */
 export async function playSound(id) {
   if (typeof id !== 'string') return false;
+  const recording = recordingFor(id);
   if (Object.prototype.hasOwnProperty.call(SOUND_ALIASES, id)) id = SOUND_ALIASES[id];
   if (!Object.prototype.hasOwnProperty.call(effects, id)) return false;
   const effect = effects[id];
+  const epoch = soundEpoch;
   if (!soundEnabled || !effect || !(await unlockAudio()) || !soundEnabled) return false;
+  if (epoch !== soundEpoch) return false;
   if (typeof document !== 'undefined' && document.hidden) return false;
   const now = context.currentTime;
-  const previous = lastPlayed.get(id);
+  const key = recording || id;
+  const previous = lastPlayed.get(key);
   if (previous !== undefined && now - previous < 0.16) return false;
-  lastPlayed.set(id, now);
-  const voice = makeVoice(effect.duration);
+  lastPlayed.set(key, now);
+  const buffer = recording ? await boundedRecording(loadRecording(recording)) : null;
+  if (epoch !== soundEpoch || !soundEnabled || context.state !== 'running') return false;
+  if (typeof document !== 'undefined' && document.hidden) return false;
+  const voice = makeVoice(buffer ? buffer.duration : effect.duration);
   try {
-    effect.draw(voice);
+    if (buffer) {
+      const source = context.createBufferSource();
+      source.buffer = buffer;
+      source.connect(voice.output);
+      voice.sources.push(source);
+      voice.nodes.push(source);
+      envelope(voice.output.gain, voice.start, buffer.duration, 0.65, 0.008, 0.1);
+      source.start(voice.start);
+      source.onended = () => disposeVoice(voice);
+    } else {
+      effect.draw(voice);
+    }
     return true;
   } catch {
     disposeVoice(voice, true);

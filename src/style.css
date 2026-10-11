@@ -178,3 +178,74 @@ body.reading #app{height:100dvh;min-height:100dvh;overflow:hidden}
 /* Six character groups wrap instead of overflowing on a phone. */
 .character-dialog .catalog-filters{flex-wrap:wrap}
 @media(max-width:520px){.character-dialog .catalog-filters button{padding:8px 11px;font-size:11px}}
+
+/* Size the painting, rather than the transparent square around it. */
+.character-sprite,.object-sprite,.scene-sprite{aspect-ratio:var(--art-ratio,1);height:auto}
+.note-illustration .character-sprite{width:calc(115px * var(--art-ratio,1));height:auto}
+.setup-art>.character-sprite{width:calc(154px * var(--art-ratio,1));height:auto}
+@media(min-width:700px){.note-illustration .character-sprite{width:calc(140px * var(--art-ratio,1))}}
+.page-inner{gap:22px}
+.page-art{
+  width:calc(var(--page-width) - 28px);max-width:650px;
+  --character-height:min(140px,calc(var(--sprite-limit,var(--art-height)) * .32));
+  --object-height:min(60px,calc(var(--sprite-limit,var(--art-height)) * .14));
+}
+.page-art>.scene-sprite{
+  width:min(100%,calc(var(--sprite-limit,var(--art-height)) * 1.12 * var(--art-ratio,1)));
+  max-width:none;aspect-ratio:var(--art-ratio,1);height:auto;
+  top:auto;bottom:4%;transform:translateX(-50%);opacity:1;
+}
+.scene-sprite{
+  -webkit-mask-image:radial-gradient(ellipse closest-side,#000 82%,#000b 93%,#0000 100%);
+  mask-image:radial-gradient(ellipse closest-side,#000 82%,#000b 93%,#0000 100%);
+}
+.page-art.has-objects>.scene-sprite{opacity:1}
+.page-characters{
+  justify-content:center;align-items:flex-end;gap:6%;padding:0 4% 4%;
+}
+.page-art.has-objects .page-characters{justify-content:flex-start;padding-left:5%;padding-right:24%;gap:5%}
+.page-characters>.character-sprite,
+.page-characters>.character-sprite:only-child,
+.page-characters>.character-sprite:nth-child(2),
+.page-art.has-objects .character-sprite,
+.page-art.has-objects .character-sprite:only-child{
+  width:min(43%,calc(var(--character-height) * var(--art-ratio,1)));
+  max-width:none;height:auto;aspect-ratio:var(--art-ratio,1);transform:none;
+}
+.page-characters>.character-sprite:only-child,
+.page-art.has-objects .character-sprite:only-child{width:min(58%,calc(var(--character-height) * var(--art-ratio,1)))}
+.page-art.three-characters .character-sprite{width:min(29%,calc(var(--character-height) * .88 * var(--art-ratio,1)))}
+.page-objects{gap:4%;padding:0 5% 5%}
+.page-objects>.object-sprite,
+.page-art.no-characters .object-sprite{
+  width:min(26%,calc(var(--object-height) * var(--object-scale,1) * var(--art-ratio,1)));
+  max-width:none;height:auto;aspect-ratio:var(--art-ratio,1);
+}
+.page-art.no-characters .page-objects{align-items:flex-end;justify-content:center;padding:0 5% 6%}
+.page-objects>.object-sprite::before{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:100%;height:100%;min-width:44px;min-height:44px}
+.page-objects .sound-dot{width:16px;height:16px;right:-8px;bottom:-4px}
+.page-objects .sound-dot .icon{width:10px;height:10px}
+.human-sprite>.human-character{width:100%;height:100%}
+.cover-portrait>.character-sprite{
+  width:min(100%,calc(min(210px,calc(var(--page-height) * .24)) * var(--art-ratio,1)));
+  height:auto;aspect-ratio:var(--art-ratio,1);
+}
+.end-characters{align-items:flex-end;gap:5%;max-width:100%}
+.end-characters>.character-sprite,.end-characters>.human-sprite{
+  width:min(calc(85% / var(--cast-count,2)),calc(125px * var(--art-ratio,1)));
+  max-width:none;height:auto;aspect-ratio:var(--art-ratio,1);flex-shrink:1;
+}
+.character-gallery .character-sprite{
+  width:min(100%,calc(116px * var(--art-ratio,1)));max-width:none;
+  height:auto;aspect-ratio:var(--art-ratio,1);
+}
+.world-gallery .scene-sprite,.world-gallery .object-sprite{height:auto;aspect-ratio:var(--art-ratio,1)}
+.world-gallery .object-sprite{width:min(100%,calc(88px * var(--art-ratio,1)));max-width:none}
+.sound-bounce{animation-name:illustration-bounce}
+@keyframes illustration-bounce{25%{translate:0 -6px;rotate:-3deg}65%{translate:0 -3px;rotate:2deg}}
+@media(orientation:landscape) and (max-height:500px){
+  .page-inner{gap:24px;padding:58px 34px 58px}
+  .page-art{width:48%;max-width:360px;--art-height:calc(var(--page-height) - 126px)}
+  .page-copy{width:46%}
+  .cover-portrait>.character-sprite{width:min(100%,calc(115px * var(--art-ratio,1)))}
+}

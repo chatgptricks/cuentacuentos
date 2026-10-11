@@ -24,11 +24,18 @@ de inicio. La instalación requiere esa acción de la persona que usa el teléfo
 
 ## Efectos de sonido
 
-`src/audio.js` crea efectos suaves con Web Audio; son sonidos sintetizados,
-no grabaciones reales de animales. No se reproducen al cargar el app.
+`src/audio.js` reproduce 31 grabaciones locales CC0 para sonidos reconocibles:
+animales, bosque, viento, agua, páginas, hojas, puertas, campanas y relojes.
+Los MP3 breves ocupan 1.16 MiB en conjunto; sus fuentes, autores, licencias y
+preparación están en [audio-sources.md](audio-sources.md). Los efectos de
+fantasía siguen siendo sintetizados. No se reproduce audio al cargar el app.
 
 ```js
-import { unlockAudio, playSound, setSoundEnabled, getSoundEnabled, stopSounds } from './audio.js';
+import { unlockAudio, preloadSounds, playSound, setSoundEnabled, getSoundEnabled, stopSounds } from './audio.js';
+
+// Al preparar o reanudar el cuento: sólo los ids que aparecen en él.
+// La precarga no crea/reanuda AudioContext ni reproduce audio.
+void preloadSounds(['owl', 'forest', 'bell', 'page']);
 
 // Dentro del gesto de abrir/generar el libro (compatible con Safari en iOS).
 await unlockAudio();
@@ -48,17 +55,39 @@ Identificadores de personajes: `fox`, `mouse`, `rabbit`, `bear`, `knight`,
 
 Los lugares usan `forest`, `castle`, `lake`, `garden`, `beach`, `mountain`,
 `treehouse`, `village`, `meadow`, `cave`, `river` y `clouds`.
-`page` es el roce suave al pasar una página. Las pequeñas ilustraciones
-de objetos usan `seed`, `bell`, `drop`, `feather`, `key`, `umbrella`, `cloud`,
-`yarn`, `blanket`, `basket`, `flower` y `boat`: tintineos, agua, tela, madera
-y aire sintetizados con el mismo volumen suave de los personajes.
+`page` es una página real al pasarla. Los identificadores originales de
+personajes, lugares y objetos siguen funcionando, incluidos los de cuentos
+guardados. `SOUND_RECORDINGS` resuelve grabaciones concretas antes de aplicar
+los alias compartidos: por ejemplo, vaca, oveja, perro, abeja y grillo tienen
+su grabación propia. Los ids sin grabación mantienen su efecto sintetizado.
 
-El módulo limita la ganancia y las voces simultáneas, ignora repeticiones muy
+`preloadSounds(ids)` reutiliza datos y audio decodificado, limita las cargas
+simultáneas a tres y devuelve tras un máximo de 4.5 segundos. Cada solicitud
+de archivo se cancela si supera cuatro segundos. La app prepara sólo los
+sonidos del cuento y `page`; no descarga todo el catálogo al abrir la biblioteca.
+Los archivos se sirven desde `./audio/`, sin peticiones a servicios externos
+durante la lectura, y el build los incluye automáticamente en el precaché del
+service worker para uso sin conexión después de la primera carga completa.
+
+Si un clip no carga, no decodifica o tarda más de 700 ms al tocar una ilustración,
+`playSound()` usa el respaldo sintetizado. Cuando la carga termina tarde no se
+reproduce un segundo sonido. El lector no depende de que la precarga tenga éxito.
+
+El módulo limita la ganancia y los efectos simultáneos a cuatro, ignora repeticiones muy
 rápidas, detiene los sonidos al ocultar el app y funciona silenciosamente si
 el navegador no admite Web Audio. El control visual de silencio debe mostrar
 el estado persistido y exponer `aria-pressed` y un nombre accesible.
+Silenciar, salir del lector u ocultar la app cancela también las reproducciones
+que todavía estén esperando un archivo. La preferencia de efectos se conserva
+en `cuentacuentos:sound`.
 
-## Música de los cuatro libros
+`node scripts/verify-audio.mjs` verifica precarga sin reproducción, caché,
+grabaciones, respaldo, límite de voces, cancelación de cargas pendientes y
+preferencias independientes. Los 31 MP3 también se verificaron con FFmpeg y
+ffprobe: decodificación, duración, canales, tamaño y picos sin recorte. No se
+realizó una audición subjetiva porque el entorno del agente no admite entrada de audio.
+
+## Música de los libros
 
 El módulo también incluye cuatro composiciones originales sintetizadas de
 dieciséis compases. Sus bucles duran entre 40 y 57 segundos, con melodía,
@@ -68,6 +97,9 @@ acompañamiento y progresiones armónicas propias:
 - `action`: cuerdas suaves y pulsos graves en re menor, 76 pulsos por minuto
 - `relax`: acordes cálidos y campanillas espaciadas, 68 pulsos por minuto
 - `friends`: notas pulsadas, ritmo ligero y armonía mayor, 96 pulsos por minuto
+
+El libro `family` comparte la composición tranquila de `relax`. La música
+conserva sus composiciones originales y no carga grabaciones externas.
 
 ```js
 import { unlockAudio, startAmbient, stopAmbient, getMusicEnabled, setMusicEnabled } from './audio.js';

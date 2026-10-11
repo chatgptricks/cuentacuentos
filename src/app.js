@@ -1,8 +1,9 @@
 import { BOOKS, CHARACTERS, CHARACTER_ATLASES, VILLAINS, VILLAIN_ATLASES, SUPPORTING, SUPPORTING_ATLASES, PENDING_ART } from './story-engine.js';
 import { generateFreshStory, normalizeStoryHistory, rememberStory } from './story-selection.js';
-import { SCENES, ITEMS, WORLD_ATLASES, SCENE_VIEW_LABELS, getScene, getSceneView, getSceneViewIndex, getItem } from './world-catalog.js';
+import { SCENES, ITEMS, WORLD_ATLASES, getScene, getSceneView, getSceneViewLabels, getSceneViewIndex, getItem } from './world-catalog.js';
+import { atlasPresentation, loadArtGeometry } from './art-layout.js';
 import { HAIRSTYLES, OUTFITS, SKIN_TONES, FAVORITE_COLORS, FAMILY_ROLES, createDefaultFamily, createFamilyMember, normalizeFamily, renderHuman } from './family-characters.js';
-import { unlockAudio, playSound, setSoundEnabled, getSoundEnabled, stopSounds, startAmbient, stopAmbient, setMusicEnabled, getMusicEnabled } from './audio.js';
+import { unlockAudio, playSound, preloadSounds, setSoundEnabled, getSoundEnabled, stopSounds, startAmbient, stopAmbient, setMusicEnabled, getMusicEnabled } from './audio.js';
 
 const app = document.querySelector('#app');
 const dialog = document.querySelector('#dialog');
@@ -55,9 +56,7 @@ const isSupporting = character => SUPPORTING.some(entry => entry.id === characte
 // Registered characters whose painting has not been added yet stay out of the illustrations.
 const hasArt = character => !PENDING_ART.includes(PORTRAIT_ATLASES[character.atlas.sheet || 'main'].file);
 function atlasStyle(cell, registry) {
-  const atlas = registry[cell.sheet || 'main'];
-  const position = `${cell.x / (atlas.columns - 1) * 100}% ${cell.y / (atlas.rows - 1) * 100}%`;
-  return `background-image:url('./art/${atlas.file}');background-size:${atlas.columns * 100}% ${atlas.rows * 100}%;background-position:${position}`;
+  return atlasPresentation(cell, registry);
 }
 function sprite(id, { interactive = false, extra = '', label } = {}) {
   const human = [...(state.story?.characters || []), ...state.family.members].find(c => c?.id === id && c.kind === 'human');
@@ -72,8 +71,8 @@ function sprite(id, { interactive = false, extra = '', label } = {}) {
 function humanSprite(character, { interactive = false, extra = '', label } = {}) {
   const art = renderHuman(character);
   return interactive
-    ? `<button type="button" class="character-sprite human-sprite ${extra}" data-sound="human" aria-label="Escuchar a ${escape(label || character.name)}">${art}<span class="sound-dot">${icon('volume')}</span></button>`
-    : `<span class="character-sprite human-sprite ${extra}" role="img" aria-label="${escape(label || character.name)}">${art}</span>`;
+    ? `<button type="button" class="character-sprite human-sprite ${extra}" style="--art-ratio:${160 / 210}" data-sound="human" aria-label="Escuchar a ${escape(label || character.name)}">${art}<span class="sound-dot">${icon('volume')}</span></button>`
+    : `<span class="character-sprite human-sprite ${extra}" style="--art-ratio:${160 / 210}" role="img" aria-label="${escape(label || character.name)}">${art}</span>`;
 }
 function place(scene, interactive = false, viewIndex = 0) {
   const location = getScene(scene) || getScene('forest');
@@ -81,7 +80,7 @@ function place(scene, interactive = false, viewIndex = 0) {
   const view = (index % 3 + 3) % 3;
   const style = atlasStyle(getSceneView(location.id, view), WORLD_ATLASES);
   const attributes = `data-scene="${escape(location.id)}" data-scene-view="${view}"`;
-  const label = `${location.label}, vista ${SCENE_VIEW_LABELS[view].toLowerCase()}`;
+  const label = `${location.label}, vista ${getSceneViewLabels(location.id)[view].toLowerCase()}`;
   return interactive
     ? `<button type="button" class="scene-sprite" style="${style}" ${attributes} data-sound="${location.sound}" data-sound-label="Suena ${escape(location.label)}" aria-label="Escuchar ${escape(label)}"></button>`
     : `<span class="scene-sprite" style="${style}" ${attributes} role="img" aria-label="Ilustración: ${escape(label)}"></span>`;
@@ -89,12 +88,25 @@ function place(scene, interactive = false, viewIndex = 0) {
 function scenePages(pages) {
   return pages.map((page, sourceIndex) => ({ ...page, sourceIndex, partIndex: 0, sceneView: getSceneViewIndex(pages, sourceIndex) }));
 }
+function preloadStorySounds(story) {
+  const cast = story.characters || [story.hero, story.companion, story.guardian].filter(Boolean);
+  const ids = new Set(['page', ...cast.map(person => person.kind === 'human' ? 'human' : person.sound || person.id)]);
+  for (const page of story.pages) {
+    const scene = getScene(page.scene);
+    if (scene) ids.add(scene.sound);
+    for (const id of page.objects || []) if (getItem(id)) ids.add(getItem(id).sound);
+  }
+  void preloadSounds([...ids]);
+}
 function objectSprite(id) {
   const obj = getItem(id);
   if (!obj) return '';
   const label = `${obj.article} ${obj.label}`;
   const soundLabel = `${['los', 'las'].includes(obj.article) ? 'Suenan' : 'Suena'} ${label}`;
-  return `<button type="button" class="object-sprite" style="${atlasStyle(obj.atlas, WORLD_ATLASES)}" data-sound="${obj.sound}" data-sound-label="${escape(soundLabel)}" aria-label="Escuchar ${escape(label)}"><span class="sound-dot">${icon('volume')}</span></button>`;
+  const small = ['teacup', 'key', 'bell', 'feather', 'seed', 'flower', 'pearl', 'shell', 'crystal', 'acorn', 'apple', 'whistle', 'medal', 'moonstone', 'smooth-stone', 'thermometer', 'bandage', 'stopwatch', 'old-glasses', 'toothbrush', 'glass-of-milk'];
+  const large = ['bicycle', 'wheelbarrow', 'ladder', 'old-trunk', 'treasure-chest', 'scooter', 'pinata', 'cardboard-box', 'sack', 'umbrella'];
+  const scale = small.includes(id) ? 0.65 : large.includes(id) ? 1.4 : 1;
+  return `<button type="button" class="object-sprite" style="${atlasStyle(obj.atlas, WORLD_ATLASES)};--object-scale:${scale}" data-sound="${obj.sound}" data-sound-label="${escape(soundLabel)}" aria-label="Escuchar ${escape(label)}"><span class="sound-dot">${icon('volume')}</span></button>`;
 }
 function soundButton() { return `<button class="icon-button sound-toggle" data-action="sound" aria-label="${getSoundEnabled() ? 'Silenciar efectos' : 'Activar efectos'}" aria-pressed="${getSoundEnabled()}">${icon(getSoundEnabled() ? 'volume' : 'mute')}</button>`; }
 function musicButton() { return `<button class="icon-button music-toggle" data-action="music" aria-label="${getMusicEnabled() ? 'Pausar música' : 'Activar música'}" aria-pressed="${getMusicEnabled()}">${icon(getMusicEnabled() ? 'music' : 'music-off')}</button>`; }
@@ -170,7 +182,7 @@ function showWorldCatalog(category = 'scenes') {
   dialog.innerHTML = `<button class="icon-button dialog-close" data-action="close-dialog" aria-label="Cerrar">${icon('close')}</button>
     <div class="catalog-heading"><span class="eyebrow">LUGARES Y TESOROS POR DESCUBRIR</span><h2 id="dialog-title">Cada lugar.<br><em>Una nueva aventura.</em></h2><p>Explora los rincones y objetos de nuestros cuentos.<br>Toca una ilustración para escuchar su sonido.</p></div>
     <div class="catalog-filters" role="group" aria-label="Categoría de ilustraciones">${[['scenes', 'Escenarios', SCENES.length], ['items', 'Elementos', ITEMS.length]].map(([id, name, count]) => `<button type="button" data-action="world-filter" data-category="${id}" aria-pressed="${category === id}">${name}<span>${count}</span></button>`).join('')}</div>
-    <ul class="character-gallery world-gallery ${category === 'scenes' ? 'scene-gallery' : ''}" aria-label="${category === 'scenes' ? 'Escenarios de los cuentos' : 'Elementos de los cuentos'}">${entries.map(entry => `<li>${category === 'scenes' ? `<div class="scene-views">${SCENE_VIEW_LABELS.map((label, index) => `<div>${place(entry.id, true, index)}<span>${label}</span></div>`).join('')}</div>` : objectSprite(entry.id)}<strong>${escape(category === 'scenes' ? entry.label.replace(/^(el|la) /, '') : entry.label)}</strong>${category === 'scenes' ? `<span>${escape(entry.name)}</span>` : ''}</li>`).join('')}</ul>`;
+    <ul class="character-gallery world-gallery ${category === 'scenes' ? 'scene-gallery' : ''}" aria-label="${category === 'scenes' ? 'Escenarios de los cuentos' : 'Elementos de los cuentos'}">${entries.map(entry => `<li>${category === 'scenes' ? `<div class="scene-views">${getSceneViewLabels(entry.id).map((label, index) => `<div>${place(entry.id, true, index)}<span>${label}</span></div>`).join('')}</div>` : objectSprite(entry.id)}<strong>${escape(category === 'scenes' ? entry.label.replace(/^(el|la) /, '') : entry.label)}</strong>${category === 'scenes' ? `<span>${escape(entry.name)}</span>` : ''}</li>`).join('')}</ul>`;
   if (!dialog.open) dialog.showModal();
   else dialog.querySelector(`[data-category="${category}"]`)?.focus({ preventScroll: true });
 }
@@ -265,6 +277,7 @@ async function generate() {
     await unlockAudio();
     await new Promise(resolve => setTimeout(resolve, 350));
     state.story = generateFreshStory(state.bookId, state.duration, { family: state.family, companionRole: state.companionRole }, state.recentStories);
+    preloadStorySounds(state.story);
     document.querySelector('#loading-message').textContent = 'Preparando las páginas y sus ilustraciones…';
     const sheets = new Set((state.story.characters || [state.story.hero, state.story.companion]).filter(character => character && character.kind !== 'human' && hasArt(character)).map(character => PORTRAIT_ATLASES[character.atlas.sheet || 'main'].file));
     for (const page of scenePages(state.story.pages)) {
@@ -314,6 +327,7 @@ function endHTML() {
 }
 function renderReader() {
   state.screen = 'reader';
+  preloadStorySounds(state.story);
   document.body.classList.add('reading');
   app.innerHTML = `${header(true)}<main class="reader"><div class="book-stage" id="book-stage"><div id="storybook" class="storybook"></div></div><nav class="reading-controls" aria-label="Páginas del cuento"><button class="page-nav" data-action="prev" aria-label="Página anterior">${icon('back')}</button><div class="reading-progress"><span id="page-status" aria-live="polite">Portada</span><div class="progress-track"><span id="progress-bar"></span></div></div><button class="page-nav" data-action="next" aria-label="Página siguiente">${icon('arrow')}</button></nav><div class="reader-hint sr-only" id="reader-hint">Toca las ilustraciones para escuchar sus sonidos.</div></main>`;
   createBook();
@@ -346,7 +360,7 @@ function createBook() {
   el.style.setProperty('--book-ink', palettes[state.story.bookId].ink);
   el.style.setProperty('--copy-size', `${Math.max(20, Math.min(29, width / 16.5))}px`);
   el.style.setProperty('--page-padding', `${Math.max(28, Math.min(65, width * 0.11))}px`);
-  el.style.setProperty('--art-height', `${Math.max(140, Math.min(330, height * 0.36))}px`);
+  el.style.setProperty('--art-height', `${Math.max(170, Math.min(460, height * 0.48))}px`);
   // Measure every page before PageFlip hides and clones the inactive sheets.
   fitPageText();
   state.flip = new window.St.PageFlip(el, {
@@ -563,4 +577,5 @@ if ('serviceWorker' in navigator) {
     } catch (error) { console.warn('No se pudo preparar la biblioteca sin conexión', error); }
   });
 }
+await loadArtGeometry();
 renderHome();

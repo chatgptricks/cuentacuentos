@@ -1,5 +1,5 @@
 /** Shared, immutable world identities for stories, illustrations, sound and offline assets. */
-// Each column keeps one place; the three rows move from an establishing view to a detail.
+// Each column keeps one place; the original rows vary framing and the expansion rows vary angle.
 const sceneViewGroups = [
   ['forest', 'lake', 'castle', 'garden'],
   ['beach', 'mountain', 'treehouse', 'village'],
@@ -24,6 +24,8 @@ const sceneViewGroups = [
 ];
 const sceneViewSheets = sceneViewGroups.map((_, index) => `places-views-${String(index + 1).padStart(2, '0')}`);
 export const SCENE_VIEW_LABELS = Object.freeze(['Panorámica', 'Media', 'Cercana']);
+const SCENE_ANGLE_LABELS = Object.freeze(['Frontal', 'Desde la izquierda', 'Desde la derecha']);
+const angleViewSceneIds = new Set(sceneViewGroups.slice(9).flat());
 const sceneViews = Object.fromEntries(sceneViewGroups.flatMap((ids, index) => ids.map((id, x) => [id,
   Object.freeze(SCENE_VIEW_LABELS.map((_, y) => Object.freeze({ sheet: sceneViewSheets[index], x, y }))),
 ])));
@@ -202,6 +204,8 @@ export const ITEMS = Object.freeze(itemSheets.flatMap(([sheet, columns, rows]) =
 // Retain the existing engine API while the renderer can use the same records directly.
 export const OBJECTS = ITEMS;
 export const getScene = id => SCENES.find(scene => scene.id === id);
+/** Labels describe the paintings while the three stored view indices remain unchanged. */
+export const getSceneViewLabels = id => angleViewSceneIds.has(id) ? SCENE_ANGLE_LABELS : SCENE_VIEW_LABELS;
 /** Presentation only: saved scenes and their original atlas coordinates stay valid. */
 export const getSceneView = (id, index = 0) => {
   const scene = getScene(id);

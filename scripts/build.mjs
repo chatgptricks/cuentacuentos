@@ -52,11 +52,17 @@ function validateTransparency(png, filename, width, height, columns, rows) {
   }
   const transparent = Array(columns * rows).fill(0);
   const visible = Array(columns * rows).fill(0);
+  const bounds = Array.from({ length: columns * rows }, () => ({ left: width, top: height, right: -1, bottom: -1 }));
   for (let y = 0; y < height; y += 1) for (let x = 0; x < width; x += 1) {
     const cell = Math.floor(y / (height / rows)) * columns + Math.floor(x / (width / columns));
     const alpha = pixels[(y * width + x) * 4 + 3];
     if (alpha === 0) transparent[cell] += 1;
     if (alpha >= 128) visible[cell] += 1;
+    if (alpha >= 16) {
+      const box = bounds[cell];
+      box.left = Math.min(box.left, x); box.right = Math.max(box.right, x);
+      box.top = Math.min(box.top, y); box.bottom = Math.max(box.bottom, y);
+    }
   }
   for (let cell = 0; cell < visible.length; cell += 1) {
     if (!visible[cell]) throw new Error(`${filename}: empty illustration in cell ${cell + 1}`);
@@ -89,8 +95,20 @@ function validateTransparency(png, filename, width, height, columns, rows) {
       }
     }
   }
+  // Fit the painted content, preserving a soft margin and the original PNG/cell.
+  const cells = bounds.map((box, index) => {
+    const column = index % columns, row = Math.floor(index / columns);
+    const padding = Math.ceil(Math.min(width / columns, height / rows) * 0.025);
+    const left = Math.max(Math.ceil(column * width / columns), box.left - padding);
+    const top = Math.max(Math.ceil(row * height / rows), box.top - padding);
+    const right = Math.min(Math.ceil((column + 1) * width / columns) - 1, box.right + padding);
+    const bottom = Math.min(Math.ceil((row + 1) * height / rows) - 1, box.bottom + padding);
+    return [left, top, right - left + 1, bottom - top + 1];
+  });
+  return { width, height, columns, rows, cells };
 }
 let validated = 0;
+const atlasGeometry = {};
 for (const [filename, columns, rows] of atlases) {
   const exists = await access(path.join(root, 'public/art', filename)).then(() => true, () => false);
   if (PENDING_ART.includes(filename)) {
@@ -102,7 +120,7 @@ for (const [filename, columns, rows] of atlases) {
   if (png.length < 33 || png.toString('hex', 0, 8) !== '89504e470d0a1a0a') throw new Error(`${filename}: invalid PNG`);
   const width = png.readUInt32BE(16), height = png.readUInt32BE(20);
   if (!width || !height || width * rows !== height * columns || png[24] !== 8 || png[25] !== 6 || png[28] !== 0) throw new Error(`${filename}: atlas needs square, non-interlaced 8-bit RGBA cells`);
-  validateTransparency(png, filename, width, height, columns, rows);
+  atlasGeometry[filename] = validateTransparency(png, filename, width, height, columns, rows);
   validated += 1;
 }
 for (const filename of ['character-catalog.js', 'world-catalog.js', 'villain-catalog.js', 'supporting-catalog.js', 'narrative-world.js', 'quest-catalog.js', 'story-kit.js', 'structures-adventure.js', 'structures-action.js', 'structures-relax.js', 'structures-social.js', 'structures-family.js', 'story-engine.js', 'story-blocks.js', 'story-language.js', 'story-selection.js', 'family-characters.js', 'family-story.js', 'app.js', 'audio.js', 'style.css']) await readFile(path.join(root, 'src', filename));
@@ -111,6 +129,7 @@ await mkdir(dist, { recursive: true });
 await cp(path.join(root, 'public'), dist, { recursive: true });
 await cp(path.join(root, 'src'), path.join(dist, 'src'), { recursive: true });
 await cp(path.join(root, 'index.html'), path.join(dist, 'index.html'));
+await writeFile(path.join(dist, 'art/atlas-geometry.json'), JSON.stringify(atlasGeometry));
 await writeFile(path.join(dist, '.nojekyll'), '');
 async function filesAt(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
