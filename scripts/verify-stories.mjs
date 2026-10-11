@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { BOOKS, CHARACTERS, CHARACTER_ATLASES, CHARACTER_NAMES, SCENES, ITEMS, OBJECTS, WORLD_ATLASES, STORY_BLOCK_COUNTS, STORY_STRUCTURES, VILLAINS, VILLAIN_ATLASES, VILLAIN_NAMES, SUPPORTING, SUPPORTING_ATLASES, SUPPORTING_NAMES, PENDING_ART, generateStory, getCharacter, getScene, getItem, getVillain } from '../src/story-engine.js';
+import { BOOKS, CHARACTERS, CHARACTER_ATLASES, CHARACTER_NAMES, SCENES, ITEMS, OBJECTS, WORLD_ATLASES, STORY_BLOCK_COUNTS, STORY_STRUCTURES, STORY_FOCUS_LIMITS, VILLAINS, VILLAIN_ATLASES, VILLAIN_NAMES, SUPPORTING, SUPPORTING_ATLASES, SUPPORTING_NAMES, PENDING_ART, generateStory, getCharacter, getScene, getItem, getVillain } from '../src/story-engine.js';
 import { ABILITIES, AQUATIC, WATER_PLACES, PLACE_INFO, TRIALS, TOOLS, ITEM_WORDS } from '../src/narrative-world.js';
 import { ADVENTURE_MENTORS, RELAX_MENTORS, ELIXIRS, TARGETS, VILLAIN_PLOTS } from '../src/quest-catalog.js';
 import { RELAX_GOALS, FRIEND_GOALS, FAMILY_GOALS } from '../src/story-blocks.js';
@@ -246,7 +246,7 @@ const ORDER = {
   activity: [[/tuvo una idea:/u, /le contó su plan/u], [/pensó un momento y propuso/u, /probó la idea, y esta vez funcionó/u]],
   'new-friend': [[/llegó a la escuela/u, /le propuso a/u], [/vio que/u, /sonrió/u], [/sonrió/u, /invitó a/u]],
   quarrel: [[/empezaron a discutir/u, /decidió ir a pedirle perdón/u], [/le pidió perdón/u, /Volvieron al parque/u]],
-  surprise: [[/se dio cuenta de que/u, /Fueron al mercado/u], [/Fueron al mercado/u, /gritaron sorpresa/u]],
+  surprise: [[/se dio cuenta de que/u, /Fue al mercado/u], [/Fue al mercado/u, /gritó sorpresa/u]],
   'everyone-plays': [[/invitó a su/u, /no podía/u], [/no podía/u, /tuvo una idea/u], [/tuvo una idea/u, /contaron las canicas/u]],
   contest: [[/anunciaron/u, /el concurso empezó/u], [/el concurso empezó/u, /Al final, /u], [/Al final, /u, /premio especial/u]],
 };
@@ -283,6 +283,16 @@ for (const { id: bookId } of BOOKS) {
       assert.equal(new Set(paragraphs).size, paragraphs.length, `${bookId}/${story.structure}/${duration}/${seed}: longer stories must add distinct passages.`);
       assert.ok(story.title.includes(story.hero.name));
       assert.ok(text.includes(story.hero.name) && text.includes(story.companion.name), `${bookId}/${story.structure}/${seed}: both protagonists take part.`);
+      assert.deepEqual(story.characters.slice(0, 2), [story.hero, story.companion], 'The same pair leads the whole story.');
+      assert.deepEqual(story.plan.focus, { protagonists: [story.hero.id, story.companion.id], goal: story.plan.blockIds.goal });
+      assert.ok(story.characters.length <= STORY_FOCUS_LIMITS.characters, `${bookId}/${story.structure}: only necessary secondary roles join the pair.`);
+      const drawnItems = new Set(story.pages.flatMap(page => page.objects));
+      const itemLimit = story.structure === 'treasure-map' ? STORY_FOCUS_LIMITS.treasureMapObjects : STORY_FOCUS_LIMITS.objects;
+      assert.ok(drawnItems.size <= itemLimit, `${bookId}/${story.structure}: ${drawnItems.size} objects exceed the narrative focus budget.`);
+      assert.ok(story.plan.world.items.length <= itemLimit, 'The full reading preserves the same limited set of objects.');
+      if (story.structure === 'three-things') assert.equal(new Set(story.plan.roles.moments).size, 1, 'Three memories revisit one shared activity.');
+      if (['surprise', 'new-friend', 'hurry', 'worry'].includes(story.structure)) assert.equal(story.characters.length, 2, 'A companion provides support without an unrelated cameo.');
+      if (story.structure === 'goodnight') assert.equal(story.plan.roles.guests.length, 1, 'Goodnight has one recurring visitor.');
       assert.ok(!/undefined|null|NaN|\$\{|\{\{|\}\}|<[^>]+>/.test(text), 'No template remnants or HTML in story text.');
       assert.ok(!/\s[,.!?:]| {2}|\.\.\.|,,/.test(text), 'Story punctuation must stay clean.');
       assert.ok(!/(?<![\p{L}\p{N}])(?:de el|a el)(?![\p{L}\p{N}])/u.test(text), 'Masculine nouns use del/al after a preposition.');
@@ -311,6 +321,7 @@ for (const { id: bookId } of BOOKS) {
         assert.ok(sceneIds.has(page.scene));
         assert.equal(page.paragraphs.length, 1, 'A picture-book page contains one short sentence.');
         assert.ok(page.characters.length <= 3);
+        assert.ok(page.objects.length <= STORY_FOCUS_LIMITS.pageObjects, 'A sentence follows at most two central objects.');
         assert.equal(new Set(page.characters).size, page.characters.length);
         assert.ok(page.characters.every(id => allowedCast.has(id)), 'Pages can only show the selected cast.');
         assert.ok(page.objects.every(id => objectIds.has(id) && objectMentions[id].test(page.paragraphs[0])), `${bookId}/${seed}: a page only draws what its sentence names.`);
@@ -390,14 +401,15 @@ for (const { id: bookId } of BOOKS) {
   assert.equal(reached.goals[bookId].size, STORY_BLOCK_COUNTS[bookId].goal, `${bookId}: every goal must be reachable.`);
   // Mi familia always stars the same child, so its stories differ by structure, activity, relative and home.
   assert.ok(uniqueStories.size >= sampleSize * (bookId === 'family' ? 0.4 : 0.95), `${bookId}: seeds must produce different stories (${uniqueStories.size}).`);
-  assert.ok(plans.size >= sampleSize * ({ family: 0.25, friends: 0.4, relax: 0.5 }[bookId] ?? 0.6), `${bookId}: plans must vary beyond names (${plans.size}/${sampleSize}).`);
+  // Simpler books no longer inflate plot counts with unrelated visitors, owners and decorations.
+  assert.ok(plans.size >= sampleSize * ({ family: 0.2, friends: 0.35, relax: 0.4 }[bookId] ?? 0.6), `${bookId}: plans must vary beyond names (${plans.size}/${sampleSize}).`);
   if (bookId !== 'family') assert.ok(heroes.size >= 60, 'Cast selection must vary.');
 }
 
 assert.deepEqual([...reached.villains].sort(), VILLAINS.map(villain => villain.id).sort(), 'Every villain is reachable.');
 assert.deepEqual([...reached.trials].sort(), Object.keys(TRIALS).sort(), 'Every trial is reachable.');
 assert.deepEqual([...reached.tools].sort(), Object.keys(TOOLS).sort(), 'Every tool is reachable.');
-assert.deepEqual([...reached.mentors].filter(id => [...ADVENTURE_MENTORS, ...RELAX_MENTORS].includes(id)).sort(), [...new Set([...ADVENTURE_MENTORS, ...RELAX_MENTORS])].sort(), 'Every mentor is reachable.');
+assert.deepEqual([...reached.mentors].filter(id => ADVENTURE_MENTORS.includes(id)).sort(), [...ADVENTURE_MENTORS].sort(), 'Every necessary adventure mentor is reachable.');
 assert.ok(reached.abilities.size >= 10, 'Companions use many different abilities.');
 assert.deepEqual([...reached.supporting].filter(id => SUPPORTING.some(entry => entry.id === id)).sort(), SUPPORTING.map(entry => entry.id).sort(), 'Every baby, neighbor and pet appears.');
 
@@ -408,9 +420,23 @@ assert.notEqual(generateStory('friends', 3, 'immutable').hero.name, 'Changed');
 assert.equal(JSON.stringify(CHARACTERS), metadataBefore, 'Generating or editing a story must not mutate the catalogue.');
 assert.equal(JSON.stringify({ SCENES, ITEMS, WORLD_ATLASES }), worldBefore, 'Stories cannot mutate shared world identities or compatibility tags.');
 assert.deepEqual([...usedCharacters].sort(), [...characterIds].sort(), 'All catalogue characters must appear in generated stories.');
-assert.deepEqual([...usedObjects].sort(), [...objectIds].sort(), 'All reusable elements must appear in generated stories.');
+// Catalogue validation above preserves every old ID and atlas. Focused stories need not
+// force every optional decoration or bedtime accessory into the new narrative templates.
+assert.ok(usedObjects.size >= 70, 'The reusable catalogue still supplies broad variety across focused stories.');
 assert.deepEqual([...usedScenes].sort(), [...sceneIds].sort(), 'All locations must appear in generated stories.');
 assert.deepEqual([...describedScenes].sort(), [...sceneIds].sort(), 'Each illustrated location must also be named or described on its page.');
+
+const shortGame = generateStory('friends', 3, 'review-2');
+assert.equal(shortGame.structure, 'everyone-plays');
+assert.ok(shortGame.pages.findIndex(page => /Escondieron unas canicas/u.test(page.paragraphs[0])) < shortGame.pages.findIndex(page => /encontró tres canicas/u.test(page.paragraphs[0])), 'The short game introduces the canicas before searching for them.');
+for (const duration of [3, 6]) {
+  const map = generateStory('adventure', duration, 'review-8');
+  assert.equal(map.structure, 'treasure-map');
+  assert.ok(textOf(map).includes('La piedra tenía letras:'), 'Even a short map explains where its clue is written.');
+}
+const babyHelper = generateStory('family', 9, 'review-baby-53', { companionRole: 'baby' });
+assert.equal(babyHelper.structure, 'helpers');
+assert.ok(!/Amasaron|Cerraron la ventana|cantaban una canción|Hasta silbaron/u.test(textOf(babyHelper)), 'The baby watches while the protagonist works with tools.');
 
 console.log(`Verified ${checkedStories.toLocaleString('en-US')} procedural stories across ${Object.values(STORY_STRUCTURES).flat().length} structures and ${BOOKS.length * 3} book/duration combinations.`);
 console.log('Roles, habitats, terrain-compatible trials, gifts used after they are given, villains redeemed for their own motive, cause before effect in every structure, catalogue identities, grammar, determinism and length: passed.');

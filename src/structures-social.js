@@ -4,8 +4,7 @@ import { FAMILY_HOMES, FRIEND_HOMES } from './quest-catalog.js';
 import { FRIEND_GOALS, FAMILY_GOALS, SOCIAL_OBSTACLES } from './story-blocks.js';
 import { applyStoryLanguage } from './story-language.js';
 import { familyStoryMoment } from './family-story.js';
-import { CHARACTERS } from './character-catalog.js';
-import { at, choose, copyCharacter, copySupporting, gendered } from './story-kit.js';
+import { at, choose, copySupporting, gendered } from './story-kit.js';
 
 /** D1/E1 · El plan compartido: an idea at home, preparation, a complication, a shared solution and the way back. */
 function activity({ random, hero: h, companion: c, family, bookId }) {
@@ -123,7 +122,6 @@ const ORIGINS = ['mountain', 'beach', 'snowy-valley', 'desert-oasis', 'harbor', 
 function newFriend({ random, hero: h, companion: c }) {
   const first = choose(random, INTERESTS);
   const shared = choose(random, INTERESTS.filter(entry => entry !== first));
-  const teacher = copySupporting(random, 'teacher');
   const origin = getScene(choose(random, ORIGINS));
   const home = getScene(choose(random, FRIEND_HOMES.filter(id => fitsCast([h, c], id))));
   const both = [h.id, c.id];
@@ -133,9 +131,9 @@ function newFriend({ random, hero: h, companion: c }) {
   const newcomer = gendered(c, 'un compañero nuevo', 'una compañera nueva');
   const beats = [
     [
-      school(1, `Aquella mañana, llegó a la escuela ${newcomer}: ${named(c)} que venía ${ofOrigin(origin)}.`, [c.id, teacher.id]),
+      school(1, `Aquella mañana, llegó a la escuela ${newcomer}: ${named(c)} que venía ${ofOrigin(origin)}.`, [c.id]),
       school(2, getScene('school').detail),
-      school(3, `${teacher.name}, la maestra, l${gendered(c, 'o', 'a')} presentó con una sonrisa.`, [teacher.id, c.id]),
+      school(3, `${h.name} le hizo un saludo pequeño desde su sitio.`, both),
       school(1, `${c.name} era muy ${shy} y casi no levantaba la vista del suelo.`, [c.id]),
       school(2, `${named(h)} l${gendered(c, 'o', 'a')} miró con curiosidad desde su pupitre.`, [h.id]),
       school(3, `${c.name} se sentó en el último pupitre, solito.`.replace('solito', gendered(c, 'solito', 'solita')), [c.id]),
@@ -163,7 +161,7 @@ function newFriend({ random, hero: h, companion: c }) {
       yard(3, 'A veces, una sonrisa vale más que muchas palabras.'),
       yard(1, shared.together, both, [shared.item]),
       yard(2, 'Se rieron tanto que se les olvidó el resto del recreo.', both),
-      yard(3, `Hasta ${teacher.name} los miró, contenta, desde la puerta.`, [teacher.id]),
+      yard(3, `Ya hablaban con confianza mientras seguían jugando juntos.`, both),
     ],
     [
       yard(1, `Mientras jugaban, ${c.name} le contó que echaba de menos a sus antiguos amigos.`, [c.id]),
@@ -178,11 +176,11 @@ function newFriend({ random, hero: h, companion: c }) {
     ],
     [
       school(1, 'Al final del día, ya parecía que se conocían de siempre.', both),
-      school(2, `${teacher.name} les sonrió al despedirse en la puerta.`, [teacher.id]),
+      school(2, `Se despidieron de la escuela con ganas de seguir jugando.`, both),
       school(3, 'Salieron juntos de la escuela, hablando sin parar.', both),
       atHome(1, `${h.name} invitó a ${c.name} a merendar en su casa.`, both),
       atHome(2, home.detail),
-      atHome(3, 'Merendaron pan con miel y jugaron hasta el atardecer.', both, ['bread']),
+      atHome(3, 'Siguieron con su juego compartido hasta el atardecer.', both, [shared.item]),
       atHome(1, `${h.name} le enseñó sus juguetes, y ${c.name} sus historias.`, both),
       atHome(2, 'Se dieron cuenta de que tenían muchas cosas en común.', both),
       atHome(3, `${c.name} prometió traer algo ${ofOrigin(origin)} al día siguiente.`, [c.id]),
@@ -200,10 +198,10 @@ function newFriend({ random, hero: h, companion: c }) {
     ],
   ];
   return {
-    title: `${h.name} y ${gendered(c, 'el amigo nuevo', 'la amiga nueva')}`, place: getScene('school'), extras: [teacher], questId: `new-${shared.item}`, variantId: first.item, beats,
+    title: `${h.name} y ${gendered(c, 'el amigo nuevo', 'la amiga nueva')}`, place: getScene('school'), questId: `new-${shared.item}`, variantId: first.item, beats,
     items: [first.item, shared.item],
     blockIds: { opening: 'school', goal: `new-${shared.item}`, obstacle: first.item, strategy: origin.id, discovery: shared.item, ending: home.id },
-    roles: { home: home.id, destination: 'playground', teacher: teacher.id },
+    roles: { home: home.id, destination: 'playground' },
   };
 }
 const ofOrigin = place => `${place.article === 'la' ? 'de la' : 'del'} ${place.name}`;
@@ -239,9 +237,9 @@ function quarrel({ random, hero: h, companion: c }) {
     [
       room(1, `${h.name} se tumbó en su cama, con el ceño fruncido.`, [h.id]),
       room(2, getScene('bedroom').detail),
-      room(3, 'Ni siquiera quiso merendar, aunque había galletas.', [h.id], ['cookies']),
+      room(3, 'Le costaba disfrutar del descanso sin aquella compañía tan querida.'),
       room(1, 'Al principio estaba muy enfadad' + gendered(h, 'o', 'a') + ', pero poco a poco se puso triste.', [h.id]),
-      room(2, `Abrazó su osito de peluche y suspiró.`, [h.id], ['teddy-bear']),
+      room(2, 'Recordaron su momento favorito y se quedaron con aquella sensación agradable.'),
       room(3, 'La tarde se le hizo larguísima.', [h.id]),
       other(1, `En su casa, ${c.name} también estaba triste, mirando por la ventana.`, [c.id]),
       other(2, getScene('living-room').detail),
@@ -256,7 +254,7 @@ function quarrel({ random, hero: h, companion: c }) {
       room(3, 'Y ninguno había escuchado al otro.', [h.id]),
       room(1, `${h.name} decidió ir a pedirle perdón.`, [h.id]),
       room(2, 'Le temblaban un poco las piernas, pero era lo correcto.', [h.id]),
-      room(3, `Se puso los zapatos y salió de casa.`, [h.id], ['new-shoes']),
+      room(3, 'Hizo una pausa y pensó cómo arreglar lo que había pasado.'),
     ],
     [
       porch(1, `A mitad de camino, se encontró con ${c.name}, que venía a buscarl${gendered(h, 'o', 'a')}.`, both),
@@ -287,7 +285,7 @@ function quarrel({ random, hero: h, companion: c }) {
       room(1, `Desde entonces, cuando discutían, ${pair} respiraban hondo y hablaban.`, both),
       room(2, 'A veces todavía se enfadaban, como todos los amigos.', both),
       room(3, 'Pero siempre encontraban la manera de arreglarlo.', both),
-      room(2, `${h.name} se tapó con la manta, ${gendered(h, 'tranquilo', 'tranquila')}.`, [h.id], ['blanket']),
+      room(2, 'Aquel rincón se sentía cómodo, tranquilo y lleno de cariño.'),
       room(3, 'Afuera, la luna brillaba sobre el parque vacío.'),
       room(1, `Y se durmió con una sonrisa, pensando en su ${friendWord(c)} ${c.name}.`, [h.id]),
     ],
@@ -301,93 +299,91 @@ function quarrel({ random, hero: h, companion: c }) {
 
 /** Surprises: why, what they need, what goes wrong and how the surprise is saved. */
 const SURPRISES = [
-  { id: 'birthday', why: c => `era el cumpleaños de ${c.name}`, buy: ['birthday-cake', 'balloon', 'party-hat'], buyText: 'una tarta, globos y sombreros de fiesta', mishap: 'Uno de los globos explotó con un pum enorme.', fix: 'Lo llenaron de confeti, y la sorpresa quedó todavía más alegre.', fixItems: ['confetti'] },
-  { id: 'cheer-up', why: c => `${c.name} estaba triste porque se le había roto su juguete favorito`, buy: ['gift-box', 'garland', 'cookies'], buyText: 'una caja de regalo, una guirnalda y galletas', mishap: 'Empezó a llover justo cuando iban a colgar la guirnalda.', fix: 'Llevaron toda la sorpresa a la sala de estar, y quedó preciosa.', fixItems: ['garland'] },
-  { id: 'thank-you', why: c => `${c.name} siempre ayudaba a todo el mundo y nadie le daba las gracias`, buy: ['flower-crown', 'letter', 'pinata'], buyText: 'una corona de flores, una carta y una piñata', mishap: 'La piñata quedó colgada tan alto que nadie la alcanzaba.', fix: 'La bajaron un poco con una escalera de mano, y quedó perfecta.', fixItems: ['ladder', 'pinata'] },
+  { id: 'birthday', why: c => `era el cumpleaños de ${c.name}`, buy: ['birthday-cake', 'balloon'], buyText: 'una tarta y dos globos', mishap: 'Uno de los globos se desinfló antes de empezar la fiesta.', fix: 'Infló otra vez el globo y lo dejó junto a la tarta.', fixItems: ['balloon', 'birthday-cake'] },
+  { id: 'cheer-up', why: c => `${c.name} estaba triste porque se le había roto su juguete favorito`, buy: ['gift-box', 'garland'], buyText: 'una caja de regalo y una guirnalda', mishap: 'La guirnalda se enredó y no pudo colgarla como quería.', fix: 'Desenredó la guirnalda despacio y puso el regalo debajo.', fixItems: ['garland', 'gift-box'] },
+  { id: 'thank-you', why: c => `${c.name} siempre ayudaba a todo el mundo y nadie le daba las gracias`, buy: ['flower-crown', 'letter'], buyText: 'una carta de agradecimiento y una corona de flores', mishap: 'La carta se arrugó un poquito mientras preparaba la sorpresa.', fix: 'Alisó la carta con cuidado y puso la corona a su lado.', fixItems: ['letter', 'flower-crown'] },
 ];
 
 /** D4 · La sorpresa: a reason to celebrate a friend, secret preparations, a mishap saved and the big moment. */
 function surprise({ random, hero: h, companion: c }) {
   const plan = choose(random, SURPRISES);
-  const helperId = choose(random, CHARACTERS.map(entry => entry.id).filter(id => id !== h.id && id !== c.id && !needsWater([{ id }])));
-  const helper = copyCharacter(random, helperId);
   const party = getScene(plan.id === 'cheer-up' ? 'living-room' : 'festival-square');
   const both = [h.id, c.id];
-  const team = [h.id, helper.id];
+  const team = [h.id];
   const market = at('market'), there = at(party.id), porch = at('porch');
   const beats = [
     [
       porch(1, `${named(h)} se dio cuenta de que ${plan.why(c)}.`, [h.id]),
       porch(2, getScene('porch').detail),
       porch(3, `${h.name} se quedó pensando qué podía hacer.`, [h.id]),
-      porch(1, `Así que decidió prepararle una sorpresa con ayuda de ${helper.name}, ${helper.article} ${helper.label}.`, team),
-      porch(2, `${helper.name} dijo que sí enseguida, muy ${gendered(helper, 'emocionado', 'emocionada')}.`, [helper.id]),
-      porch(3, 'Se prometieron no contar nada a nadie.', team),
-      porch(2, `Hicieron una lista con todo lo que necesitaban.`, team),
+      porch(1, `Así que decidió preparar una sorpresa sencilla para ${c.name}.`, team),
+      porch(2, `${h.name} pensó en lo que más le gustaría a ${c.name}.`, [h.id]),
+      porch(3, 'Guardó el secreto para que la sorpresa fuera especial.', team),
+      porch(2, `Preparó una lista corta para recordar su idea.`, team),
       porch(3, `${h.name} la escribió con letra grande y clara.`, [h.id]),
       porch(1, `${c.name} no podía enterarse de nada.`),
     ],
     [
-      market(1, `Fueron al mercado a buscar ${plan.buyText}.`, team, plan.buy),
+      market(1, `Fue al mercado a buscar ${plan.buyText}.`, team, plan.buy),
       market(2, getScene('market').detail),
-      market(3, 'La vendedora les regaló unas fresas para la fiesta.', team),
-      market(1, 'Volvieron cargados, escondiendo todo bajo una manta.', team, ['blanket']),
-      market(2, `Casi se tropiezan con ${c.name} al doblar una esquina.`, [...team, c.id]),
-      market(3, `${helper.name} silbó disimulando, y ${c.name} siguió su camino.`, [helper.id, c.id]),
-      there(1, `Llegaron ${toPlace(party)} y empezaron a prepararlo todo.`, team),
+      market(3, 'Encontró lo que buscaba sin añadir más cosas al plan.', team),
+      market(1, 'Volvió con sus cosas, procurando mantener la sorpresa en secreto.', team),
+      market(2, `Casi se encontró con ${c.name} al doblar una esquina.`, [...team, c.id]),
+      market(3, `${h.name} saludó disimulando, y ${c.name} siguió su camino.`, both),
+      there(1, `Llegó ${toPlace(party)} y empezó a preparar la sorpresa.`, team),
       there(2, party.detail),
       there(3, 'Había que darse prisa, pero sin hacer ruido.', team),
     ],
     [
-      there(1, `Colgaron los adornos y colocaron cada cosa en su sitio.`, team, plan.buy),
-      there(2, `${helper.name} se subió a una silla para llegar a lo más alto.`, [helper.id]),
-      there(3, `${h.name} sujetaba la silla con las dos manos.`, [h.id]),
+      there(1, `Colocó las dos cosas donde ${c.name} pudiera verlas al entrar.`, team, plan.buy),
+      there(2, `${h.name} dejó libre la entrada para recibir a ${c.name}.`, [h.id]),
+      there(3, `${h.name} comprobó que la sorpresa seguía bien preparada.`, [h.id]),
       there(1, plan.mishap, team, plan.buy),
       there(2, `${h.name} se asustó, porque ya casi no quedaba tiempo.`, [h.id]),
-      there(3, `${helper.name} se rascó la cabeza, pensando.`, [helper.id]),
+      there(3, `${h.name} miró el pequeño problema y pensó cómo resolverlo.`, [h.id]),
       there(1, plan.fix, team, plan.fixItems),
       there(2, 'Al final, todo estaba listo justo a tiempo.', team),
-      there(3, 'Se escondieron detrás de una cortina, aguantando la risa.', team, ['curtain']),
+      there(3, 'Se quedó cerca de la entrada, aguantando una sonrisa.', team),
     ],
     [
       there(1, `Entonces ${h.name} fue a buscar a ${c.name} con una excusa.`, both),
       there(2, `Le dijo que quería enseñarle una cosa muy rara.`, both),
       there(3, `${c.name} l${gendered(h, 'o', 'a')} siguió, sin sospechar nada.`, [c.id]),
-      there(1, `Cuando ${c.name} entró, todos gritaron sorpresa a la vez.`, [c.id, ...team]),
+      there(1, `Cuando ${c.name} entró, ${h.name} gritó sorpresa con una sonrisa.`, [c.id, ...team]),
       there(2, `${c.name} se quedó con la boca abierta.`, [c.id]),
       there(3, 'Por un momento, no supo qué decir.', [c.id]),
       there(1, `Luego se le escapó una sonrisa enorme, y abrazó a ${h.name}.`, both),
-      there(2, `También abrazó a ${helper.name}, que no paraba de reírse.`, [c.id, helper.id]),
+      there(2, `Le dijo a ${h.name} que aquel detalle le hacía mucha ilusión.`, both),
       there(3, 'Hasta se le escapó una lagrimita de alegría.', [c.id]),
     ],
     [
       there(1, `${c.name} dijo que era la mejor sorpresa de su vida.`, [c.id]),
       there(2, `${h.name} le contó cómo lo habían preparado todo, y lo del susto.`, both),
-      there(3, 'Se rieron mucho con la historia.', [...both, helper.id]),
-      there(1, `Celebraron juntos con todo lo que habían preparado.`, [...both, helper.id], plan.buy),
-      there(2, 'Bailaron, cantaron y jugaron hasta cansarse.', [...both, helper.id]),
-      there(3, `${helper.name} contó chistes que no tenían ninguna gracia, y aun así se rieron.`, [helper.id]),
-      there(1, plan.id === 'birthday' ? `${c.name} no podía pensar en nada que no fuera aquella fiesta.` : `${c.name} ya no se acordaba de por qué había estado triste ese día.`, [c.id]),
-      there(2, 'Al final, recogieron todo entre los tres.', [...both, helper.id]),
-      there(3, 'Todo quedó tan limpio como antes.', [...both, helper.id]),
+      there(3, 'Se rieron mucho con la historia.', both),
+      there(1, `Celebraron juntos con todo lo que habían preparado.`, both, plan.buy),
+      there(2, 'Bailaron, cantaron y jugaron hasta cansarse.', both),
+      there(3, `${c.name} quiso saber cómo se le había ocurrido la idea.`, [c.id]),
+      there(1, plan.id === 'birthday' ? `${c.name} no podía pensar en nada que no fuera aquella fiesta.` : `${c.name} sintió que aquel pequeño detalle tenía mucho cariño dentro.`, [c.id]),
+      there(2, 'Al final, recogieron juntos las cosas de la sorpresa.', both),
+      there(3, 'Todo quedó tan limpio como antes.', both),
     ],
     [
       porch(1, `${h.name} aprendió que hacer feliz a un amigo también nos hace felices.`, [h.id]),
       porch(2, 'Y que las sorpresas salen bien aunque algo salga mal.', [h.id]),
-      porch(3, `${helper.name} se despidió con un saludo enorme.`, [helper.id]),
+      porch(3, `${h.name} recordó la sonrisa que había despertado su detalle.`, [h.id]),
       porch(1, `${c.name} le dio las gracias a ${h.name} una vez más antes de irse.`, both),
       porch(2, 'Prometió prepararle una sorpresa algún día.', [c.id]),
       porch(3, `${h.name} se quedó mirando cómo se alejaba.`, [h.id]),
       porch(2, 'Esa noche, durmió con una sonrisa.', [h.id]),
-      porch(3, 'Soñó con globos, tartas y abrazos.', [h.id]),
+      porch(3, 'Soñó con la sonrisa que había recibido aquella tarde.', [h.id]),
       porch(1, `Y desde entonces, ${h.name} y ${c.name} fueron todavía más amigos.`, both),
     ],
   ];
   return {
-    title: `${h.name} y la sorpresa para ${c.name}`, place: party, extras: [helper], questId: `surprise-${plan.id}`, variantId: party.id, beats,
+    title: `${h.name} y la sorpresa para ${c.name}`, place: party, questId: `surprise-${plan.id}`, variantId: party.id, beats,
     items: [...plan.buy, ...plan.fixItems],
-    blockIds: { opening: 'porch', goal: `surprise-${plan.id}`, obstacle: plan.id, strategy: helper.id, discovery: party.id, ending: 'porch' },
-    roles: { home: 'porch', destination: party.id, helper: helper.id },
+    blockIds: { opening: 'porch', goal: `surprise-${plan.id}`, obstacle: plan.id, strategy: 'thoughtful-detail', discovery: party.id, ending: 'porch' },
+    roles: { home: 'porch', destination: party.id, helper: h.id },
   };
 }
 
@@ -445,9 +441,9 @@ function everyonePlays({ random, hero: h, companion: c }) {
       there(2, `Le preguntó a ${c.name} qué era lo que mejor sabía hacer.`, both),
       there(3, `${c.name} se secó los ojos y se lo pensó.`, [c.id]),
       there(1, `Decidieron jugar a buscar un tesoro escondido, donde cada uno usaría lo que mejor sabía hacer.`, both, ['treasure-chest']),
-      there(2, `${h.name} escondió unas canicas de colores por todas partes.`, [h.id], ['marbles']),
+      there(2, `${h.name} eligió escondites que los dos pudieran alcanzar.`, [h.id]),
       there(3, 'Algunas en lo alto, otras en lo bajo y otras muy escondidas.', [], ['marbles']),
-      there(1, 'Cuando terminaron de esconderlas, empezó la búsqueda.', both),
+      there(1, 'Escondieron unas canicas de colores y empezó la búsqueda.', both, ['marbles']),
       there(2, `${c.name} ya sonreía otra vez, con ganas de jugar.`, [c.id]),
       there(3, 'Se dieron la mano para empezar.', both),
     ],
@@ -514,10 +510,10 @@ function contest({ random, hero: h, companion: c }) {
     [
       atHome(1, `En el pueblo anunciaron ${event.what}, y ${named(h)} quiso participar.`, [h.id]),
       atHome(2, home.detail),
-      atHome(3, 'El premio era un trofeo brillante que se veía desde lejos.', [], ['trophy']),
+      atHome(3, 'El premio reconocía el esfuerzo de quienes participaban con ilusión.'),
       atHome(1, `Su ${friendWord(c)} ${c.name} también se apuntó, muy ${gendered(c, 'contento', 'contenta')}.`, [c.id]),
-      atHome(2, `${h.name} pensaba en el trofeo día y noche.`, [h.id], ['trophy']),
-      atHome(3, 'Hasta soñaba con él por las noches, levantándolo en alto.', [h.id]),
+      atHome(2, `${h.name} pensaba en ganar cada vez que practicaba.`, [h.id]),
+      atHome(3, 'Hasta soñaba con terminar su trabajo antes que los demás.', [h.id]),
       atHome(2, 'Practicaron muchas tardes, cada uno a su manera.', both, event.items),
       atHome(3, `${c.name} se reía cuando algo le salía mal, y volvía a empezar.`, [c.id]),
       atHome(1, `${h.name} quería ganar como fuera, costara lo que costara.`, [h.id]),
@@ -535,14 +531,14 @@ function contest({ random, hero: h, companion: c }) {
     ],
     [
       there(1, `A ${h.name} le estaba saliendo de maravilla.`, [h.id], event.items),
-      there(2, 'Iba por delante de todos, y ya casi tocaba el trofeo.', [h.id], ['trophy']),
+      there(2, 'Iba por delante de los demás y ya casi había terminado.', [h.id]),
       there(3, 'El público aplaudía con fuerza al verl' + gendered(h, 'o', 'a') + '.', [h.id]),
       there(1, event.mishap(c), [c.id], event.items),
       there(2, `${c.name} se quedó mirando, con los ojos llenos de lágrimas.`, [c.id]),
       there(3, 'Nadie se paraba a ayudarle, porque todos querían ganar.', [c.id]),
       there(1, `${h.name} dudó un momento, porque quería ganar.`, [h.id]),
-      there(2, 'Si se paraba, perdería su ventaja y quizá el trofeo.', [h.id], ['trophy']),
-      there(3, 'Miró el trofeo, y luego miró a su amigo.'.replace('su amigo', gendered(c, 'su amigo', 'su amiga')), [h.id], ['trophy']),
+      there(2, 'Si se paraba a ayudar, seguramente perdería aquella ventaja.', [h.id]),
+      there(3, `${h.name} miró a ${c.name} y comprendió que necesitaba compañía.`, both),
     ],
     [
       there(1, `Al final, ${h.name} ${event.help}.`, both, event.items),
@@ -560,7 +556,7 @@ function contest({ random, hero: h, companion: c }) {
       there(2, 'Era el premio a la amistad, el más especial de todos.', both),
       there(3, 'El público aplaudió con muchas ganas, de pie.'),
       there(1, `${judge.name} les colgó a cada uno una medalla.`, [judge.id, ...both], ['medal']),
-      there(2, `La medalla brillaba más que cualquier trofeo, pensó ${h.name}.`, [h.id], ['medal', 'trophy']),
+      there(2, `La medalla recordaba lo que habían conseguido ayudándose, pensó ${h.name}.`, [h.id], ['medal']),
       there(3, `${c.name} abrazó a ${h.name} con mucha fuerza.`, both),
       there(1, `${c.name} le dio las gracias por haberse parado a ayudar.`, both),
       there(2, `${h.name} le dijo que lo volvería a hacer mil veces.`, [h.id]),
@@ -568,7 +564,7 @@ function contest({ random, hero: h, companion: c }) {
     ],
     [
       atHome(1, `${h.name} aprendió que ayudar a un amigo vale más que ganar.`, [h.id]),
-      atHome(2, 'Y que los mejores premios no siempre son trofeos.', [h.id], ['trophy']),
+      atHome(2, 'Y que compartir el esfuerzo también merece celebrarse.', [h.id]),
       atHome(3, `${c.name} colgó su medalla junto a la ventana.`, [c.id], ['medal']),
       atHome(1, `Al año siguiente, ${pair} se apuntaron otra vez, juntos.`, both),
       atHome(2, 'Esta vez decidieron participar en equipo.', both),
@@ -579,7 +575,7 @@ function contest({ random, hero: h, companion: c }) {
     ],
   ];
   return {
-    title: `${h.name} y ${event.what}`, place, extras: [judge], questId: `contest-${event.id}`, variantId: judge.id, beats, items: [...event.items, 'medal', 'trophy', 'whistle'],
+    title: `${h.name} y ${event.what}`, place, extras: [judge], questId: `contest-${event.id}`, variantId: judge.id, beats, items: [...event.items, 'medal', 'whistle'],
     blockIds: { opening: home.id, goal: `contest-${event.id}`, obstacle: event.id, strategy: judge.id, discovery: place.id, ending: home.id },
     roles: { home: home.id, destination: place.id, judge: judge.id },
   };

@@ -4,6 +4,10 @@ import { SCENES, ITEMS, WORLD_ATLASES, getScene, getSceneView, getSceneViewLabel
 import { atlasPresentation, loadArtGeometry } from './art-layout.js';
 import { HAIRSTYLES, OUTFITS, SKIN_TONES, FAVORITE_COLORS, FAMILY_ROLES, createDefaultFamily, createFamilyMember, normalizeFamily, renderHuman } from './family-characters.js';
 import { unlockAudio, playSound, preloadSounds, setSoundEnabled, getSoundEnabled, stopSounds, startAmbient, stopAmbient, setMusicEnabled, getMusicEnabled } from './audio.js';
+import { sceneEffectHTML, mountSceneEffects } from './scene-effects.js';
+import { MUSIC_CREDITS } from './music-library.js';
+import { composePage } from './page-composition.js';
+import { characterScale } from './illustration-scale.js';
 
 const app = document.querySelector('#app');
 const dialog = document.querySelector('#dialog');
@@ -14,11 +18,11 @@ const palettes = {
   friends: { color: '#e9d29b', ink: '#78632f', icon: 'heart', hero: 'bear', scene: 'garden', copy: 'Las cosas bonitas se hacen juntos.', note: 'Amistad en las pequeñas cosas' },
   family: { color: '#d8b8bb', ink: '#79515b', icon: 'home', hero: 'family-child', scene: 'garden', copy: 'Tú protagonizas las pequeñas aventuras de tu familia.', note: 'Tu personaje y tu familia en cada cuento' },
 };
-const sounds = { human: 'Un saludo con campanitas', fox: 'Un saludo del zorro', mouse: '¡Pip, pip!', rabbit: 'Un saltito de conejo', bear: 'Un ronroneo de oso', knight: 'La campanita del caballero', wizard: 'Un poquito de magia', dragon: 'Un dragoncito contento', owl: '¡Uuuh, uuuh!', forest: 'El bosque susurra', castle: 'Suena el castillo', lake: 'El agua canta', garden: 'Un jardín con vida' };
-const state = { screen: 'home', story: null, displayPages: null, page: 0, duration: Number(readSetting('cc-duration', '3')), bookId: 'adventure', family: readFamily(), companionRole: readSetting('cc-family-companion', 'auto'), recentStories: readStoryHistory(), editingRole: 'child', flip: null, observer: null, renderTimer: null, wakeLock: null };
+const state = { screen: 'home', story: null, displayPages: null, page: 0, duration: Number(readSetting('cc-duration', '3')), bookId: 'adventure', family: readFamily(), companionRole: readSetting('cc-family-companion', 'auto'), recentStories: readStoryHistory(), editingRole: 'child', flip: null, sceneEffects: null, observer: null, renderTimer: null, wakeLock: null };
 if (![3, 6, 9].includes(state.duration)) state.duration = 3;
 let installPrompt = null;
 let toastTimer;
+let generationEpoch = 0;
 let offlineReady = false;
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 function readSetting(key, fallback) { try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; } }
@@ -64,18 +68,18 @@ function sprite(id, { interactive = false, extra = '', label } = {}) {
   if (human) return humanSprite(human, { interactive, extra, label });
   const char = PORTRAITS.find(c => c.id === id);
   if (!char || !hasArt(char)) return '';
-  const style = atlasStyle(char.atlas, PORTRAIT_ATLASES);
+  const style = `${atlasStyle(char.atlas, PORTRAIT_ATLASES)};--character-scale:${characterScale(char)}`;
   return interactive
-    ? `<button type="button" class="character-sprite ${extra}" style="${style}" data-sound="${escape(char.sound)}" data-sound-label="El sonido de ${escape(label || char.name)}" aria-label="Escuchar a ${escape(label || char.name)}"><span class="sound-dot">${icon('volume')}</span></button>`
+    ? `<button type="button" class="character-sprite ${extra}" style="${style}" data-sound="${escape(char.sound)}" data-sound-label="El sonido de ${escape(label || char.name)}" aria-label="Escuchar a ${escape(label || char.name)}"></button>`
     : `<span class="character-sprite ${extra}" style="${style}" role="img" aria-label="${escape(label || char.label)}"></span>`;
 }
 function humanSprite(character, { interactive = false, extra = '', label } = {}) {
   const art = renderHuman(character);
   return interactive
-    ? `<button type="button" class="character-sprite human-sprite ${extra}" style="--art-ratio:${160 / 210}" data-sound="human" aria-label="Escuchar a ${escape(label || character.name)}">${art}<span class="sound-dot">${icon('volume')}</span></button>`
-    : `<span class="character-sprite human-sprite ${extra}" style="--art-ratio:${160 / 210}" role="img" aria-label="${escape(label || character.name)}">${art}</span>`;
+    ? `<button type="button" class="character-sprite human-sprite ${extra}" style="--art-ratio:${160 / 210};--character-scale:${characterScale(character)}" data-sound="human" aria-label="Escuchar a ${escape(label || character.name)}">${art}</button>`
+    : `<span class="character-sprite human-sprite ${extra}" style="--art-ratio:${160 / 210};--character-scale:${characterScale(character)}" role="img" aria-label="${escape(label || character.name)}">${art}</span>`;
 }
-function place(scene, interactive = false, viewIndex = 0) {
+function place(scene, interactive = false, viewIndex = 0, effects = '') {
   const location = getScene(scene) || getScene('forest');
   const index = Number.isFinite(Number(viewIndex)) ? Math.trunc(Number(viewIndex)) : 0;
   const view = (index % 3 + 3) % 3;
@@ -83,7 +87,7 @@ function place(scene, interactive = false, viewIndex = 0) {
   const attributes = `data-scene="${escape(location.id)}" data-scene-view="${view}"`;
   const label = `${location.label}, vista ${getSceneViewLabels(location.id)[view].toLowerCase()}`;
   return interactive
-    ? `<button type="button" class="scene-sprite" style="${style}" ${attributes} data-sound="${location.sound}" data-sound-label="Suena ${escape(location.label)}" aria-label="Escuchar ${escape(label)}"></button>`
+    ? `<button type="button" class="scene-sprite" style="${style}" ${attributes} data-sound="${location.sound}" data-sound-label="Suena ${escape(location.label)}" aria-label="Escuchar ${escape(label)}">${effects}</button>`
     : `<span class="scene-sprite" style="${style}" ${attributes} role="img" aria-label="Ilustración: ${escape(label)}"></span>`;
 }
 function scenePages(pages) {
@@ -107,7 +111,7 @@ function objectSprite(id) {
   const small = ['teacup', 'key', 'bell', 'feather', 'seed', 'flower', 'pearl', 'shell', 'crystal', 'acorn', 'apple', 'whistle', 'medal', 'moonstone', 'smooth-stone', 'thermometer', 'bandage', 'stopwatch', 'old-glasses', 'toothbrush', 'glass-of-milk'];
   const large = ['bicycle', 'wheelbarrow', 'ladder', 'old-trunk', 'treasure-chest', 'scooter', 'pinata', 'cardboard-box', 'sack', 'umbrella'];
   const scale = small.includes(id) ? 0.65 : large.includes(id) ? 1.4 : 1;
-  return `<button type="button" class="object-sprite" style="${atlasStyle(obj.atlas, WORLD_ATLASES)};--object-scale:${scale}" data-sound="${obj.sound}" data-sound-label="${escape(soundLabel)}" aria-label="Escuchar ${escape(label)}"><span class="sound-dot">${icon('volume')}</span></button>`;
+  return `<button type="button" class="object-sprite" style="${atlasStyle(obj.atlas, WORLD_ATLASES)};--object-scale:${scale}" data-sound="${obj.sound}" data-sound-label="${escape(soundLabel)}" aria-label="Escuchar ${escape(label)}"></button>`;
 }
 function soundButton() { return `<button class="icon-button sound-toggle" data-action="sound" aria-label="${getSoundEnabled() ? 'Silenciar efectos' : 'Activar efectos'}" aria-pressed="${getSoundEnabled()}">${icon(getSoundEnabled() ? 'volume' : 'mute')}</button>`; }
 function musicButton() { return `<button class="icon-button music-toggle" data-action="music" aria-label="${getMusicEnabled() ? 'Pausar música' : 'Activar música'}" aria-pressed="${getMusicEnabled()}">${icon(getMusicEnabled() ? 'music' : 'music-off')}</button>`; }
@@ -137,6 +141,7 @@ function getLastStory() {
   } catch { return null; }
 }
 function renderHome() {
+  generationEpoch++;
   destroyReader();
   state.screen = 'home';
   document.body.classList.remove('reading');
@@ -265,6 +270,8 @@ function switchFamilyEditor(role) {
   dialog.querySelector(`.family-tab[data-role="${state.editingRole}"]`)?.focus({ preventScroll: true });
 }
 async function generate() {
+  const epoch = ++generationEpoch;
+  const isCurrent = () => generationEpoch === epoch && state.screen === 'loading';
   const selected = dialog.querySelector('input[name="duration"]:checked');
   if (selected) state.duration = Number(selected.value);
   saveSetting('cc-duration', state.duration);
@@ -277,6 +284,7 @@ async function generate() {
   try {
     await unlockAudio();
     await new Promise(resolve => setTimeout(resolve, 350));
+    if (!isCurrent()) return;
     state.story = generateFreshStory(state.bookId, state.duration, { family: state.family, companionRole: state.companionRole }, state.recentStories);
     preloadStorySounds(state.story);
     document.querySelector('#loading-message').textContent = 'Preparando las páginas y sus ilustraciones…';
@@ -291,6 +299,7 @@ async function generate() {
     }
     await Promise.all([...sheets].map(file => `./art/${file}`).map(src => { const img = new Image(); img.src = src; return img.decode().catch(() => {}); }));
     await new Promise(resolve => setTimeout(resolve, 650));
+    if (!isCurrent()) return;
     if (state.bookId === 'family') { state.family = state.story.family; saveFamily(); }
     state.recentStories = rememberStory(state.recentStories, state.story);
     saveSetting('cc-story-history', JSON.stringify(state.recentStories));
@@ -300,6 +309,7 @@ async function generate() {
     state.displayPages = null;
     renderReader();
   } catch (error) {
+    if (!isCurrent()) return;
     console.error('No se pudo generar el cuento', error);
     renderHome();
     showToast('No se pudo preparar el cuento. Inténtalo de nuevo.');
@@ -312,13 +322,21 @@ function coverHTML() {
 }
 function pageHTML(page, i) {
   const s = state.story;
+  const composition = composePage(page);
   const cast = s.characters || [s.hero, s.companion, s.guardian].filter(Boolean);
-  const characters = [...new Set(page.characters)].filter(id => cast.some(c => c.id === id) || CHARACTERS.some(c => c.id === id))
+  const characters = [...new Set(composition.characters)].filter(id => cast.some(c => c.id === id) || CHARACTERS.some(c => c.id === id))
     .filter(id => { const person = cast.find(c => c.id === id); return !person || person.kind === 'human' || hasArt(person); }).slice(0, 3);
   const labelFor = id => cast.find(c => c?.id === id)?.name || PORTRAITS.find(c => c.id === id)?.name;
-  const elements = (Array.isArray(page.objects) ? page.objects : []).filter(id => getItem(id)).slice(0, 2);
+  const elements = composition.objects.filter(id => getItem(id)).slice(0, 4);
+  const castUnits = characters.map(id => {
+    const character = cast.find(person => person.id === id) || PORTRAITS.find(person => person.id === id);
+    const ratio = character?.kind === 'human' ? 160 / 210 : Number(atlasStyle(character.atlas, PORTRAIT_ATLASES).match(/--art-ratio:([\d.]+)/)?.[1]) || 1;
+    const scale = characterScale(character || id);
+    return { width: ratio * scale, scale };
+  });
+  const castStyle = `--cast-unit-width:${castUnits.reduce((sum, person) => sum + person.width, 0) || 1};--cast-max-scale:${Math.max(...castUnits.map(person => person.scale), 0) || 1}`;
   const viewIndex = getSceneViewIndex(s.pages, page.sourceIndex ?? i);
-  return `<article class="storybook-page paper-page" data-page-index="${i + 1}"><div class="page-inner"><div class="page-art ${characters.length > 2 ? 'three-characters' : ''} ${elements.length ? 'has-objects' : ''} ${characters.length ? '' : 'no-characters'}">${page.scene ? place(page.scene, true, viewIndex) : ''}<div class="page-characters">${characters.map(id => sprite(id, { interactive: true, label: labelFor(id) })).join('')}</div><div class="page-objects">${elements.map(objectSprite).join('')}</div></div><div class="page-copy">${page.paragraphs.map(text => `<p>${escape(text)}</p>`).join('')}</div><span class="page-number">${i + 1}</span></div></article>`;
+  return `<article class="storybook-page paper-page" data-page-index="${i + 1}" data-composition="${composition.kind}"><div class="page-inner"><div class="page-art composition-${composition.kind} ${characters.length > 2 ? 'three-characters' : ''} ${elements.length ? 'has-objects' : ''} ${elements.length > 2 ? 'many-objects' : ''} ${characters.length ? '' : 'no-characters'}" style="${castStyle}">${composition.showScene && page.scene ? place(page.scene, true, viewIndex, sceneEffectHTML(page.scene, page.sourceIndex ?? i, page.paragraphs)) : ''}<div class="page-characters">${characters.map(id => sprite(id, { interactive: true, label: labelFor(id) })).join('')}</div><div class="page-objects">${elements.map(objectSprite).join('')}</div></div><div class="page-copy">${page.paragraphs.map(text => `<p>${escape(text)}</p>`).join('')}</div><span class="page-number">${i + 1}</span></div></article>`;
 }
 function endHTML() {
   const p = palettes[state.story.bookId];
@@ -332,11 +350,21 @@ function renderReader() {
   document.body.classList.add('reading');
   app.innerHTML = `${header(true)}<main class="reader"><div class="book-stage" id="book-stage"><div id="storybook" class="storybook"></div></div><nav class="reading-controls" aria-label="Páginas del cuento"><button class="page-nav" data-action="prev" aria-label="Página anterior">${icon('back')}</button><div class="reading-progress"><span id="page-status" aria-live="polite">Portada</span><div class="progress-track"><span id="progress-bar"></span></div></div><button class="page-nav" data-action="next" aria-label="Página siguiente">${icon('arrow')}</button></nav><div class="reader-hint sr-only" id="reader-hint">Toca las ilustraciones para escuchar sus sonidos.</div></main>`;
   createBook();
+  const stage = document.querySelector('#book-stage');
+  let renderedWidth = stage.clientWidth, renderedHeight = stage.clientHeight;
   state.observer = new ResizeObserver(() => {
     clearTimeout(state.renderTimer);
-    state.renderTimer = setTimeout(() => { if (state.screen === 'reader') rebuildBook(); }, 180);
+    // The initial observer notification is not a resize and must not cancel a first page turn.
+    if (stage.clientWidth === renderedWidth && stage.clientHeight === renderedHeight) return;
+    state.renderTimer = setTimeout(() => {
+      if (state.screen !== 'reader' || !stage.isConnected || !stage.clientWidth || !stage.clientHeight) return;
+      if (stage.clientWidth === renderedWidth && stage.clientHeight === renderedHeight) return;
+      renderedWidth = stage.clientWidth;
+      renderedHeight = stage.clientHeight;
+      rebuildBook();
+    }, 180);
   });
-  state.observer.observe(document.querySelector('#book-stage'));
+  state.observer.observe(stage);
   requestWakeLock();
   if (getMusicEnabled()) startAmbient(state.story.bookId);
 }
@@ -377,9 +405,12 @@ function createBook() {
     playSound('page');
     updateProgress();
     fitPageText();
+    state.sceneEffects?.sync();
   });
+  state.flip.on('changeState', () => state.sceneEffects?.sync());
   state.flip.on('init', updateProgress);
   state.flip.loadFromHTML(el.querySelectorAll('.storybook-page'));
+  state.sceneEffects = mountSceneEffects(el);
   stage.classList.toggle('spread-mode', spread);
   updateProgress();
   fitPageText();
@@ -418,6 +449,7 @@ function fitPageText() {
   });
 }
 function rebuildBook() {
+  state.sceneEffects?.destroy(); state.sceneEffects = null;
   const old = state.flip;
   state.flip = null;
   old?.destroy();
@@ -444,6 +476,7 @@ async function requestWakeLock() {
   try { if ('wakeLock' in navigator && document.visibilityState === 'visible') state.wakeLock = await navigator.wakeLock.request('screen'); } catch {}
 }
 function destroyReader() {
+  state.sceneEffects?.destroy(); state.sceneEffects = null;
   state.observer?.disconnect(); state.observer = null;
   clearTimeout(state.renderTimer);
   state.flip?.destroy(); state.flip = null;
@@ -454,7 +487,13 @@ function destroyReader() {
 function turn(next) {
   if (!state.flip) return;
   unlockAudio().then(() => { if (getMusicEnabled() && state.screen === 'reader') startAmbient(state.story.bookId); });
-  try { next ? state.flip.flipNext('bottom') : state.flip.flipPrev('bottom'); } catch {}
+  const flip = state.flip;
+  const settings = flip.getSettings();
+  const disableFlipByClick = settings.disableFlipByClick;
+  // PageFlip applies its click-corner gate to programmatic flips too; portrait "prev" starts at the spine.
+  settings.disableFlipByClick = false;
+  try { next ? flip.flipNext('bottom') : flip.flipPrev('bottom'); } catch {}
+  finally { settings.disableFlipByClick = disableFlipByClick; }
 }
 function showToast(text) {
   const toast = document.querySelector('#toast');
@@ -466,13 +505,19 @@ function showToast(text) {
 async function install() {
   if (installPrompt) { await installPrompt.prompt(); installPrompt = null; return; }
   dialog.className = 'install-dialog';
-  dialog.innerHTML = `<button class="icon-button dialog-close" data-action="close-dialog" aria-label="Cerrar">${icon('close')}</button><div class="install-mark">${icon('book')}</div><span class="eyebrow">TU BIBLIOTECA, SIEMPRE A MANO</span><h2 id="dialog-title">La magia también<br><em>vive en tu teléfono.</em></h2><p>Guarda Cuentacuentos en tu pantalla de inicio para abrirlo como una app.</p><ol class="install-steps"><li><strong>En iPhone o iPad</strong><span>Abre esta página en Safari, toca Compartir y elige «Añadir a pantalla de inicio».</span></li><li><strong>En Android</strong><span>Abre el menú de Chrome y toca «Añadir a pantalla de inicio» o «Instalar aplicación».</span></li></ol><p class="install-offline">${icon('leaf')} Después de la primera carga completa, los cuentos y sus ilustraciones están disponibles sin conexión.</p><button class="primary-button" data-action="close-dialog">Entendido ${icon('check')}</button>`;
-  dialog.showModal();
+  dialog.innerHTML = `<button class="icon-button dialog-close" data-action="close-dialog" aria-label="Cerrar">${icon('close')}</button><div class="install-mark">${icon('book')}</div><span class="eyebrow">TU BIBLIOTECA, SIEMPRE A MANO</span><h2 id="dialog-title">La magia también<br><em>vive en tu teléfono.</em></h2><p>Guarda Cuentacuentos en tu pantalla de inicio para abrirlo como una app.</p><ol class="install-steps"><li><strong>En iPhone o iPad</strong><span>Abre esta página en Safari, toca Compartir y elige «Añadir a pantalla de inicio».</span></li><li><strong>En Android</strong><span>Abre el menú de Chrome y toca «Añadir a pantalla de inicio» o «Instalar aplicación».</span></li></ol><p class="install-offline">${icon('leaf')} Después de la primera carga completa, los cuentos y sus ilustraciones están disponibles sin conexión.</p><button class="primary-button" data-action="close-dialog">Entendido ${icon('check')}</button><button class="text-button audio-credits-link" data-action="audio-credits">Créditos de audio</button>`;
+  if (!dialog.open) dialog.showModal();
+}
+function showAudioCredits() {
+  dialog.className = 'install-dialog audio-credits-dialog';
+  dialog.innerHTML = `<button class="icon-button dialog-close" data-action="close-dialog" aria-label="Cerrar">${icon('close')}</button><div class="install-mark">${icon('music')}</div><span class="eyebrow">LA MÚSICA DE NUESTROS CUENTOS</span><h2 id="dialog-title">Créditos de audio</h2><p>Fragmentos recortados, normalizados y adaptados para repetición</p><ul class="audio-credits-list">${MUSIC_CREDITS.map(track => `<li><strong>${escape(track.title)}</strong><span>${escape(track.author)}</span><div><a href="${escape(track.url)}" target="_blank" rel="noopener noreferrer">Obra original</a><a href="${escape(track.licenseUrl)}" target="_blank" rel="noopener noreferrer">${escape(track.license)}</a></div></li>`).join('')}</ul><p><a href="./audio/LICENSES.md" target="_blank" rel="noopener noreferrer">Fuentes y licencias de los efectos grabados</a></p><button class="primary-button" data-action="close-dialog">Entendido ${icon('check')}</button>`;
+  if (!dialog.open) dialog.showModal();
+  else dialog.querySelector('.dialog-close')?.focus({ preventScroll: true });
 }
 function updateOfflineStatus() {
   const el = document.querySelector('#offline-status');
   if (!el) return;
-  el.innerHTML = !navigator.onLine ? `${icon('leaf')} La magia sigue, incluso sin internet`
+  el.innerHTML = !navigator.onLine ? offlineReady ? `${icon('leaf')} La magia sigue, incluso sin internet` : `${icon('leaf')} Sin conexión. La biblioteca todavía no ha terminado de prepararse.`
     : offlineReady ? `${icon('check')} Tu biblioteca está lista para leer sin conexión` : '';
 }
 document.addEventListener('click', async e => {
@@ -486,7 +531,7 @@ document.addEventListener('click', async e => {
     sound.classList.remove('sound-bounce');
     void sound.offsetWidth;
     sound.classList.add('sound-bounce');
-    showToast(sounds[sound.dataset.sound] || sound.dataset.soundLabel || 'Un poquito de magia');
+    showToast(sound.dataset.soundLabel || 'Suena la ilustración');
     return;
   }
   const action = e.target.closest('[data-action]');
@@ -536,6 +581,7 @@ document.addEventListener('click', async e => {
       break;
     }
     case 'install': install(); break;
+    case 'audio-credits': showAudioCredits(); break;
     case 'resume': {
       state.story = getLastStory();
       if (state.story) { state.displayPages = null; state.page = Math.max(0, Number(readSetting('cc-last-page', '0')) || 0); await unlockAudio(); renderReader(); }

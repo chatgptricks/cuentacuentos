@@ -14,10 +14,10 @@ const homeOf = random => getScene(choose(random, FAMILY_HOMES));
 /** First times, where they happen, what scares and what the relative does to help. */
 const FIRSTS = [
   { id: 'bike', scene: 'playground', items: ['bicycle', 'helmet'], first: 'montar en bicicleta sin rueditas', fear: 'Le daba miedo caerse y hacerse daño.', ready: 'Se puso el casco y se subió a la bicicleta.', help: c => `${c.name} sujetó el sillín y corrió a su lado.`, wobble: 'La primera vez se tambaleó y puso un pie en el suelo.', success: 'Al tercer intento, la bicicleta avanzó recta, sin que nadie la sujetara.' },
-  { id: 'school', scene: 'school', items: ['lunchbox', 'pencil-case', 'chalkboard'], first: 'ir a la escuela nueva', fear: 'Le daba miedo no conocer a nadie.', ready: 'Preparó su lonchera y su estuche favorito.', help: c => `${c.name} le acompañó hasta la puerta y le dio un abrazo.`, wobble: 'Al principio no se atrevía a hablar con nadie.', success: 'Antes del recreo, ya dibujaba en la pizarra con dos compañeros nuevos.', person: 'teacher' },
+  { id: 'school', scene: 'school', items: ['pencil-case', 'chalkboard'], first: 'ir a la escuela nueva', fear: 'Le daba miedo no conocer a nadie.', ready: 'Preparó su estuche favorito con muchas ganas de aprender.', help: c => `${c.name} le acompañó hasta la puerta y le dio un abrazo.`, wobble: 'Al principio no se atrevía a hablar con nadie.', success: 'Antes del recreo, ya dibujaba en la pizarra con dos compañeros nuevos.' },
   { id: 'dentist', scene: 'clinic', items: ['toothbrush', 'teddy-bear'], first: 'ir a la consulta del dentista', fear: 'Le daba miedo el sillón y las luces.', ready: 'Llevó su osito de peluche para que le hiciera compañía.', help: c => `${c.name} le tomó de la mano en la sala de espera.`, wobble: 'Al sentarse en el sillón, le temblaron un poco las rodillas.', success: 'El dentista contó sus dientes y dijo que estaban muy limpios.', person: 'dentist' },
   { id: 'swim', scene: 'beach', items: ['float-ring'], first: 'nadar con flotador en el mar', fear: 'Le daba miedo el agua fría y las olas.', ready: 'Se puso el flotador, bien ajustado.', help: c => `${c.name} se quedó a su lado, en el agua bajita.`, wobble: 'La primera ola le salpicó la cara y le hizo toser.', success: 'Pataleó con fuerza y flotó como un barquito feliz.' },
-  { id: 'train', scene: 'train-station', items: ['lunchbox'], first: 'viajar en tren', fear: 'Le daba miedo el ruido del tren al llegar.', ready: 'Preparó una lonchera con fruta para el viaje.', help: c => `${c.name} le tapó los oídos cuando el tren silbó.`, wobble: 'Cuando el tren llegó, dio un paso atrás.', success: 'El tren arrancó, y el paisaje empezó a correr por la ventanilla.', person: 'train-driver' },
+  { id: 'train', scene: 'train-station', items: ['lunchbox'], first: 'viajar en tren', fear: 'Le daba miedo el ruido del tren al llegar.', ready: 'Preparó una lonchera con fruta para el viaje.', help: c => `${c.name} le tapó los oídos cuando el tren silbó.`, wobble: 'Cuando el tren llegó, dio un paso atrás.', success: 'El tren arrancó, y el paisaje empezó a correr por la ventanilla.' },
   { id: 'shoes', scene: 'porch', items: ['new-shoes'], first: 'atarse los zapatos nuevos', fear: 'Los cordones se le escapaban de los dedos.', ready: 'Se sentó en el escalón con sus zapatos nuevos.', help: c => `${c.name} le enseñó el truco de las orejas de conejo.`, wobble: 'El primer lazo se deshizo en cuanto dio un paso.', success: 'Por fin hizo un lazo con dos orejas de conejo bien fuertes.' },
   { id: 'sleep', scene: 'bedroom', items: ['night-lamp', 'teddy-bear'], first: 'dormir en su cama nueva', fear: 'Le daba miedo la oscuridad de la habitación.', ready: 'Colocó su osito de peluche y su lamparita de noche.', help: c => `${c.name} le leyó un cuento sentado en el borde de la cama.`, wobble: 'Al apagar la luz grande, sintió un poco de miedo.', success: 'Con la lamparita encendida, la habitación parecía un lugar amable.' },
 ];
@@ -120,7 +120,16 @@ const CHORES = [
 /** E3 · Ayudantes de casa: a chore shared, a mistake, laughing it off and a result to enjoy. */
 function helpers({ random, hero: h, companion: c }) {
   const baby = c.role === 'baby';
-  const chore = choose(random, CHORES);
+  const selectedChore = choose(random, CHORES);
+  const babyActions = {
+    cookies: { start: 'se lavó las manos y preparó la masa de galletas.', step: 'mezcló la masa con la cuchara de madera.', mistake: 'echó demasiada harina y vio una nube blanca en la cocina.', fix: 'limpió con calma y volvió a medir la harina con cuidado.' },
+    bread: { start: 'se puso el delantal y preparó la harina.', step: 'amasó la masa hasta que quedó suave.', mistake: 'vio que la masa no subía porque entraba frío por la ventana.', fix: 'cerró la ventana y tapó la masa con un paño.' },
+    soup: { start: 'se lavó las manos y preparó las verduras.', step: 'removió las verduras con la cuchara de madera.', mistake: 'probó la sopa y notó que había olvidado la sal.', fix: 'añadió una pizca de sal y removió despacio.' },
+    leaves: { start: 'tomó la escoba y empezó a barrer el porche.', step: 'barrió las hojas secas hasta formar un montón.', mistake: 'vio cómo el viento deshacía su montón de hojas.', fix: 'metió las hojas secas en un saco antes de que volviera el viento.' },
+    garden: { start: 'preparó la pala y la regadera para plantar.', step: 'hizo agujeritos en la tierra con la pala.', mistake: 'plantó varias semillas demasiado juntas en el mismo hoyo.', fix: 'separó las semillas con cuidado para que cada una tuviera sitio.' },
+    tidy: { start: 'trajo unas cajas de cartón para ordenar los juguetes.', step: 'recogió los juguetes del suelo, uno a uno.', mistake: 'metió todo en una sola caja y luego no encontraba nada.', fix: 'dibujó en cada caja de cartón los juguetes que había dentro.' },
+  };
+  const chore = baby ? { ...selectedChore, ...Object.fromEntries(Object.entries(babyActions[selectedChore.id]).map(([key, text]) => [key, `${h.name} ${text}`])) } : selectedChore;
   const home = homeOf(random);
   const both = [h.id, c.id];
   const there = at(chore.scene), atHome = at(home.id);
@@ -139,25 +148,25 @@ function helpers({ random, hero: h, companion: c }) {
     ],
     [
       there(1, baby ? `${c.name} hizo palmas cada vez que ${h.name} terminaba algo.` : `${c.name} hacía una parte, y ${h.name} hacía la otra.`, both),
-      there(2, 'Trabajaban a buen ritmo, sin prisa y sin dejar de sonreír.', both),
-      there(3, 'De vez en cuando, cantaban una canción inventada sobre lo que estaban haciendo.', both),
+      there(2, baby ? `${h.name} trabajaba sin prisa mientras ${c.name} miraba con curiosidad.` : 'Trabajaban a buen ritmo, sin prisa y sin dejar de sonreír.', both),
+      there(3, baby ? `${h.name} cantaba bajito para hacer compañía a ${c.name}.` : 'De vez en cuando, cantaban una canción sobre lo que estaban haciendo.', both),
       there(1, chore.mistake, both, chore.items),
       there(2, `${h.name} se quedó sin moverse, sin saber qué decir.`, [h.id]),
       there(3, baby ? `${c.name} soltó una risita muy graciosa.` : `${c.name} se tapó la boca para no reírse.`, [c.id]),
       there(1, 'Y al final, los dos se echaron a reír.', both),
       there(2, 'Equivocarse también podía ser divertido, si se hacía en buena compañía.', both),
-      there(3, 'Se limpiaron la cara, respiraron hondo y volvieron a empezar.', both),
+      there(3, baby ? `${h.name} respiró hondo y volvió a empezar con calma.` : 'Se limpiaron la cara, respiraron hondo y volvieron a empezar.', both),
     ],
     [
       there(1, chore.fix, both, chore.items),
       there(2, `${h.name} pensó que así tenía mucho más sentido.`, [h.id]),
       there(3, baby ? `${c.name} balbuceó, como si estuviera de acuerdo.` : `${c.name} le felicitó por la idea.`, [c.id]),
-      there(1, 'Esta vez lo hicieron más despacio y con más cuidado.', both),
+      there(1, baby ? `${h.name} lo hizo más despacio y con más cuidado.` : 'Esta vez lo hicieron más despacio y con más cuidado.', both),
       there(2, 'Cada paso salía un poco mejor que el anterior, y eso les animaba.', both),
       there(3, 'El tiempo pasó volando, como pasa siempre que algo nos gusta.', both),
       there(1, `${h.name} se sintió capaz de hacer cosas de mayores.`, [h.id]),
       there(2, baby ? `${c.name} parecía muy feliz de verle.` : `${c.name} le dijo que era una gran ayuda.`, [c.id]),
-      there(3, 'Hasta silbaron una melodía alegre mientras terminaban.', both),
+      there(3, baby ? `${h.name} terminó el trabajo mientras ${c.name} hacía palmas.` : 'Hasta silbaron una melodía alegre mientras terminaban.', both),
     ],
     [
       there(1, chore.result, both, chore.items),
@@ -166,7 +175,7 @@ function helpers({ random, hero: h, companion: c }) {
       there(1, `${h.name} y ${c.name} ${baby ? 'se sonrieron, muy orgullosos del trabajo' : 'chocaron las manos, muy orgullosos'}.`, both),
       there(2, 'Lo habían conseguido juntos, paso a paso y sin rendirse.', both),
       there(3, 'Hasta la casa entera parecía más contenta que por la mañana.'),
-      there(1, 'Después recogieron todo, para dejarlo como estaba.', both),
+      there(1, baby ? `${h.name} recogió todo para dejar el rincón ordenado.` : 'Después recogieron todo, para dejarlo como estaba.', both),
       there(2, baby ? `${h.name} lo recogió todo mientras ${c.name} miraba.` : 'Uno lavaba y el otro secaba.', both),
       there(3, 'Recoger también formaba parte de ayudar, aunque fuera la parte menos divertida.', both),
     ],
@@ -188,7 +197,7 @@ function helpers({ random, hero: h, companion: c }) {
       atHome(1, `Antes de dormir, ${h.name} le dio un abrazo a ${c.name}.`, both),
       atHome(2, baby ? `${c.name} le respondió con un sonido muy dulce.` : `${c.name} le dio las gracias por toda su ayuda.`, both),
       atHome(3, 'La casa quedó en silencio, y solo se oía el tictac del reloj.'),
-      atHome(2, `${h.name} se tapó con su manta favorita hasta la barbilla.`, [h.id], ['blanket']),
+      atHome(2, 'Aquel rincón se sentía cómodo, tranquilo y lleno de cariño.'),
       atHome(3, 'Soñó con más tareas, más errores divertidos y más risas.', [h.id]),
       atHome(1, `Y se durmió pensando en lo bien que se trabaja en familia.`, [h.id]),
     ],
@@ -202,10 +211,10 @@ function helpers({ random, hero: h, companion: c }) {
 
 /** When the relative needs care: what happened and three small acts of care. */
 const CARES = [
-  { id: 'cold', scene: 'living-room', what: c => `${c.name} se había resfriado y necesitaba descansar`, acts: [['Le llevó un pañuelo limpio, doblado con cuidado.', ['handkerchief']], ['Le trajo el termómetro, como hacían con todos en casa.', ['thermometer']], ['Le preparó una bolsa de agua caliente con ayuda de un vecino.', ['hot-water-bottle']]], better: 'Al día siguiente, ya estornudaba mucho menos.' },
-  { id: 'tired', scene: 'living-room', what: c => `${c.name} había trabajado mucho y estaba sin energía`, acts: [['Le llevó un vaso de leche y unas galletas.', ['glass-of-milk', 'cookies']], ['Le leyó su libro de cuentos favorito.', ['storybook']], ['Le puso unas flores en un vaso junto al sofá.', ['flowers-in-glass']]], better: 'Después de descansar, volvió a tener ganas de jugar.' },
+  { id: 'cold', scene: 'living-room', what: c => `${c.name} se había resfriado y necesitaba descansar`, acts: [['Le llevó un pañuelo limpio, doblado con cuidado.', ['handkerchief']], ['Le trajo el termómetro, como hacían con todos en casa.', ['thermometer']], ['Le dejó descansar y se quedó cerca para acompañarle.', []]], better: 'Al día siguiente, ya estornudaba mucho menos.' },
+  { id: 'tired', scene: 'living-room', what: c => `${c.name} había trabajado mucho y estaba sin energía`, acts: [['Le llevó un vaso de leche para tomar despacio.', ['glass-of-milk']], ['Le leyó su libro de cuentos favorito.', ['storybook']], ['Le preguntó si quería seguir el cuento o descansar.', []]], better: 'Después de descansar, volvió a tener ganas de jugar.' },
   { id: 'sad', scene: 'living-room', what: c => `${c.name} estaba triste porque se le había roto su taza favorita`, acts: [['Le hizo un dibujo de una taza nueva, llena de colores.', []], ['Le sirvió leche en otra taza, la más bonita de la casa.', ['teacup']], ['Le contó su chiste más gracioso, dos veces.', []]], better: 'Al rato, la tristeza se convirtió en una sonrisa.' },
-  { id: 'sleepy', scene: 'bedroom', what: c => `${c.name} había dormido muy poco y tenía mucho sueño`, acts: [['Le llevó su almohada más blandita.', ['pillow']], ['Encendió la lamparita de noche para que descansara a gusto.', ['night-lamp']], ['Le leyó un libro de cuentos en voz muy bajita.', ['storybook']]], better: 'Después de una buena siesta, se despertó con mucha energía.' },
+  { id: 'sleepy', scene: 'bedroom', what: c => `${c.name} había dormido muy poco y tenía mucho sueño`, acts: [['Le llevó su almohada más blandita.', ['pillow']], ['Le habló muy bajito para mantener la calma del dormitorio.', []], ['Le leyó un libro de cuentos en voz muy bajita.', ['storybook']]], better: 'Después de una buena siesta, se despertó con mucha energía.' },
   { id: 'scrape', scene: 'porch', what: c => `${c.name} se había raspado la rodilla en el jardín`, acts: [['Le trajo una tirita y se la puso con mucho cuidado.', ['bandage']], ['Le sopló en la rodilla para que no doliera.', []], ['Le prestó su pañuelo favorito para secarse las lágrimas.', ['handkerchief']]], better: 'Al rato, la rodilla ya casi no dolía.' },
 ];
 const BABY_CARE = { id: 'teeth', scene: 'bedroom', what: c => `a ${c.name} le estaban saliendo los dientes y no paraba de llorar`, acts: [['Le cantó una canción muy suave.', []], ['Le dio cuerda a la caja de música.', ['music-box']], ['Le acercó su osito de peluche.', ['teddy-bear']]], better: `Al rato, el llanto se convirtió en una sonrisa.` };
@@ -266,20 +275,20 @@ function reversedDay({ random, hero: h, companion: c }) {
     [
       atHome(1, `${h.name} aprendió que cuidar a quien queremos es una forma de quererle.`, [h.id]),
       atHome(2, 'Y que los cuidados pequeños hacen sentir muy grande.', [h.id]),
-      atHome(3, 'Lo apuntó en su cuaderno, con letras grandes.', [h.id], ['notebook']),
+      atHome(3, 'Recordó los cuidados pequeños que habían ayudado a descansar.'),
       atHome(1, `Desde entonces, ${h.name} buscaba cada día un pequeño cuidado para regalar.`, [h.id]),
       atHome(2, 'A veces era un dibujo, y a veces un abrazo.', [h.id]),
       atHome(3, 'Nadie en la casa se quedaba sin su pequeño regalo.'),
       atHome(2, 'La casa se llenó de detalles bonitos.'),
       atHome(3, 'Y de abrazos a todas horas, también sin motivo.'),
-      atHome(1, `${c.name} decía que tenía el cariño más grande del mundo a su lado.`, [c.id]),
+      atHome(1, baby ? `${c.name} sonreía al notar aquel cuidado tan cercano.` : `${c.name} decía que tenía el cariño más grande del mundo a su lado.`, [c.id]),
     ],
     [
       atHome(1, `Esa noche, ${h.name} se metió en la cama con el corazón lleno.`, [h.id]),
       atHome(2, baby ? `${c.name} dormía ya, en paz por fin.` : `${c.name} vino a darle las buenas noches.`, [c.id]),
-      atHome(3, 'La lamparita de noche brillaba suave.', [], ['night-lamp']),
+      atHome(3, 'La habitación estaba en calma y todo invitaba a descansar.'),
       atHome(1, baby ? `${h.name} le susurró buenas noches a ${c.name} desde la puerta.` : `Esta vez, fue ${c.name} quien arropó a ${h.name}.`, both),
-      atHome(2, 'Las mantas olían a casa y a jabón.', [h.id], ['blanket']),
+      atHome(2, 'Aquel rincón se sentía cómodo, tranquilo y lleno de cariño.'),
       atHome(3, 'Todo estaba en calma, y la luna asomaba por la ventana.'),
       atHome(2, `${h.name} respiró hondo y despacio, una vez más.`, [h.id]),
       atHome(3, 'Los ojos se le cerraron poquito a poco.', [h.id]),
@@ -373,9 +382,9 @@ function longAgo({ random, hero: h, companion: c }) {
     [
       atHome(1, `Antes de dormir, ${h.name} pidió una historia más.`, [h.id]),
       atHome(2, baby ? `${h.name} le contó a ${c.name} una historia inventada, muy bajito.` : `${c.name} le contó una historia de hacía mucho tiempo.`, both),
-      atHome(3, 'La lamparita de noche brillaba suave en un rincón.', [], ['night-lamp']),
+      atHome(3, 'La habitación estaba en calma y todo invitaba a descansar.'),
       atHome(2, baby ? `${c.name} ya dormía, con el puñito cerrado.` : `${c.name} apagó la luz y le dio un beso de buenas noches.`, [c.id]),
-      atHome(3, 'Las mantas olían a casa y a jabón.', [h.id], ['blanket']),
+      atHome(3, 'Aquel rincón se sentía cómodo, tranquilo y lleno de cariño.'),
       atHome(3, 'Afuera, la noche estaba tranquila y estrellada.'),
       atHome(1, `${h.name} se durmió pensando en todas las historias que aún le quedaban por descubrir.`, [h.id]),
       atHome(2, 'Todo estaba en calma en la casa.'),
@@ -393,17 +402,17 @@ function longAgo({ random, hero: h, companion: c }) {
 const WAITS = [
   { id: 'visit', what: 'la visita de los abuelos', scene: 'porch', prepare: 'Hornearon galletas y pusieron la tetera al fuego con cuidado.', items: ['cookies', 'kettle'], arrive: 'Por fin sonó el timbre: eran los abuelos, con los brazos abiertos.' },
   { id: 'snow', what: 'la primera nevada del invierno', scene: 'porch', prepare: 'Prepararon gorros, bufandas y una bolsa de agua caliente para después.', items: ['hot-water-bottle'], arrive: 'Por fin, empezaron a caer copos de nieve grandes y lentos.' },
-  { id: 'birthday', what: 'la fiesta de cumpleaños', scene: 'living-room', prepare: 'Colgaron globos, una guirnalda y prepararon sombreros de fiesta.', items: ['balloon', 'garland', 'party-hat'], arrive: 'Por fin llegó la hora, y la tarta de cumpleaños apareció con sus velas.', arriveItems: ['birthday-cake'] },
-  { id: 'stars', what: 'la noche de las estrellas fugaces', scene: 'shooting-star-hill', prepare: 'Prepararon una manta, una linterna y una jarra de leche.', items: ['blanket', 'milk-jug'], arrive: 'Por fin, una estrella fugaz cruzó el cielo, y luego otra, y otra más.' },
+  { id: 'birthday', what: 'la fiesta de cumpleaños', scene: 'living-room', prepare: 'Prepararon dos globos para recibir la tarta de cumpleaños.', items: ['balloon'], arrive: 'Por fin llegó la hora, y la tarta de cumpleaños apareció con sus velas.', arriveItems: ['birthday-cake'] },
+  { id: 'stars', what: 'la noche de las estrellas fugaces', scene: 'shooting-star-hill', prepare: 'Prepararon una manta para mirar el cielo sin pasar frío.', items: ['blanket'], arrive: 'Por fin, una estrella fugaz cruzó el cielo, y luego otra, y otra más.' },
   { id: 'letter', what: 'una carta de su prima, que vivía lejos', scene: 'post-office', prepare: 'Escribieron una carta de respuesta para tenerla preparada.', items: ['letter'], arrive: 'Por fin, la cartera les entregó la carta con una sonrisa.', person: 'mail-carrier' },
-  { id: 'train', what: 'el tren que traía a su tía', scene: 'train-station', prepare: 'Prepararon un cartel de bienvenida y una lonchera con fruta.', items: ['lunchbox'], arrive: 'Por fin, el tren entró en la estación, y la tía bajó saludando.', person: 'train-driver' },
+  { id: 'train', what: 'el tren que traía a su tía', scene: 'train-station', prepare: 'Prepararon un cartel de bienvenida y una lonchera con fruta.', items: ['lunchbox'], arrive: 'Por fin, el tren entró en la estación, y la tía bajó saludando.' },
 ];
 
 /** E6 · La espera: a long wait, impatience, activities to fill it and the joy of arrival. */
 function theWait({ random, hero: h, companion: c }) {
   const baby = c.role === 'baby';
   const wait = choose(random, WAITS);
-  const person = wait.person ? copySupporting(random, wait.person) : null;
+  const person = wait.person === 'mail-carrier' ? copySupporting(random, wait.person) : null;
   const home = homeOf(random);
   const both = [h.id, c.id];
   const atHome = at(home.id), there = at(wait.scene), inside = at('living-room');
@@ -424,19 +433,19 @@ function theWait({ random, hero: h, companion: c }) {
       inside(1, wait.prepare, both, wait.items),
       inside(2, getScene('living-room').detail),
       inside(3, baby ? `${c.name} aplaudía cada vez que algo quedaba listo.` : `${c.name} le dejó hacer la parte más importante.`, both),
-      inside(1, 'Después jugaron a las canicas para que el tiempo pasara más rápido.', both, ['marbles']),
-      inside(2, 'Una canica rodó debajo del sofá, y tardaron un buen rato en sacarla.', both, ['marbles']),
-      inside(3, 'Hasta se olvidaron del reloj de arena que habían puesto en la mesa.', both, ['hourglass']),
-      inside(1, `${h.name} leyó un libro de cuentos en voz alta a ${c.name}.`, both, ['storybook']),
-      inside(2, 'Hizo todas las voces de los personajes.', [h.id]),
-      inside(3, baby ? `${c.name} se rio con la voz del lobo.` : `${c.name} se rio con la voz del lobo, y pidió otra vez.`, [c.id]),
+      inside(1, 'Después repasaron juntos lo que aún faltaba para la llegada.', both),
+      inside(2, 'Hicieron una pequeña tarea cada vez, sin volver a mirar la hora.', both),
+      inside(3, 'Estaban tan concentrados en preparar la llegada que olvidaron las prisas.', both),
+      inside(1, `${h.name} inventó una canción corta para continuar con alegría.`, both),
+      inside(2, 'La canción recordaba las pequeñas cosas que estaban preparando.', [h.id]),
+      inside(3, baby ? `${c.name} se rio al escuchar aquella canción tan divertida.` : `${c.name} repitió la canción para acompañar el trabajo.`, [c.id]),
     ],
     [
       inside(1, 'Cuando volvieron a mirar el despertador, había pasado casi toda la tarde.', both, ['alarm-clock']),
       inside(2, `${h.name} no podía creer que la tarde hubiera volado.`, [h.id]),
       inside(3, 'Esperar en compañía hacía que el tiempo volara.', both),
       inside(1, `${h.name} se dio cuenta de que la espera también había sido bonita.`, [h.id]),
-      inside(2, 'Cada juego había sido un pequeño regalo.', both),
+      inside(2, 'Preparar juntos la llegada había sido un pequeño regalo.', both),
       inside(3, baby ? `${c.name} bostezaba, pero no quería perderse nada.` : `${c.name} le guiñó un ojo, como diciendo que tenía razón.`, [c.id]),
       inside(1, 'Entonces llegó el momento de ir a esperar en el sitio exacto.', both),
       inside(2, 'Se abrigaron bien y salieron juntos.', both),
@@ -469,8 +478,8 @@ function theWait({ random, hero: h, companion: c }) {
       atHome(2, `Y que ${c.name} era la mejor compañía para esperar.`, [h.id]),
       atHome(3, baby ? `${c.name} ya dormía, con una sonrisa.` : `${c.name} le dio un abrazo antes de dormir.`, [c.id]),
       atHome(2, 'Esa noche, se durmió repasando cada momento del día.', [h.id]),
-      atHome(2, 'Las mantas olían a casa y a jabón.', [h.id], ['blanket']),
-      atHome(3, 'La lamparita de noche brillaba suave.', [], ['night-lamp']),
+      atHome(2, 'Aquel rincón se sentía cómodo, tranquilo y lleno de cariño.'),
+      atHome(3, 'La habitación estaba en calma y todo invitaba a descansar.'),
       atHome(1, 'Mañana ya no habría que esperar, pero quizá llegaría algo nuevo.', [h.id]),
       atHome(3, 'Las estrellas parpadeaban, como si guardaran un secreto.'),
       atHome(1, `Y ${h.name} soñó con todas las cosas bonitas que todavía estaban por llegar.`, [h.id]),
@@ -478,7 +487,7 @@ function theWait({ random, hero: h, companion: c }) {
   ];
   return {
     title: `${h.name} y ${c.name}: la gran espera`, place: getScene(wait.scene), extras: person ? [person] : [], questId: `wait-${wait.id}`, variantId: wait.scene, beats,
-    items: [...wait.items, ...(wait.arriveItems || []), 'alarm-clock', 'hourglass', 'marbles', 'storybook'],
+    items: [...wait.items, ...(wait.arriveItems || []), 'alarm-clock'],
     blockIds: { opening: home.id, goal: `wait-${wait.id}`, obstacle: wait.id, strategy: 'living-room', discovery: wait.scene, ending: home.id },
     roles: { home: home.id, destination: wait.scene },
   };
@@ -594,7 +603,7 @@ function petGuest({ random, hero: h, companion: c }) {
   const baby = c.role === 'baby';
   const care = choose(random, PETS);
   const pet = copySupporting(random, care.id);
-  const owner = copySupporting(random, choose(random, ['baker', 'teacher', 'gardener', 'market-seller', 'mail-carrier']));
+  const owner = { name: 'la vecina', gender: 'f' };
   const home = homeOf(random);
   const both = [h.id, c.id];
   const atHome = at(home.id), search = at(care.search), inside = at('living-room');
@@ -602,14 +611,14 @@ function petGuest({ random, hero: h, companion: c }) {
   const fish = care.id === 'goldfish';
   const beats = [
     [
-      atHome(1, `Un día, ${owner.name}, ${owner.article} ${owner.label}, tuvo que salir de viaje.`, [owner.id]),
+      atHome(1, `Una vecina pidió ayuda porque debía salir de viaje.`, both),
       atHome(2, home.detail),
-      atHome(3, `${owner.name} llevaba una jaula, una cesta y muchas instrucciones.`, [owner.id], ['basket']),
-      atHome(1, `Les pidió a ${h.name} y a ${c.name} que cuidaran de su ${pet.label} ${pet.name}.`, [owner.id, pet.id]),
+      atHome(3, `Explicó los cuidados que necesitaba ${pet.name} durante aquella tarde.`, [pet.id]),
+      atHome(1, `Les pidió a ${h.name} y a ${c.name} que cuidaran de su ${pet.label} ${pet.name}.`, [pet.id]),
       atHome(2, `${h.name} prometió cuidar${it} como si fuera ${pet.gender === 'f' ? 'suya' : 'suyo'}.`, [h.id]),
-      atHome(3, baby ? `${c.name} estiró las manitas hacia ${pet.name}.` : `${c.name} apuntó todas las instrucciones en un cuaderno.`, [c.id], ['notebook']),
-      atHome(2, `${owner.name} se despidió de ${pet.name} con un beso.`, [owner.id, pet.id]),
-      atHome(3, 'Dijo que volvería antes de la cena.', [owner.id]),
+      atHome(3, `${h.name} repitió los cuidados para recordarlos durante aquella tarde.`, [h.id]),
+      atHome(2, `La vecina se despidió de ${pet.name} con un beso.`, [pet.id]),
+      atHome(3, 'Dijo que volvería antes de la cena.', []),
       atHome(1, `${h.name} se sintió ${'importante'}, porque era la primera vez que cuidaba una mascota.`, [h.id]),
     ],
     [
@@ -628,10 +637,10 @@ function petGuest({ random, hero: h, companion: c }) {
       inside(2, `${h.name} se levantó de un salto.`, [h.id]),
       inside(3, baby ? `${c.name} miró a ${h.name} con los ojos muy abiertos.` : `${c.name} se puso de pie también.`, [c.id]),
       inside(1, fish ? `${h.name} se preocupó muchísimo por ${pet.name}.` : `Buscaron a ${pet.name} por todas partes.`, both),
-      inside(2, fish ? 'Pensaron qué podía necesitar un pez para estar feliz.' : 'Miraron debajo de la mesa, detrás de las cortinas y dentro de los armarios.', both, fish ? [] : ['curtain']),
+      inside(2, 'Miraron cerca con atención, sin dejar de ayudarse durante la búsqueda.'),
       inside(3, `${h.name} sentía un nudo en la barriga.`, [h.id]),
       inside(1, `${h.name} respiró hondo tres veces para pensar con calma.`, [h.id]),
-      inside(2, fish ? 'Entonces recordaron las instrucciones del cuaderno.' : `Pensó en qué haría ${pet.name} en su lugar.`, [h.id], fish ? ['notebook'] : []),
+      inside(2, `${h.name} recordó los cuidados antes de continuar con la búsqueda.`, [h.id]),
       inside(3, 'Entonces se le ocurrió una idea muy buena.', [h.id]),
     ],
     [
@@ -646,33 +655,33 @@ function petGuest({ random, hero: h, companion: c }) {
       search(3, `${pet.name} parecía haberse divertido con la aventura.`, [pet.id]),
     ],
     [
-      atHome(1, `Antes de la cena, ${owner.name} volvió de su viaje.`, [owner.id]),
-      atHome(2, `${pet.name} ${fish ? 'nadó deprisa' : 'corrió'} a saludar${owner.gender === 'f' ? 'la' : 'lo'} con mucha alegría.`, [pet.id, owner.id]),
-      atHome(3, `${owner.name} se rio de alegría al ver a ${pet.name}.`, [owner.id]),
-      atHome(1, `${h.name} le contó la verdad: ${pet.name} les había dado un pequeño susto.`, [h.id, owner.id]),
-      atHome(2, `${owner.name} dijo que a ${gendered(owner, 'él', 'ella')} también le había pasado muchas veces.`, [owner.id]),
-      atHome(3, 'Y que decir la verdad era lo más importante.', [owner.id]),
-      atHome(1, `${owner.name} les dio las gracias y les dijo que podían visitar a ${pet.name} cuando quisieran.`, [owner.id, ...both]),
+      atHome(1, `Antes de la cena, la vecina volvió de su viaje.`, []),
+      atHome(2, `${pet.name} ${fish ? 'nadó deprisa' : 'corrió'} a saludar${owner.gender === 'f' ? 'la' : 'lo'} con mucha alegría.`, [pet.id]),
+      atHome(3, `La vecina se rio de alegría al ver a ${pet.name}.`, []),
+      atHome(1, `${h.name} le contó la verdad: ${pet.name} les había dado un pequeño susto.`, [h.id]),
+      atHome(2, `La vecina dijo que a ${gendered(owner, 'él', 'ella')} también le había pasado muchas veces.`, []),
+      atHome(3, 'Y que decir la verdad era lo más importante.', []),
+      atHome(1, `La vecina les dio las gracias y les dijo que podían visitar a ${pet.name} cuando quisieran.`, both),
       atHome(2, `${h.name} prometió ir a ver${it} muy pronto.`, [h.id]),
-      atHome(3, baby ? `${c.name} dijo adiós con la mano.` : `${c.name} le dio a ${owner.name} el cuaderno con las instrucciones.`, [c.id], ['notebook']),
+      atHome(3, baby ? `${c.name} balbuceó al ver que todo estaba en calma.` : `${c.name} recordó lo que habían aprendido cuidando a ${pet.name}.`, [c.id]),
     ],
     [
       atHome(1, `${h.name} aprendió que cuidar de un animal es una gran responsabilidad.`, [h.id]),
       atHome(2, 'Y que la calma ayuda a encontrar lo que se pierde.', [h.id]),
-      atHome(3, `${c.name} le dijo que había sido una gran tarde.`, [c.id]),
+      atHome(3, baby ? `${c.name} balbuceó, todavía pendiente de su nueva compañía.` : `${c.name} le dijo que había sido una gran tarde.`, [c.id]),
       atHome(1, `Esa noche, ${h.name} dibujó a ${pet.name} para no olvidar${it}.`, [h.id]),
       atHome(2, 'Colgó el dibujo junto a su cama.', [h.id]),
-      atHome(3, 'La lamparita de noche lo iluminaba suavemente.', [], ['night-lamp']),
-      atHome(2, `${h.name} se tapó con su manta favorita.`, [h.id], ['blanket']),
+      atHome(3, 'La habitación estaba en calma y todo invitaba a descansar.'),
+      atHome(2, 'Aquel rincón se sentía cómodo, tranquilo y lleno de cariño.'),
       atHome(3, `Y soñó que ${pet.name} venía a visitar su casa.`, [h.id]),
       atHome(1, `Y se durmió pensando en su nuevo amigo ${fish ? 'de la pecera' : 'peludo'}.`, [h.id]),
     ],
   ];
   return {
-    title: `${h.name} y ${c.name}: el huésped de ${owner.name}`, place: getScene(care.search), extras: [owner, pet], questId: `pet-${care.id}`, variantId: owner.id, beats,
-    items: [...care.items, ...(care.foundItems || []), 'notebook'],
-    blockIds: { opening: home.id, goal: `pet-${care.id}`, obstacle: care.search, strategy: owner.id, discovery: care.id, ending: home.id },
-    roles: { home: home.id, destination: care.search, owner: owner.id, pet: pet.id },
+    title: `${h.name} y ${c.name}: una tarde con ${pet.name}`, place: getScene(care.search), extras: [pet], questId: `pet-${care.id}`, variantId: care.search, beats,
+    items: [...care.items, ...(care.foundItems || [])],
+    blockIds: { opening: home.id, goal: `pet-${care.id}`, obstacle: care.search, strategy: 'gentle-care', discovery: care.id, ending: home.id },
+    roles: { home: home.id, destination: care.search, owner: null, pet: pet.id },
   };
 }
 const gendered = (character, masculine, feminine) => character.gender === 'f' ? feminine : masculine;

@@ -31,6 +31,9 @@ export const BOOKS = Object.freeze([
 export const STORY_STRUCTURES = Object.freeze({
   adventure: ADVENTURE_STRUCTURES, action: ACTION_STRUCTURES, relax: RELAX_STRUCTURES, friends: FRIEND_STRUCTURES, family: FAMILY_STRUCTURES,
 });
+// A fixed pair leads every new story. A guide, antagonist or someone being rescued
+// only joins when the structure needs that role; catalogue breadth lives across stories.
+export const STORY_FOCUS_LIMITS = Object.freeze({ characters: 4, pageObjects: 2, objects: 4, treasureMapObjects: 5 });
 const GOALS = { adventure: ADVENTURE_GOALS, action: ACTION_GOALS, relax: RELAX_GOAL_IDS, friends: FRIEND_GOAL_IDS, family: FAMILY_GOAL_IDS };
 export const STORY_BLOCK_COUNTS = Object.freeze(Object.fromEntries(Object.entries(GOALS).map(([bookId, goals]) => [bookId,
   Object.freeze({ structure: STORY_STRUCTURES[bookId].length, goal: unique(goals).length })])));
@@ -78,7 +81,9 @@ export function generateStory(bookId, duration = 3, seed, options = {}) {
   const pair = familyCast?.characters || [cast.hero, cast.companion];
   const characters = [...pair, ...supporting].filter((character, index, list) => list.findIndex(other => other.id === character.id) === index);
   const plan = planFor(structure.id, story.blockIds, story.place.id, drawnIn(story.beats, story.items), {
-    ...(story.lexicon ? { lexicon: story.lexicon } : {}), roles: story.roles, ...(familyCast ? { family: { companionRole: cast.companion.role } } : {}),
+    ...(story.lexicon ? { lexicon: story.lexicon } : {}), roles: story.roles,
+    focus: { protagonists: pair.map(character => character.id), goal: story.blockIds.goal },
+    ...(familyCast ? { family: { companionRole: cast.companion.role } } : {}),
   });
   return {
     format: 'picturebook-v2', id, bookId, duration: minutes, seed: storySeed, structure: structure.id,

@@ -51,7 +51,10 @@ export function unfold(beats, duration) {
 }
 
 /** Items the full reading actually names and draws. */
-export const drawnIn = (beats, items) => items.filter(id => beats.flat().some(entry => entry.page.objects.includes(id)));
+export const drawnIn = (beats, items) => {
+  const drawn = unique(beats.flatMap(beat => beat.flatMap(entry => entry.page.objects)));
+  return unique([...items, ...drawn]).filter(id => drawn.includes(id));
+};
 
 export function planFor(structure, blockIds, destination, items, extra = {}) {
   return { version: 3, structure, blockIds, world: { destination, items: unique(items) }, ...extra };

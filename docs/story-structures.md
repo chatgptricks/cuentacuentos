@@ -2,12 +2,14 @@
 
 El generador funciona sin conexión, sin modelos de lenguaje y sin servicios externos. Cada libro ofrece varias **estructuras de seis partes**. Al generar un cuento, el motor elige una estructura y llena sus huecos (roles, lugares y elementos) con valores del catálogo **compatibles** entre sí. Cambian los personajes, los lugares, las pruebas, los regalos y los objetivos, pero la cadena de causa y efecto se mantiene siempre. La app evita repetir la misma estructura en dos cuentos seguidos del mismo libro.
 
+Cada cuento nuevo mantiene una pareja protagonista y un objetivo central. Los secundarios solo se añaden cuando cumplen una función: quien necesita un rescate, quien encarga o recibe algo, un consejero necesario o el antagonista. Hay como máximo cuatro personajes, dos objetos por página y cuatro objetos distintos en la lectura completa. El mapa conserva cinco elementos porque las pistas y el tesoro forman parte de su causa y efecto. El catálogo amplio ofrece variedad **entre cuentos**, sin obligar a incluir todos sus accesorios en cada historia. Los cuentos guardados conservan sus páginas y sus identificadores.
+
 ## Huecos y reglas
 
 | Hueco | Valores | Reglas |
 | --- | --- | --- |
 | Protagonista y amigo | 76 personajes (56 animales y 20 de fantasía) | Cada uno declara sus habilidades (`ABILITIES`): volar, nadar, trepar, fuerza, pequeño, alto, saltar, olfato, oído, luz o magia. Delfín, ballena, sirena y pulpo solo viven historias junto al agua. Las parejas incluyen al menos un nombre masculino para que «los dos» concuerde. |
-| Consejero | Abuela sabia, sabio, Merlín, maga, bruja amable, hada, espíritu del árbol, tortuga, panda, koala, elefanta; Olmo en «El robo» | Nunca coincide con la pareja protagonista. |
+| Consejero | Consejeros del catálogo en Aventura y El hechizo; Olmo en «El robo» | Solo aparece si la trama necesita ese papel. En La prisa, La preocupación y La carrera ayuda el compañero protagonista. |
 | Villano | 16 villanos suaves | Cada uno tiene guaridas, lo que suele llevarse, un motivo comprensible y una oferta que responde a ese motivo. |
 | Secundarios | 8 crías, 8 vecinos y 8 mascotas | Las crías tienen madre o padre en el catálogo y un hábitat; los vecinos, un lugar de trabajo; las mascotas, cuidados y escondites propios. |
 | Lugares | 76 escenarios | Cada lugar declara el terreno y las pruebas que permite (`PLACE_INFO`). Las habitaciones de la casa y los paisajes de sueño no tienen pruebas. |
@@ -22,7 +24,7 @@ El generador funciona sin conexión, sin modelos de lenguaje y sin servicios ext
 | --- | --- |
 | El elixir | Problema en casa · consejero, rumbo y regalo · viaje y prueba con el regalo · prueba con la habilidad del amigo y hallazgo · la virtud que gana el elixir y el regreso · el elixir resuelve el problema |
 | El rescate | Una madre o padre pide ayuda · rastro de la cría · prueba con el regalo · se oye a la cría y una habilidad la alcanza · consuelo y regreso · reencuentro |
-| El mapa de tres pistas | Mapa en el baúl del desván · pergamino con una adivinanza · prueba y piedra de luna · tercera adivinanza · la piedra abre el cofre · el tesoro se comparte |
+| El mapa de tres pistas | Mapa en el desván · pergamino con una adivinanza · prueba y piedra de luna · letras de la piedra con la tercera adivinanza · la piedra abre el cofre · el tesoro se comparte |
 | El encargo | Un vecino pide llevar algo frágil · el camino y el cruce · una prueba · el objeto corre peligro y se salva · entrega a otro vecino · regreso y gratitud |
 | Lejos de casa | Una criatura lejos de su hábitat · cómo transportarla · prueba en el camino · su familia la recibe · un regalo de su mundo · cartas y amistad |
 | La gran pregunta | Una pregunta en casa · el consejero indica dónde mirar · prueba · observación · respuesta sencilla y verdadera · una pregunta nueva |
@@ -32,7 +34,7 @@ El generador funciona sin conexión, sin modelos de lenguaje y sin servicios ext
 | Estructura | Partes |
 | --- | --- |
 | El robo y la redención | Fiesta y robo · Olmo y su regalo · Olmo muere en paz y la despedida · viaje y prueba · motivo y redención · la fiesta y el recuerdo de Olmo |
-| La defensa del hogar | Aviso de un vecino · trampa inofensiva · llegada del villano · la trampa falla a medias y alguien habla con calma · motivo y redención · fiesta |
+| La defensa del hogar | Aviso del compañero · trampa inofensiva · llegada del villano · la trampa falla a medias y alguien habla con calma · motivo y redención · fiesta |
 | El hechizo | Un hechizo sobre el hogar · receta del consejero · viaje y prueba · el ingrediente · la poción rompe el hechizo y el villano cuenta su motivo · redención |
 | La carrera tramposa | Reto de un rival presumido · entrenamiento · la trampa · la trampa se vuelve contra quien la hizo · el héroe se para a ayudar · medallas para todos |
 | El rescate en la guarida | Un villano solitario se lleva a una cría · viaje y prueba · entrar sin hacer ruido · la huida y el llanto del villano · una amistad prometida · reencuentro |
@@ -43,12 +45,12 @@ El generador funciona sin conexión, sin modelos de lenguaje y sin servicios ext
 | Estructura | Partes |
 | --- | --- |
 | La prisa | Deseo · intento con prisa · respiración · consejo · intento con calma · moraleja y sueño |
-| Buenas noches a todo | Pijamada sin sueño · buenas noches a las cosas y a los animales de la noche · de vuelta a la cama · respiración · sueño |
+| Buenas noches a todo | Pijamada sin sueño · saludos tranquilos con un solo visitante recurrente · de vuelta a la cama · respiración · sueño |
 | El ruido de la noche | Rutina de dormir · un ruido y lo que parece · respiración · ir a mirar juntos · la causa inofensiva · sueño |
 | La fábula de contraste | Liebre y tortuga, la cigarra y la hormiga, o el león y el ratón, con parejas del catálogo que encajan · moraleja · sueño |
 | El viaje del sueño | En la cama · una nube, un barquito, un avión de papel o la luna llevan a tres paisajes de sueño, con una respiración en cada uno · de vuelta a la cama |
-| Tres cosas bonitas | Pijamada · tres recuerdos del día, cada uno en su lugar · gratitud · sueño |
-| La preocupación que se encoge | Una preocupación para mañana · visita del consejero · caja, piedra lisa o tarro de la calma · un plan pequeño · sueño |
+| Tres cosas bonitas | Pijamada · una actividad compartida, su sonrisa y su gratitud, en el mismo lugar · gratitud · sueño |
+| La preocupación que se encoge | Una preocupación para mañana · compañía del amigo · una caja, piedra lisa o tarro de la calma · un plan pequeño · sueño |
 
 ### Amigos (6)
 
@@ -57,7 +59,7 @@ El generador funciona sin conexión, sin modelos de lenguaje y sin servicios ext
 | El plan compartido | Idea · preparación · complicación · solución · disfrute · recuerdo |
 | El amigo nuevo | Llega alguien tímido · el primer intento falla · algo en común · juegan · invitación a casa · amistad |
 | La pelea | Discusión · cada uno en su casa · calma y reflexión · se buscan y se piden perdón · solución justa · algo creado juntos |
-| La sorpresa | Un motivo para celebrar a un amigo · compras en secreto · un imprevisto salvado · la sorpresa · fiesta · gratitud |
+| La sorpresa | Un motivo para celebrar al compañero · solo dos cosas elegidas para ese motivo · un imprevisto con esas mismas cosas · la sorpresa · celebración juntos · gratitud |
 | Todos juegan | Un juego que necesita una habilidad que el amigo no tiene · tristeza · un juego nuevo donde cada habilidad encuentra algo · todos juegan |
 | La competición amistosa | Concurso · ventaja · tropieza el amigo · ayudar en vez de ganar · premio a la amistad |
 
@@ -80,6 +82,9 @@ Cada parte tiene nueve frases en orden de lectura y en tres niveles. Los cuentos
 - Olmo solo muere en «El robo» y no reaparece después.
 - Los animales marinos no salen del agua.
 - Cada página dibuja solo lo que nombra.
+- La pareja y el objetivo siguen siendo los mismos; no se superan los presupuestos de personajes y objetos.
+- Los cuentos cortos introducen las canicas y las letras de la piedra antes de usarlas.
+- Un bebé acompaña y observa mientras el protagonista realiza las tareas con herramientas.
 - No hay errores de concordancia ni de contracciones, y no aparecen nombres repetidos.
 - Las versiones cortas conservan el orden de las largas.
-- Todo el arte del catálogo aparece en algún cuento.
+- Los identificadores y posiciones originales de todo el catálogo siguen siendo válidos; los accesorios opcionales no se fuerzan dentro de las tramas nuevas.

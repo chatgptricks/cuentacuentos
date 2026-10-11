@@ -122,7 +122,6 @@ const TRAPS = [
   { id: 'hideout', items: ['wheelbarrow', 'broom'], set: () => 'escondieron todo en una carretilla y borraron las huellas con una escoba', works: the => `${cap(the)} buscó por todas partes sin encontrar nada.`, escape: () => 'Pero oyó un ruidito y fue directo hacia la carretilla.' },
 ];
 const LAND_VILLAINS = ['troll', 'ghost', 'crow', 'ogre', 'imp', 'spider', 'giant', 'winter-witch', 'thief-rat', 'scarecrow', 'envious-wizard', 'vain-snake', 'storm-cloud'];
-const NEIGHBORS = ['baker', 'mail-carrier', 'teacher', 'market-seller', 'gardener'];
 
 /** B2 · La defensa del hogar: a warning, a harmless trap, a brave conversation and a new friend. */
 function defense({ random, hero: h, companion: f }) {
@@ -135,7 +134,7 @@ function defense({ random, hero: h, companion: f }) {
   const home = getScene(choose(random, homesFor(target)));
   const trap = choose(random, TRAPS);
   const villain = copyVillain(random, villainId);
-  const leader = copySupporting(random, choose(random, NEIGHBORS));
+  const leader = f;
   const { the, a, them } = villainWords(villain);
   const both = [h.id, f.id];
   const pair = `${h.name} y ${f.name}`;
@@ -147,9 +146,9 @@ function defense({ random, hero: h, companion: f }) {
     [
       atHome(1, `${h.name} y su ${friendWord(f)} ${f.name} preparaban ${target.event} ${inPlace(home)}.`, both),
       atHome(2, home.detail),
-      atHome(3, 'Los vecinos colgaban adornos y se reían mientras trabajaban.'),
+      atHome(3, 'Querían tenerlo preparado para disfrutar de una tarde tranquila.'),
       atHome(2, target.role, [], things),
-      atHome(1, `Entonces ${leader.name}, ${kind(leader)}, trajo una noticia: ${a} quería llevarse ${target.name}.`, [leader.id], things),
+      atHome(1, `Entonces ${leader.name} trajo una noticia: ${a} quería llevarse ${target.name}.`, [leader.id], things),
       atHome(3, `${leader.name} ${them} había visto rondando, muy cerca de allí.`, [leader.id]),
       atHome(2, 'Todos se asustaron, y algunos querían esconderse en casa.'),
       atHome(3, `${h.name} respiró hondo, aunque también tenía un poco de miedo.`, [h.id]),
@@ -158,7 +157,7 @@ function defense({ random, hero: h, companion: f }) {
     [
       atHome(1, `Entre todos, ${trap.set(target)}.`, [...both, leader.id], trap.items),
       atHome(2, `${f.name} ayudó a cargar las cosas más pesadas.`, [f.id]),
-      atHome(3, `${leader.name} organizaba a los vecinos con voz firme.`, [leader.id]),
+      atHome(3, `${f.name} comprobó que su plan protegía lo que querían cuidar.`, [leader.id]),
       atHome(1, `${pair} se quedaron vigilando ${target.short}.`, both, things),
       atHome(2, `Prometieron no hacerle daño a nadie, ni siquiera ${toPhrase(the)}.`, both),
       atHome(3, 'Al caer la tarde, todo estaba listo.'),
@@ -212,7 +211,7 @@ function defense({ random, hero: h, companion: f }) {
     ],
   ];
   return {
-    title: `${h.name} y la defensa ${ofPhrase(placeName(home))}`, place: home, villain, extras: [leader], questId: target.id, variantId: trap.id, beats,
+    title: `${h.name} y la defensa ${ofPhrase(placeName(home))}`, place: home, villain, questId: target.id, variantId: trap.id, beats,
     items: [...things, ...trap.items],
     blockIds: { opening: home.id, goal: target.id, obstacle: trap.id, strategy: leader.id, discovery: villainId, ending: home.id },
     roles: { home: home.id, destination: home.id, villain: villainId, leader: leader.id },
@@ -332,14 +331,13 @@ const CHEATS = {
   imp: { cheat: 'ató con lazos los cordones de los corredores', items: [], beat: 'Se ayudaron a desatar los lazos y siguieron corriendo.', fall: 'tropezó con uno de sus propios lazos' },
   crow: { cheat: 'se llevó la bandera de meta a lo alto de un árbol', items: ['finish-flag'], beat: 'Siguieron corriendo, porque sabían dónde estaba la meta.', fall: 'se enredó con la bandera entre las ramas' },
 };
-const COACHES = ['turtle', 'wise-elder', 'wise-grandmother', 'royal-knight', 'pony'];
 
 /** B4 · La carrera tramposa: a boastful rival, training, a cheat that backfires and help instead of victory. */
 function race({ random, hero: h, companion: f }) {
   const villainId = choose(random, Object.keys(CHEATS));
   const cheat = CHEATS[villainId];
   const villain = copyVillain(random, villainId);
-  const coach = copyCharacter(random, choose(random, COACHES.filter(id => id !== h.id && id !== f.id)));
+  const coach = f;
   const home = getScene(choose(random, ['village', 'meadow', 'playground', 'festival-square', 'farm']));
   const track = getScene('race-track');
   const { the } = villainWords(villain);
@@ -357,13 +355,13 @@ function race({ random, hero: h, companion: f }) {
       atHome(3, `${h.name} sintió un nudo en la barriga.`, [h.id]),
       atHome(2, `${f.name} le dijo que lo importante era intentarlo.`, [f.id]),
       atHome(3, 'El trofeo brillaba en la plaza, esperando al final de la carrera.', [], ['trophy']),
-      atHome(1, `${h.name} y su ${friendWord(f)} ${f.name} decidieron entrenar con ${coach.name}, ${kind(coach)}.`, [...both, coach.id]),
+      atHome(1, `${h.name} y su ${friendWord(f)} ${f.name} decidieron entrenar juntos para la carrera.`, [...both, coach.id]),
     ],
     [
-      there(1, `${coach.name} les enseñó a correr a su ritmo, sin cansarse demasiado.`, [coach.id, ...both]),
-      there(2, `Usaba un cronómetro y un silbato para marcar cada vuelta.`, [coach.id], ['stopwatch', 'whistle']),
+      there(1, `${f.name} ayudó a ${h.name} a encontrar un ritmo cómodo para correr.`, [coach.id, ...both]),
+      there(2, `Recordaron juntos cada curva para conocer bien el recorrido.`, both),
       there(3, `${f.name} se cayó una vez, pero se levantó riendo.`, [f.id]),
-      there(1, 'También les enseñó a respirar hondo cuando estuvieran nerviosos.', [coach.id, ...both]),
+      there(1, 'También recordaron respirar hondo para calmarse antes de correr.', [coach.id, ...both]),
       there(2, `${h.name} aprendió el camino de la carrera curva a curva.`, [h.id]),
       there(3, 'Entrenaron cada tarde, aunque a veces lloviera.', both),
       there(2, `${coach.name} les recordó que una carrera también se gana con el corazón.`, [coach.id]),
@@ -373,8 +371,8 @@ function race({ random, hero: h, companion: f }) {
     [
       there(1, `En ${placeName(track)}, todos esperaban junto a la línea de salida.`, [...both, villain.id]),
       there(2, track.detail, [], ['finish-flag']),
-      there(3, 'Los vecinos animaban desde los lados con pañuelos de colores.', [], ['handkerchief']),
-      there(1, `${coach.name} tocó el silbato, y la carrera empezó.`, [coach.id], ['whistle']),
+      there(3, 'Se oían palabras de ánimo junto a la línea de salida.'),
+      there(1, 'Sonó la señal de salida, y la carrera empezó.', both),
       there(2, `${cap(the)} salió disparad${gendered(villain, 'o', 'a')} y se puso delante.`, [villain.id]),
       there(3, `${h.name} corría a su ritmo, como había entrenado.`, [h.id]),
       there(1, `Pero ${the} ${cheat.cheat}.`, [villain.id], cheat.items),
@@ -383,7 +381,7 @@ function race({ random, hero: h, companion: f }) {
     ],
     [
       there(1, `${pair} no se rindieron.`, both),
-      there(2, `${h.name} respiró hondo, como les había enseñado ${coach.name}.`, [h.id]),
+      there(2, `${h.name} respiró hondo, como habían practicado durante los entrenamientos.`, [h.id]),
       there(3, `${f.name} le guiñó un ojo para darle ánimos.`, [f.id]),
       there(1, cheat.beat, both),
       there(2, 'Poco a poco, fueron adelantando a otros corredores.', both),
@@ -409,15 +407,15 @@ function race({ random, hero: h, companion: f }) {
       there(3, 'El trofeo brilló en la meta para todos los corredores.', [], ['trophy']),
       there(1, `${cap(the)} confesó que hacía trampas porque tenía miedo de perder y de que se rieran.`, [villain.id]),
       there(2, `${cap(the)} pidió perdón a todos los corredores.`, [villain.id]),
-      there(3, `${f.name} le prestó su pañuelo para limpiarse el barro.`, [f.id], ['handkerchief']),
+      there(3, `${f.name} esperó a que pudiera seguir sin volver a resbalar.`, [f.id]),
       there(1, `${h.name} aprendió que ayudar a alguien vale más que cualquier trofeo.`, [h.id], ['trophy']),
       there(2, `Desde entonces, ${the} entrenaba con ${pair} cada tarde.`, [villain.id, ...both]),
       there(3, 'Y nunca más volvió a hacer trampas.', [villain.id]),
     ],
   ];
   return {
-    title: `${h.name} y la carrera tramposa`, place: track, mentor: coach, villain, questId: `race-${villainId}`, variantId: villainId, beats,
-    items: ['whistle', 'stopwatch', 'medal', 'trophy', ...cheat.items],
+    title: `${h.name} y la carrera tramposa`, place: track, villain, questId: `race-${villainId}`, variantId: villainId, beats,
+    items: ['medal', 'trophy', ...cheat.items],
     blockIds: { opening: home.id, goal: `race-${villainId}`, obstacle: villainId, strategy: coach.id, discovery: 'race-track', ending: home.id },
     roles: { home: home.id, destination: track.id, mentor: coach.id, villain: villainId },
   };
@@ -447,9 +445,8 @@ function lairRescue({ random, hero: h, companion: f }) {
   const lair = getScene(KIDNAPPERS[villainId]);
   const pick = choose(random, babiesFor(villainId));
   const baby = copySupporting(random, pick.id);
-  const parent = pick.parent ? copyCharacter(random, pick.parent) : null;
-  const parentName = parent ? parent.name : pick.parentName;
-  const parentIds = parent ? [parent.id] : [];
+  const parentName = `la familia de ${baby.name}`;
+  const parentIds = [];
   const villain = copyVillain(random, villainId);
   const home = getScene(choose(random, ['village', 'meadow', 'garden', 'farm', 'orchard', 'treehouse'].filter(id => fitsCast(cast, id))));
   const trial = abilityTrial(random, PLACE_INFO[lair.id].trials, [f, h]);
@@ -529,7 +526,7 @@ function lairRescue({ random, hero: h, companion: f }) {
     ],
   ];
   return {
-    title: `${h.name} y la guarida ${ofPhrase(the)}`, place: lair, villain, extras: [...(parent ? [parent] : []), baby], questId: `lair-${villainId}`, variantId: trial.id, beats,
+    title: `${h.name} y la guarida ${ofPhrase(the)}`, place: lair, villain, extras: [baby], questId: `lair-${villainId}`, variantId: trial.id, beats,
     items: ['sack', ...sneak.items],
     blockIds: { opening: home.id, goal: `lair-${villainId}`, obstacle: trial.id, strategy: pick.id, discovery: villainId, ending: home.id },
     roles: { home: home.id, destination: lair.id, villain: villainId, baby: baby.id, helper: helper?.id ?? null, ability: trial.ability ?? null },
@@ -587,13 +584,13 @@ function falseVillain({ random, hero: h, companion: f }) {
     ],
     [
       atHome(1, `Con la lupa encontraron la primera pista: ${incident.clue1[0].toLocaleLowerCase('es')}${incident.clue1.slice(1, -1)}.`, both, ['magnifying-glass']),
-      atHome(2, `${f.name} lo apuntó todo en un cuaderno.`, [f.id], ['notebook']),
+      atHome(2, 'Recordó cada paso para poder probarlo otra vez cuando quisiera.'),
       atHome(3, `${h.name} miró de cerca, con un ojo cerrado.`, [h.id]),
       atHome(1, incident.clue2, both, incident.clue2Items || []),
       atHome(2, `Aquello no encajaba con ${the}, que era muy ${suspectId === 'vain-snake' ? 'larga' : 'diferente'}.`),
       atHome(3, 'Cada pista los acercaba un poco más a la verdad.', both),
       atHome(1, `${pair} decidieron vigilar esa noche para descubrir al culpable.`, both),
-      atHome(2, 'Prepararon una lamparita de noche y una manta.', both, ['night-lamp', 'blanket']),
+      atHome(2, 'Prepararon una lamparita de noche para mirar sin asustarse.', both, ['night-lamp']),
       atHome(3, 'Se escondieron detrás de unos arbustos, muy quietos.', both),
     ],
     [
@@ -614,7 +611,7 @@ function falseVillain({ random, hero: h, companion: f }) {
       atHome(1, `Entonces se dieron cuenta de que habían culpado ${toPhrase(the)} sin razón.`, both),
       atHome(2, 'Muchos bajaron la cabeza, un poco avergonzados.'),
       atHome(3, `${f.name} propuso ir a pedirle perdón todos juntos.`, [f.id]),
-      there(1, `${pair} fueron hasta ${placeName(lair)} con un pastel de disculpas.`, both, ['birthday-cake']),
+      there(1, `${pair} fueron hasta ${placeName(lair)} para explicar su error.`, both),
       there(2, `Al principio, ${the} no quería abrir la puerta.`, [suspect.id]),
       there(3, `${h.name} llamó tres veces, con mucha paciencia.`, [h.id]),
     ],
@@ -622,7 +619,7 @@ function falseVillain({ random, hero: h, companion: f }) {
       there(1, `Cuando por fin abrió, ${pair} le pidieron perdón.`, [...both, suspect.id]),
       there(2, `${cap(the)} les confesó que siempre había querido tener amigos en el pueblo.`, [suspect.id]),
       there(3, `Y que tenía cara de pocos amigos solo porque se sentía ${gendered(suspect, 'solo', 'sola')}.`, [suspect.id]),
-      there(1, `${cap(the)} sonrió y aceptó compartir el pastel con ellos.`, [suspect.id, ...both], ['birthday-cake']),
+      there(1, `${cap(the)} sonrió y aceptó sus disculpas con alivio.`, [suspect.id, ...both]),
       there(2, 'Resultó ser divertidísimo y sabía muchos chistes.', [suspect.id]),
       atHome(3, `Desde entonces, ${the} bajaba al pueblo cada domingo.`, [suspect.id]),
       atHome(1, `${h.name} aprendió que no hay que juzgar a nadie por su apariencia.`, [h.id]),

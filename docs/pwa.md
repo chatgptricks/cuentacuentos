@@ -1,132 +1,46 @@
-# PWA y sonidos
+# PWA, efectos y música
 
-La interfaz y el lector están pensados para teléfono. `orientation: any` permite
-leer el libro en horizontal cuando se utiliza una tableta.
+La biblioteca se instala como PWA y permite leer sin conexión tras completar su primera descarga. El service worker generado por `scripts/build.mjs` precarga los módulos, atlas, efectos y música locales, verifica la instalación completa y mantiene una versión calculada del contenido. Una actualización conserva la biblioteca anterior hasta instalar la nueva. La app muestra si la biblioteca está preparada; perder conexión antes de completar la primera instalación no garantiza que todas las ilustraciones y sonidos estén disponibles.
 
-## Instalación y uso sin conexión
+En iPhone/iPad se instala desde Safari → Compartir → Añadir a pantalla de inicio. En Android se utiliza la opción de instalación de Chrome. La instalación depende de esa acción en el dispositivo.
 
-- Enlazar `./manifest.webmanifest` desde el HTML.
-- Usar `./icons/apple-touch-icon.png` para `rel="apple-touch-icon"` (180 × 180).
-- Añadir `apple-mobile-web-app-capable=yes`,
-  `apple-mobile-web-app-status-bar-style=default`,
-  `apple-mobile-web-app-title=Cuentacuentos` y `theme-color=#f6efe5`.
-- Servir por HTTPS o `localhost`; registrar el service worker con una URL relativa
-  al despliegue y una ruta de alcance correspondiente.
-- Precachear el HTML, CSS, módulos, manifiesto, iconos y todas las ilustraciones
-  para que generar y leer cuentos funcione sin conexión después de la primera
-  carga. La generación y el audio no requieren peticiones externas.
-- Generar una nueva versión del caché cuando cambien archivos y eliminar los
-  cachés anteriores durante `activate`. Un fallo en una ilustración no debe
-  dejar un service worker instalado con un precaché incompleto.
+## Efectos grabados
 
-En iPhone/iPad, abrir el sitio en Safari y utilizar Compartir → Añadir a pantalla
-de inicio. La instalación requiere esa acción de la persona que usa el teléfono.
+`src/sound-library.js` asigna una grabación física o instrumental a cada personaje, lugar y elemento, incluidos los identificadores de cuentos anteriores. Los animales con una vocalización disponible usan esa grabación; los demás usan foley apropiado y los personajes de fantasía usan instrumentos grabados. `src/audio.js` conserva la API y las preferencias originales, pero ya no genera sonidos mediante osciladores ni los utiliza como respaldo. Si un archivo falla o tarda demasiado, permanece en silencio.
 
-## Efectos de sonido
-
-`src/audio.js` reproduce 31 grabaciones locales CC0 para sonidos reconocibles:
-animales, bosque, viento, agua, páginas, hojas, puertas, campanas y relojes.
-Los MP3 breves ocupan 1.16 MiB en conjunto; sus fuentes, autores, licencias y
-preparación están en [audio-sources.md](audio-sources.md). Los efectos de
-fantasía siguen siendo sintetizados. No se reproduce audio al cargar el app.
+Los originales CC0 del primer lote se documentan en [audio-sources.md](audio-sources.md). Las grabaciones adicionales, sus autores y licencias están en [sound-library-sources.md](sound-library-sources.md) y en `public/audio/LICENSES.md`, accesible desde los créditos de la app.
 
 ```js
-import { unlockAudio, preloadSounds, playSound, setSoundEnabled, getSoundEnabled, stopSounds } from './audio.js';
-
-// Al preparar o reanudar el cuento: sólo los ids que aparecen en él.
-// La precarga no crea/reanuda AudioContext ni reproduce audio.
-void preloadSounds(['owl', 'forest', 'bell', 'page']);
-
-// Dentro del gesto de abrir/generar el libro (compatible con Safari en iOS).
-await unlockAudio();
-
-// Dentro del gesto de tocar una ilustración.
-await playSound('mouse');
-
-// El estado del control de sonido se recuerda en este dispositivo.
-setSoundEnabled(!getSoundEnabled());
-
-// Al cerrar el lector o cambiar de cuento.
+import { unlockAudio, preloadSounds, playSound, stopSounds, setSoundEnabled } from './audio.js';
+void preloadSounds(['owl', 'forest', 'bell', 'page']); // No reproduce ni desbloquea audio
+await unlockAudio(); // Dentro de un gesto de la persona
+await playSound('owl');
+setSoundEnabled(false);
 stopSounds();
 ```
 
-Identificadores de personajes: `fox`, `mouse`, `rabbit`, `bear`, `knight`,
-`wizard`, `dragon`, `owl`, `squirrel`, `frog`, `turtle` y `fairy`.
+La precarga solo prepara los sonidos del cuento, limita las cargas simultáneas a tres y espera como máximo 4,5 segundos. Cada descarga de efectos tiene un límite de cuatro segundos. Las grabaciones decodificadas se reutilizan. Tocar un mismo sonido muy rápido no lo apila; una nueva reproducción reemplaza suavemente la anterior, con un máximo de cuatro voces distintas. Silenciar, salir del cuento u ocultar la app invalida las reproducciones pendientes. Se mantiene `cuentacuentos:sound` como preferencia de efectos.
 
-Los lugares usan `forest`, `castle`, `lake`, `garden`, `beach`, `mountain`,
-`treehouse`, `village`, `meadow`, `cave`, `river` y `clouds`.
-`page` es una página real al pasarla. Los identificadores originales de
-personajes, lugares y objetos siguen funcionando, incluidos los de cuentos
-guardados. `SOUND_RECORDINGS` resuelve grabaciones concretas antes de aplicar
-los alias compartidos: por ejemplo, vaca, oveja, perro, abeja y grillo tienen
-su grabación propia. Los ids sin grabación mantienen su efecto sintetizado.
+## Música instrumental
 
-`preloadSounds(ids)` reutiliza datos y audio decodificado, limita las cargas
-simultáneas a tres y devuelve tras un máximo de 4.5 segundos. Cada solicitud
-de archivo se cancela si supera cuatro segundos. La app prepara sólo los
-sonidos del cuento y `page`; no descarga todo el catálogo al abrir la biblioteca.
-Los archivos se sirven desde `./audio/`, sin peticiones a servicios externos
-durante la lectura, y el build los incluye automáticamente en el precaché del
-service worker para uso sin conexión después de la primera carga completa.
-
-Si un clip no carga, no decodifica o tarda más de 700 ms al tocar una ilustración,
-`playSound()` usa el respaldo sintetizado. Cuando la carga termina tarde no se
-reproduce un segundo sonido. El lector no depende de que la precarga tenga éxito.
-
-El módulo limita la ganancia y los efectos simultáneos a cuatro, ignora repeticiones muy
-rápidas, detiene los sonidos al ocultar el app y funciona silenciosamente si
-el navegador no admite Web Audio. El control visual de silencio debe mostrar
-el estado persistido y exponer `aria-pressed` y un nombre accesible.
-Silenciar, salir del lector u ocultar la app cancela también las reproducciones
-que todavía estén esperando un archivo. La preferencia de efectos se conserva
-en `cuentacuentos:sound`.
-
-`node scripts/verify-audio.mjs` verifica precarga sin reproducción, caché,
-grabaciones, respaldo, límite de voces, cancelación de cargas pendientes y
-preferencias independientes. Los 31 MP3 también se verificaron con FFmpeg y
-ffprobe: decodificación, duración, canales, tamaño y picos sin recorte. No se
-realizó una audición subjetiva porque el entorno del agente no admite entrada de audio.
-
-## Música de los libros
-
-El módulo también incluye cuatro composiciones originales sintetizadas de
-dieciséis compases. Sus bucles duran entre 40 y 57 segundos, con melodía,
-acompañamiento y progresiones armónicas propias:
-
-- `adventure`: flauta suave y kalimba, melodía pentatónica, 80 pulsos por minuto
-- `action`: cuerdas suaves y pulsos graves en re menor, 76 pulsos por minuto
-- `relax`: acordes cálidos y campanillas espaciadas, 68 pulsos por minuto
-- `friends`: notas pulsadas, ritmo ligero y armonía mayor, 96 pulsos por minuto
-
-El libro `family` comparte la composición tranquila de `relax`. La música
-conserva sus composiciones originales y no carga grabaciones externas.
+Cuatro pistas musicales grabadas sustituyen las composiciones de osciladores. Aventura usa *Castles in the Sky*, Acción *Childhood*, Relax y Mi familia *Reverie* (Scott Buckley); Amigos usa *Carefree* (Kevin MacLeod). Sus fragmentos locales de aproximadamente 83–85 segundos tienen una transición circular y se repiten mediante `AudioBufferSourceNode.loop`. Los créditos visibles incluyen autor, obra, licencia y cambios; fuentes y procesamiento en [music-sources.md](music-sources.md).
 
 ```js
-import { unlockAudio, startAmbient, stopAmbient, getMusicEnabled, setMusicEnabled } from './audio.js';
-
-// Abrir o generar el cuento: ejecutar desde el gesto de la persona.
+import { unlockAudio, startAmbient, stopAmbient, setMusicEnabled } from './audio.js';
 await unlockAudio();
 startAmbient('adventure');
-
-// El control de música es independiente del control de efectos.
-setMusicEnabled(!getMusicEnabled());
-if (getMusicEnabled()) {
-  await unlockAudio();
-  startAmbient('adventure');
-}
-
-// Al cerrar el lector o abrir otra pantalla.
+setMusicEnabled(false);
 stopAmbient();
 ```
 
-La música empieza y termina con un fundido, conserva un volumen de fondo bajo
-y programa sus notas con anticipación para unir los compases sin cortes. El
-estado se guarda como `cc-music-enabled`; por defecto está activado. Guardar
-esa preferencia no inicia audio: primero se necesita el gesto y `unlockAudio()`.
+La música tiene una salida de volumen independiente y fundidos de entrada/salida. Descargar y decodificar una pista no obliga a reproducirla: el reproductor comprueba que el cuento siga abierto y la música activada antes de empezar. Se mantienen como máximo dos fragmentos decodificados para limitar memoria. La preferencia `cc-music-enabled` se conserva. Importar el módulo no descarga ni reproduce audio; se requiere un gesto de la persona para desbloquear el contexto.
 
-`stopSounds()` detiene únicamente los efectos; `stopAmbient()` detiene únicamente
-la música. Silenciar efectos permite seguir oyendo la música y viceversa. Al
-ocultar el app, ambos se detienen. La interfaz puede volver a llamar a
-`startAmbient(bookId)` al recuperar visibilidad si todavía hay un cuento abierto,
-la música está activada y el contexto sigue en ejecución; si Safari lo suspendió,
-el próximo gesto debe llamar a `unlockAudio()` antes de reanudar.
+## Presentación y efectos visuales
+
+`page-composition.js` elige entre paisaje, retrato, objeto compartido y detalle según la frase. No cambia las escenas, texto o personajes del cuento guardado. `illustration-scale.js` establece tamaños relativos de cada especie y de los familiares; los atlas originales permanecen intactos. Las ilustraciones se pueden tocar sin iconos superpuestos.
+
+`scene-effects.js` genera niebla, luciérnagas, lluvia, nieve, reflejos, burbujas y luces sobre la pintura del escenario. La selección respeta el lugar y la frase; no llueve dentro de una casa. El canvas no captura pulsaciones, tiene resolución limitada y solo se dibuja en las hojas visibles, con un máximo de 30 fotogramas por segundo. Se pausa al ocultar la app y se desactiva con movimiento reducido. Salir del lector o reconstruirlo elimina la animación anterior.
+
+## Comprobaciones
+
+`npm test` incluye reproducción grabada para todo el catálogo, silencio ante fallos, límite de voces, independencia de música/efectos y cancelación de cargas pendientes. También comprueba tamaños relativos, composiciones, clima coherente y compatibilidad de cuentos guardados. FFmpeg/ffprobe verifican decodificación, duración y niveles. Esas verificaciones no sustituyen una evaluación subjetiva del sonido en el dispositivo.

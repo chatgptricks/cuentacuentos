@@ -4,7 +4,7 @@ Una biblioteca infantil para leer juntos en el teléfono o el iPad, en español 
 
 **App:** https://chatgptricks.github.io/cuentacuentos/
 
-Cinco libros en un estante: Aventura, Acción, Relax, Amigos y **Mi familia**. Una persona adulta elige 3, 6 o 9 minutos y genera un cuento con su propia portada. Cada página tiene una oración corta y una ilustración compuesta con piezas reutilizables. La lectura llena la pantalla; en iPad horizontal se muestran dos páginas con el lomo en el centro. Los controles flotan en los márgenes y las ilustraciones tienen sonidos al tocarlas.
+Cinco libros en un estante: Aventura, Acción, Relax, Amigos y **Mi familia**. Una persona adulta elige 3, 6 o 9 minutos y genera un cuento con su propia portada. Cada página tiene una oración corta y una ilustración que se compone según su acción: paisaje, presentación de personajes, objetos compartidos o un detalle. La lectura llena la pantalla; en iPad horizontal se muestran dos páginas con el lomo en el centro. Los controles flotan en los márgenes y las ilustraciones tienen sonidos al tocarlas.
 
 ## Catálogo y cuentos
 
@@ -19,9 +19,9 @@ Cinco libros en un estante: Aventura, Acción, Relax, Amigos y **Mi familia**. U
 - Detalles en [docs/story-structures.md](docs/story-structures.md)
 - Cada plan conserva su reparto, objetivo y continuidad hasta el final
 
-Desde **Conoce a los 116 personajes**, la biblioteca abre una galería con las pestañas **Animales (56)**, **Fantasía (20)**, **Crías (8)**, **Mascotas (8)**, **Vecinos (8)** y **Villanos (16)**. Cada ficha muestra su dibujo, nombre y tipo de personaje; al tocar el dibujo suena un efecto suave. Los sonidos combinan 31 grabaciones reales de animales, naturaleza y objetos con efectos originales de fantasía. Los clips se sirven localmente, funcionan sin conexión y tienen niveles y fundidos ajustados; la música mantiene su control independiente.
+Desde **Conoce a los 116 personajes**, la biblioteca abre una galería con las pestañas **Animales (56)**, **Fantasía (20)**, **Crías (8)**, **Mascotas (8)**, **Vecinos (8)** y **Villanos (16)**. Cada ficha muestra su dibujo, nombre y tipo de personaje; al tocar el dibujo suena un efecto suave. Los sonidos usan grabaciones locales de animales, naturaleza, objetos e instrumentos; todos los personajes, lugares y elementos tienen una asignación y los efectos de fantasía también usan instrumentos grabados. Los clips se sirven localmente, funcionan sin conexión y tienen niveles y fundidos ajustados; la música mantiene su control independiente.
 
-**Explora escenarios y elementos** abre otra galería con **Escenarios (76)** y **Elementos (116)**. Permite conocer todos los lugares y objetos, ver las tres vistas de cada lugar y escuchar su sonido al tocarlos. El escenario ocupa casi todo el ancho útil de la página y dispone de más altura. El build mide la pintura visible de cada celda: el lector encuadra esa área con margen de acuarela, conserva su proporción y equilibra personajes, humanos y objetos sin modificar ningún PNG. Las figuras se alinean por su base y los objetos pequeños tienen una escala menor que los protagonistas. Los 36 lugares originales alternan panorámica, media y cercana; los 40 nuevos alternan frontal, desde la izquierda y desde la derecha. La vista se conserva al reanudar un cuento. Los recursos nuevos amplían las historias: faroles y brújulas para explorar, cometas e instrumentos para jugar, materiales de dibujo y pequeños tesoros para descubrir o cuidar.
+**Explora escenarios y elementos** abre otra galería con **Escenarios (76)** y **Elementos (116)**. Permite conocer todos los lugares y objetos, ver las tres vistas de cada lugar y escuchar su sonido al tocarlos. Cuando la frase necesita un escenario, la acuarela ocupa casi todo el ancho útil y puede mostrar niebla, luciérnagas, lluvia, nieve, reflejos o luces suaves generadas en vivo. Las páginas centradas en personajes u objetos usan el papel como fondo. El build mide la pintura visible de cada celda: el lector encuadra esa área con margen de acuarela, conserva su proporción y equilibra personajes, humanos y objetos sin modificar ningún PNG. Las figuras se alinean por su base, cada especie tiene una escala propia y los insectos se dibujan más pequeños que el ratón. Los objetos se agrupan alrededor de la acción entre los protagonistas, sin iconos de sonido superpuestos. Los 36 lugares originales alternan panorámica, media y cercana; los 40 nuevos alternan frontal, desde la izquierda y desde la derecha. La vista se conserva al reanudar un cuento. Los recursos nuevos amplían las historias: faroles y brújulas para explorar, cometas e instrumentos para jugar, materiales de dibujo y pequeños tesoros para descubrir o cuidar.
 
 **Mi familia** convierte al niño o la niña en protagonista de actividades cotidianas y aventuras pequeñas con un familiar por cuento. Su creador permite elegir un nombre, seis peinados, seis prendas, cinco tonos de piel y ocho colores favoritos para la ropa. Todas las opciones están disponibles para todos los personajes. Se puede agregar o quitar a papá, mamá, un bebé, un hermano o hermana de edad parecida y un adolescente; cada uno usa el mismo creador, con proporciones acordes a su edad. Antes de generar, se elige un familiar o **Un familiar sorpresa**. La configuración completa se conserva, pero la historia usa solo al protagonista y esa compañía. Si no hay familiares configurados, se añade Dani, hermano o hermana.
 
@@ -65,8 +65,12 @@ El lote adicional de `public/art/` contiene 40 lugares nuevos desde tres ángulo
 - `src/family-story.js`: protagonista y un familiar por historia, conservando la configuración completa
 - `src/app.js`: estante, preparación, portada, lectura y composición de ilustraciones
 - `src/style.css`: interfaz pastel y libro a pantalla completa
+- `src/scene-effects.js`: atmósferas vivas sobre las acuarelas visibles
+- `src/page-composition.js`: composición según la acción de cada página
+- `src/illustration-scale.js`: proporciones relativas de especies y familiares
+- `src/sound-library.js` y `src/music-library.js`: grabaciones y atribuciones
 - `src/art-layout.js`: encuadre de los atlas y proporciones visibles a partir de los límites calculados por el build
-- `src/audio.js`: grabaciones locales, efectos de fantasía, precarga y música ambiental original sintetizada
+- `src/audio.js`: efectos grabados, precarga, mezcla y música instrumental local
 - `public/art/`: atlas de acuarela generados, con transparencia
 - `public/manifest.webmanifest` y `public/icons/`: instalación como PWA
 - `scripts/build.mjs`: build y caché offline
@@ -82,4 +86,4 @@ En iPhone o iPad, abre la app en Safari, toca Compartir y luego **Añadir a pant
 
 ## Atribuciones
 
-El paso realista de páginas usa [StPageFlip 2.0.7](https://github.com/Nodlik/StPageFlip), incluido localmente bajo licencia MIT en `public/vendor/page-flip.LICENSE.txt`. Todas las acuarelas del catálogo se generaron para este proyecto con imagegen. Los personajes humanos usan dibujos SVG locales de capas reutilizables. La música y los efectos de fantasía se sintetizan localmente con Web Audio. Los 31 efectos grabados proceden de BigSoundBank bajo CC0; autores, originales, recortes y comprobaciones están en [docs/audio-sources.md](docs/audio-sources.md).
+El paso realista de páginas usa [StPageFlip 2.0.7](https://github.com/Nodlik/StPageFlip), incluido localmente bajo licencia MIT en `public/vendor/page-flip.LICENSE.txt`. Todas las acuarelas del catálogo se generaron para este proyecto con imagegen. Los personajes humanos usan dibujos SVG locales de capas reutilizables. La música utiliza fragmentos instrumentales de Scott Buckley y Kevin MacLeod bajo CC BY 4.0, con atribución visible en la app y fuentes en [docs/music-sources.md](docs/music-sources.md). Los efectos físicos e instrumentales proceden de BigSoundBank, Wikimedia Commons y Freesound, con sus respectivas licencias y cambios en [docs/audio-sources.md](docs/audio-sources.md), [docs/sound-library-sources.md](docs/sound-library-sources.md) y `public/audio/LICENSES.md`. Web Audio solo reproduce y mezcla las grabaciones; no hay osciladores de respaldo.

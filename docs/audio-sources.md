@@ -47,18 +47,18 @@ Los créditos se conservan aquí por cortesía y para poder auditar las fuentes.
 - Los cinco efectos con impulsos breves (página, hojas, gotas, salpicadura y tic tac) tienen compresión moderada para conservar un cuerpo audible a volumen bajo. Cada clip tiene un fundido de entrada de 20 ms; el de salida dura hasta 140 ms, o 360 ms en los ambientes naturales.
 - Las grabaciones se sirven desde el mismo origen que la app. No se solicita contenido a BigSoundBank durante la lectura. El build las incluye en la precarga del service worker para uso sin conexión.
 - `preloadSounds(ids)` carga únicamente los archivos que usará el cuento, con tres cargas simultáneas y una espera máxima de 4.5 segundos. No crea ni reanuda AudioContext y nunca reproduce sonido. Cuando AudioContext ya existe, también decodifica los clips.
-- `playSound(id)` mantiene los identificadores originales y utiliza la grabación cuando está disponible. Si la carga o decodificación falla o tarda más de 700 ms, reproduce el efecto sintetizado anterior. Una carga que termina tarde no produce un segundo sonido.
+- `playSound(id)` mantiene los identificadores originales y utiliza la grabación cuando está disponible. Si la carga o decodificación falla o tarda más de 1200 ms, el reproductor permanece en silencio; ya no usa el silencio ante fallos anterior. Una carga que termina tarde no produce un segundo sonido.
 - El silencio, la salida del lector y la ocultación de la app cancelan también los efectos que aún están esperando un archivo. Se conserva el límite de cuatro efectos, el desbloqueo de iOS dentro del toque y los controles independientes de música y efectos.
 
 ## Identidad de los sonidos
 
-El zumbido es de un abejorro, el canto de pájaro de un petirrojo y el graznido de una corneja; se usan como sonidos representativos de los dibujos correspondientes, sin alterar su altura. Los caballos usan una llamada suave. El agua al remar es una grabación de foley físico con una tabla de madera y agua. Los personajes de fantasía conservan la síntesis. El reloj de cuco tiene un efecto propio de dos notas, sintetizado, porque no se encontró una grabación real adecuada con la licencia buscada. Murciélago, delfín y tren conservan sus silbidos propios y no reutilizan el silbato de plástico.
+El zumbido es de un abejorro, el canto de pájaro de un petirrojo y el graznido de una corneja; se usan como sonidos representativos de los dibujos correspondientes, sin alterar su altura. Los caballos usan una llamada suave. El agua al remar es una grabación de foley físico con una tabla de madera y agua. Este documento conserva las fuentes y el procesamiento del primer lote. La implementación actual asigna instrumentos grabados a los personajes de fantasía; el mapa completo está en `src/sound-library.js` y las fuentes adicionales en `docs/sound-library-sources.md`. El reloj de cuco utiliza ahora una grabación física documentada en el lote adicional. Murciélago, delfín y tren usan foley de alas, agua y un tren grabado, sin reutilizar el silbato de plástico.
 
-La música de fondo sigue siendo las composiciones originales de la app y utiliza su salida separada de los efectos.
+La música de fondo usa ahora pistas instrumentales grabadas y una salida independiente; véase `docs/music-sources.md`.
 
 ## Validación
 
-Se verificaron todos los archivos con FFmpeg/ffprobe: decodificación, formato, duración, canales, tamaño, señal presente y picos sin recorte. `scripts/verify-audio.mjs` cubre caché y precarga, reproducción de grabaciones, respaldo sintetizado, limitación de voces, cancelación de cargas pendientes y preferencias independientes. No se realizó una audición subjetiva: el entorno del agente no admite entrada de audio.
+Se verificaron todos los archivos con FFmpeg/ffprobe: decodificación, formato, duración, canales, tamaño, señal presente y picos sin recorte. `scripts/verify-audio.mjs` cubre caché y precarga, reproducción de grabaciones, silencio ante fallos, limitación de voces, cancelación de cargas pendientes y preferencias independientes. No se realizó una audición subjetiva: el entorno del agente no admite entrada de audio.
 
 ## Huellas de los MP3 distribuidos
 
