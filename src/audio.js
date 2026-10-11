@@ -35,6 +35,7 @@ export const SOUND_ALIASES = Object.freeze({
   crayons: 'rustle', puzzle: 'pluck', pinwheel: 'umbrella', 'paper-star': 'fairy',
   shell: 'watersong', pearl: 'bell', crystal: 'key', acorn: 'seed',
   apple: 'basket', 'honey-jar': 'pluck', teacup: 'castle', 'watering-can': 'splash',
+  troll: 'bear', ghost: 'cloud', crow: 'bird', 'pirate-cat': 'purr', ogre: 'dragon', imp: 'pluck', spider: 'yarn', giant: 'mountain',
 });
 
 let context;

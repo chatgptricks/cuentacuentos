@@ -14,9 +14,10 @@ Cinco libros en un estante: Aventura, Acción, Relax, Amigos y **Mi familia**. U
 - 36 elementos: los 12 originales y 24 nuevos de exploración, creación y pequeños tesoros
 - 124 recursos del catálogo que participan en el texto y en las ilustraciones
 - 18, 36 o 54 páginas, según la duración elegida
-- Cinco estructuras que combinan bloques de apertura, objetivo, dificultad, estrategia, descubrimiento y cierre
-- Los bloques cambian lo que sucede en el cuento, además de los nombres y los escenarios
-- Acción tiene 16 objetivos con causas, pistas y reparaciones propias; los demás libros también varían sus acciones y su vocabulario
+- Cinco estructuras fijas de seis partes con huecos: protagonista, amigo, consejero, villano, lugar de inicio, lugar de aventura, pruebas, regalo, elixir y objetivo
+- Cada hueco se llena con un valor compatible: las habilidades del amigo resuelven pruebas posibles en ese terreno, el regalo del consejero se usa después de entregarse y el elixir resuelve el problema del inicio
+- Acción tiene ocho villanos suaves con un motivo y una redención que responde a ese motivo; Relax termina con respiración guiada y la hora de dormir
+- Detalles en [docs/story-structures.md](docs/story-structures.md)
 - Cada plan conserva su reparto, objetivo y continuidad hasta el final
 
 Desde **Conoce a los 52 personajes**, la biblioteca abre una galería con las pestañas **Animales (32)** y **Fantasía (20)**. Cada ficha muestra su dibujo, nombre y tipo de personaje; al tocar el dibujo suena un efecto suave. Los sonidos de los nuevos personajes se sintetizan localmente y comparten timbres apropiados: chapoteos, pasos, cantos, ronroneos o magia.
@@ -27,7 +28,7 @@ Desde **Conoce a los 52 personajes**, la biblioteca abre una galería con las pe
 
 Cada objetivo tiene vocabulario ligado a lo que sucede: los sustantivos, calificativos y acciones se eligen antes de escribir las frases. Los calificativos y nombres amplían la redacción; los objetivos, dificultades y soluciones aportan la variedad de trama. La app recuerda los últimos ocho planes de cada libro y busca evitar los tres objetivos más recientes y las combinaciones de bloques repetidas.
 
-Los tiempos son aproximados e incluyen leer, mirar las ilustraciones y detenerse para jugar. Acción incluye la muerte tranquila de un personaje secundario anciano, una despedida explícita, redención y esperanza. La pantalla de preparación lo avisa a la persona adulta.
+Los tiempos son aproximados e incluyen leer, mirar las ilustraciones y detenerse para jugar. Acción incluye la muerte tranquila de un personaje secundario anciano, una despedida explícita, la redención del villano y esperanza. La pantalla de preparación lo avisa a la persona adulta.
 
 La generación es local y procedural: no usa un servicio de IA en cada lectura. Los cuentos, las ilustraciones y los sonidos funcionan sin conexión tras la primera carga completa. La app guarda la familia, el último cuento y la página de lectura en ese dispositivo. No hay cuentas ni un backend.
 
@@ -41,7 +42,7 @@ npm run build
 npm run dev
 ```
 
-La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` valida las cuadrículas y la transparencia de los 16 atlas, comprueba que las ilustraciones nuevas no crucen los bordes de sus celdas, copia las fuentes y recursos a `dist` y crea un service worker con una versión calculada a partir del contenido.
+La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` valida las cuadrículas y la transparencia de los 16 atlas (y del atlas de villanos cuando se añada), comprueba que las ilustraciones nuevas no crucen los bordes de sus celdas, copia las fuentes y recursos a `dist` y crea un service worker con una versión calculada a partir del contenido.
 
 **Siempre desplegar las mejoras solicitadas a producción**, tras pasar `npm test`, `npm run build` y la revisión visual. El usuario ya autorizó ese despliegue. El workflow [.github/workflows/pages.yml](.github/workflows/pages.yml) ejecuta las pruebas, compila y publica `dist` en GitHub Pages al subir cambios a `main`; también permite ejecución manual. Comprueba que termine correctamente y verifica la app publicada. Esta preferencia está recogida en [AGENTS.md](AGENTS.md).
 
@@ -49,10 +50,12 @@ La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` va
 
 - `src/character-catalog.js`: los 52 personajes, sus nombres y el registro compartido de atlas
 - `src/world-catalog.js`: los 36 escenarios y 36 elementos, posiciones de atlas, sonidos y compatibilidad narrativa
-- `src/story-engine.js`: selección con semilla y estructuras narrativas
-- `src/story-blocks.js`: objetivos y bloques intercambiables de dificultad, estrategia, descubrimiento y cierre
-- `src/action-plots.js`: 16 mecanismos de Acción y su vocabulario con concordancia gramatical
-- `src/story-language.js`: calificativos y acciones coherentes para cada objetivo de los otros libros
+- `src/story-engine.js`: selección con semilla y las cinco estructuras narrativas
+- `src/narrative-world.js`: habilidades de cada personaje, terreno y pruebas de cada lugar, regalos y gramática compartida
+- `src/quest-catalog.js`: elixires de Aventura, fiestas y objetos de Acción, villanos con su motivo y su redención, consejeros y hogares
+- `src/villain-catalog.js`: los ocho villanos, su atlas y el arte pendiente
+- `src/story-blocks.js`: actividades de Relax, Amigos y Mi familia, con sus complicaciones
+- `src/story-language.js`: calificativos y acciones coherentes para cada actividad
 - `src/story-selection.js`: selección de cuentos nuevos con un historial limitado de planes recientes
 - `src/family-characters.js`: perfiles de la familia y dibujos humanos compuestos con SVG
 - `src/family-story.js`: protagonista y un familiar por historia, conservando la configuración completa

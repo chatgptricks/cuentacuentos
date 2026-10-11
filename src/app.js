@@ -1,4 +1,4 @@
-import { BOOKS, CHARACTERS, CHARACTER_ATLASES } from './story-engine.js';
+import { BOOKS, CHARACTERS, CHARACTER_ATLASES, VILLAINS, VILLAIN_ATLASES, PENDING_ART } from './story-engine.js';
 import { generateFreshStory, normalizeStoryHistory, rememberStory } from './story-selection.js';
 import { SCENES, ITEMS, WORLD_ATLASES, getScene, getItem } from './world-catalog.js';
 import { HAIRSTYLES, OUTFITS, SKIN_TONES, FAVORITE_COLORS, FAMILY_ROLES, createDefaultFamily, createFamilyMember, normalizeFamily, renderHuman } from './family-characters.js';
@@ -49,6 +49,9 @@ const iconPaths = {
   'music-off': '<path d="M9 17V5l11-2v12"/><ellipse cx="6" cy="17" rx="3" ry="2"/><ellipse cx="17" cy="15" rx="3" ry="2"/><path d="m3 3 18 18"/>',
 };
 function icon(name, cls = '') { return `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconPaths[name] || iconPaths.sparkle}</svg>`; }
+const PORTRAIT_ATLASES = { ...CHARACTER_ATLASES, ...VILLAIN_ATLASES };
+// Registered characters whose painting has not been added yet stay out of the illustrations.
+const hasArt = character => !PENDING_ART.includes(PORTRAIT_ATLASES[character.atlas.sheet || 'main'].file);
 function atlasStyle(cell, registry) {
   const atlas = registry[cell.sheet || 'main'];
   const position = `${cell.x / (atlas.columns - 1) * 100}% ${cell.y / (atlas.rows - 1) * 100}%`;
@@ -57,9 +60,9 @@ function atlasStyle(cell, registry) {
 function sprite(id, { interactive = false, extra = '', label } = {}) {
   const human = [...(state.story?.characters || []), ...state.family.members].find(c => c?.id === id && c.kind === 'human');
   if (human) return humanSprite(human, { interactive, extra, label });
-  const char = CHARACTERS.find(c => c.id === id);
-  if (!char) return '';
-  const style = atlasStyle(char.atlas, CHARACTER_ATLASES);
+  const char = CHARACTERS.find(c => c.id === id) || VILLAINS.find(c => c.id === id);
+  if (!char || !hasArt(char)) return '';
+  const style = atlasStyle(char.atlas, PORTRAIT_ATLASES);
   return interactive
     ? `<button type="button" class="character-sprite ${extra}" style="${style}" data-sound="${escape(char.sound)}" data-sound-label="El sonido de ${escape(label || char.name)}" aria-label="Escuchar a ${escape(label || char.name)}"><span class="sound-dot">${icon('volume')}</span></button>`
     : `<span class="character-sprite ${extra}" style="${style}" role="img" aria-label="${escape(label || char.label)}"></span>`;
@@ -251,7 +254,7 @@ async function generate() {
     await new Promise(resolve => setTimeout(resolve, 350));
     state.story = generateFreshStory(state.bookId, state.duration, { family: state.family, companionRole: state.companionRole }, state.recentStories);
     document.querySelector('#loading-message').textContent = 'Preparando las páginas y sus ilustraciones…';
-    const sheets = new Set((state.story.characters || [state.story.hero, state.story.companion]).filter(character => character && character.kind !== 'human').map(character => CHARACTER_ATLASES[character.atlas.sheet || 'main'].file));
+    const sheets = new Set((state.story.characters || [state.story.hero, state.story.companion]).filter(character => character && character.kind !== 'human' && hasArt(character)).map(character => PORTRAIT_ATLASES[character.atlas.sheet || 'main'].file));
     for (const page of state.story.pages) {
       const scene = getScene(page.scene);
       if (scene) sheets.add(WORLD_ATLASES[scene.atlas.sheet].file);
@@ -284,7 +287,8 @@ function coverHTML() {
 function pageHTML(page, i) {
   const s = state.story;
   const cast = s.characters || [s.hero, s.companion, s.guardian].filter(Boolean);
-  const characters = [...new Set(page.characters)].filter(id => cast.some(c => c.id === id) || CHARACTERS.some(c => c.id === id)).slice(0, 3);
+  const characters = [...new Set(page.characters)].filter(id => cast.some(c => c.id === id) || CHARACTERS.some(c => c.id === id))
+    .filter(id => { const person = cast.find(c => c.id === id); return !person || person.kind === 'human' || hasArt(person); }).slice(0, 3);
   const labelFor = id => cast.find(c => c?.id === id)?.name || CHARACTERS.find(c => c.id === id)?.name;
   const elements = (Array.isArray(page.objects) ? page.objects : []).filter(id => getItem(id)).slice(0, 2);
   return `<article class="storybook-page paper-page" data-page-index="${i + 1}"><div class="page-inner"><div class="page-art ${characters.length > 2 ? 'three-characters' : ''} ${elements.length ? 'has-objects' : ''} ${characters.length ? '' : 'no-characters'}">${page.scene ? place(page.scene, true) : ''}<div class="page-characters">${characters.map(id => sprite(id, { interactive: true, label: labelFor(id) })).join('')}</div><div class="page-objects">${elements.map(objectSprite).join('')}</div></div><div class="page-copy">${page.paragraphs.map(text => `<p>${escape(text)}</p>`).join('')}</div><span class="page-number">${i + 1}</span></div></article>`;

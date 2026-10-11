@@ -4,15 +4,19 @@ import { inflateSync } from 'node:zlib';
 import path from 'node:path';
 import { CHARACTER_ATLASES } from '../src/character-catalog.js';
 import { WORLD_ATLASES } from '../src/world-catalog.js';
+import { VILLAIN_ATLASES, PENDING_ART } from '../src/villain-catalog.js';
+import { access } from 'node:fs/promises';
 const root = path.resolve(import.meta.dirname, '..');
 const dist = path.join(root, 'dist');
 const atlases = [
   ...Object.values(CHARACTER_ATLASES).map(atlas => [atlas.file, atlas.columns, atlas.rows]),
   ...Object.values(WORLD_ATLASES).map(atlas => [atlas.file, atlas.columns, atlas.rows]),
+  ...Object.values(VILLAIN_ATLASES).map(atlas => [atlas.file, atlas.columns, atlas.rows]),
 ];
 const newAtlasFiles = new Set([
   ...Object.entries(CHARACTER_ATLASES).filter(([id]) => !['main', 'extra'].includes(id)),
   ...Object.entries(WORLD_ATLASES).filter(([id]) => !['main-places', 'extra-places', 'main-objects'].includes(id)),
+  ...Object.entries(VILLAIN_ATLASES),
 ].map(([, atlas]) => atlas.file));
 const paeth = (left, up, corner) => {
   const estimate = left + up - corner;
@@ -82,14 +86,22 @@ function validateTransparency(png, filename, width, height, columns, rows) {
     }
   }
 }
+let validated = 0;
 for (const [filename, columns, rows] of atlases) {
+  const exists = await access(path.join(root, 'public/art', filename)).then(() => true, () => false);
+  if (PENDING_ART.includes(filename)) {
+    // Pending paintings are optional until added; once present they must pass the same checks.
+    if (!exists) { console.log(`Pending art: public/art/${filename} (the reader hides its characters until it is added).`); continue; }
+    console.log(`${filename} is present: remove it from PENDING_ART in src/villain-catalog.js to show it.`);
+  }
   const png = await readFile(path.join(root, 'public/art', filename));
   if (png.length < 33 || png.toString('hex', 0, 8) !== '89504e470d0a1a0a') throw new Error(`${filename}: invalid PNG`);
   const width = png.readUInt32BE(16), height = png.readUInt32BE(20);
   if (!width || !height || width * rows !== height * columns || png[24] !== 8 || png[25] !== 6 || png[28] !== 0) throw new Error(`${filename}: atlas needs square, non-interlaced 8-bit RGBA cells`);
   validateTransparency(png, filename, width, height, columns, rows);
+  validated += 1;
 }
-for (const filename of ['character-catalog.js', 'world-catalog.js', 'story-engine.js', 'story-blocks.js', 'story-language.js', 'story-selection.js', 'action-plots.js', 'family-characters.js', 'family-story.js', 'app.js', 'audio.js', 'style.css']) await readFile(path.join(root, 'src', filename));
+for (const filename of ['character-catalog.js', 'world-catalog.js', 'villain-catalog.js', 'narrative-world.js', 'quest-catalog.js', 'story-engine.js', 'story-blocks.js', 'story-language.js', 'story-selection.js', 'family-characters.js', 'family-story.js', 'app.js', 'audio.js', 'style.css']) await readFile(path.join(root, 'src', filename));
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 await cp(path.join(root, 'public'), dist, { recursive: true });
@@ -131,5 +143,5 @@ self.addEventListener('fetch', event => {
   }));
 });
 `);
-console.log(`Validated ${atlases.length} RGBA atlases with visible illustrations and transparent backgrounds; new cells have no broad strokes across crop boundaries.`);
+console.log(`Validated ${validated} RGBA atlases with visible illustrations and transparent backgrounds; new cells have no broad strokes across crop boundaries.`);
 console.log(`Built ${files.length + 1} files; offline cache ${version}`);

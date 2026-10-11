@@ -1,32 +1,5 @@
 // Vocabulary belongs to an objective: changing an action must preserve its cause and outcome.
 // Each profile has a grammatical noun, three modifiers, and two alternatives to the original action.
-const adventure = {
-  seed: ['la semilla', ['luminosa', 'del amanecer', 'de los colores'], ['preparó la tierra con ayuda antes de sembrar', 'preguntó cómo cuidar el primer brote antes de plantarlo']],
-  bell: ['la campanita', ['susurrante', 'de la luna', 'del silencio'], ['esperó sin tocar la campana hasta escuchar a las luciérnagas', 'cerró los ojos para distinguir el canto entre las hojas']],
-  drop: ['la gota', ['cantora', 'del eco', 'de las voces'], ['cantó una nota y escuchó la respuesta de su compañía', 'compartió una melodía dejando silencios para otras voces']],
-  feather: ['la pluma', ['protectora', 'de la lluvia', 'del rocío'], ['apartó una rama pequeña que rozaba una flor', 'acomodó la tierra que protegía el tallo de una flor']],
-  key: ['la llave', ['amistosa', 'del encuentro', 'de la bienvenida'], ['preparó una invitación donde todas las visitas tenían sitio', 'ensayó un saludo y reservó un turno para escuchar']],
-  cloud: ['la nube', ['memoriosa', 'de las historias', 'del recuerdo'], ['describió una tarde del jardín tal como la recordaba', 'dibujó un recuerdo verdadero y explicó cada detalle']],
-  flower: ['la flor', ['orientadora', 'del sendero', 'de los caminos'], ['humedeció la tierra y retiró una hoja que la tapaba', 'pidió ayuda para cuidar sus raíces sin arrancarlas']],
-  boat: ['el barquito', ['viajero', 'de los deseos', 'de las semillas'], ['dibujó un viaje donde las semillas llegarían sin pisar flores', 'describió cómo protegería las semillas durante el viaje']],
-  lantern: ['el farol', ['acogedor', 'del refugio', 'de las luciérnagas'], ['preparó un rincón tranquilo para las visitas cansadas', 'dibujó una señal hacia un banco cómodo del jardín']],
-  compass: ['la brújula', ['curiosa', 'de las preguntas', 'del regreso'], ['nombró a las visitas que necesitaban ayuda en el jardín', 'eligió regresar para acompañar a quienes buscaban orientación']],
-  map: ['el mapa', ['detallista', 'de las visitas', 'del descubrimiento'], ['dibujó una flor que había observado junto al camino', 'contó los pétalos de una flor sin separarla del tallo']],
-  telescope: ['el telescopio', ['soñador', 'de las estrellas', 'de la noche'], ['buscó un dibujo de estrellas por el telescopio mágico', 'comparó dos figuras celestes mirando por el telescopio']],
-  'magnifying-glass': ['la lupa', ['curiosa', 'del detalle', 'de las preguntas'], ['observó las líneas de una hoja sin arrancarla', 'comparó dos pétalos que seguían unidos a su flor']],
-  backpack: ['la mochila', ['generosa', 'de las meriendas', 'del descanso'], ['preparó una lista de quienes necesitaban descansar del trabajo', 'recordó a los vecinos que habían cuidado el jardín']],
-  rope: ['la cuerda', ['cuidadosa', 'del sendero', 'de las raíces'], ['dibujó un paso amplio alrededor de los brotes pequeños', 'señaló las raíces que el nuevo sendero debía respetar']],
-  boots: ['las botas', ['viajeras', 'del jardinero', 'del regreso'], ['preguntó dónde estaba quien necesitaba recuperar las botas', 'preparó una nota para devolver las botas a su dueño']],
-  shell: ['la concha', ['melodiosa', 'de las olas', 'del silencio'], ['escuchó sin hablar hasta distinguir el rumor del mar', 'dejó un turno tranquilo para escuchar las olas']],
-  pearl: ['la perla', ['serena', 'de la noche', 'del descanso'], ['guardó silencio y esperó mientras el rincón descansaba', 'preparó una pausa sin ruido antes de continuar']],
-  crystal: ['el cristal', ['luminoso', 'de los colores', 'del reflejo'], ['eligió un lugar estable donde entraba luz suave', 'señaló un rincón iluminado que protegería el cristal']],
-  acorn: ['la bellota', ['paciente', 'de la sombra', 'del mañana'], ['dibujó cómo regaría y protegería el brote nuevo', 'pidió ayuda para preparar tierra y cuidar sus raíces']],
-  apple: ['la manzana', ['generosa', 'del encuentro', 'de la merienda'], ['dibujó porciones para que cada visita tuviera una', 'preguntó cuántas visitas compartirían la merienda']],
-  'honey-jar': ['el tarrito', ['cuidadoso', 'de miel', 'del encuentro'], ['buscó el nombre de quien había dejado el tarrito', 'preguntó a los vecinos quién podía recoger su miel']],
-  teacup: ['la taza', ['florida', 'de las visitas', 'del recuerdo'], ['dibujó la flor de la taza y contó sus pétalos', 'comparó la flor dibujada con las flores del jardín']],
-  'watering-can': ['la regadera', ['paciente', 'de los cuidados', 'del jardín'], ['comprobó la humedad de cada maceta antes de regar', 'señaló las macetas secas y dejó descansar las húmedas']],
-};
-
 const relax = {
   patience: ['la semilla', ['paciente', 'del mañana', 'sin prisa'], ['comprobó la tierra y dejó tiempo para que brotara', 'dibujó una marca para recordar cuándo revisar la maceta']],
   listening: ['la canción', ['susurrante', 'del silencio', 'más bajita'], ['cerró los ojos y distinguió un sonido por vez', 'escuchó primero el agua y después las hojas']],
@@ -77,24 +50,14 @@ const pickIndex = random => Math.floor(random() * 3);
 
 export function applyStoryLanguage(random, bookId, original) {
   const socialId = original.id.replace(/^family-/, '');
-  const profile = bookId === 'adventure' ? adventure[original.id]
-    : bookId === 'relax' ? relax[original.id]
-      : social[bookId === 'family' ? (familyAliases[socialId] || socialId) : original.id];
+  const profile = bookId === 'relax' ? relax[original.id]
+    : social[bookId === 'family' ? (familyAliases[socialId] || socialId) : original.id];
   if (!profile) throw new Error(`Missing vocabulary for ${bookId}:${original.id}`);
   const [noun, modifiers, alternatives] = profile;
   const modifierIndex = pickIndex(random), verbIndex = pickIndex(random);
-  const field = bookId === 'adventure' ? 'activation' : bookId === 'relax' ? 'change' : 'task';
+  const field = bookId === 'relax' ? 'change' : 'task';
   const title = `${noun} ${modifiers[modifierIndex]}`;
   const action = [original[field], ...alternatives][verbIndex];
   const goal = { ...original, title, [field]: action };
-  if (bookId === 'adventure') {
-    goal.object = title;
-    // Keep the same named magical object in its clue and consequence.
-    for (const [key, value] of Object.entries(goal)) {
-      if (typeof value !== 'string' || key === 'id' || key === 'title' || key === 'object') continue;
-      goal[key] = value.replaceAll(original.object, title)
-        .replaceAll(original.object[0].toUpperCase() + original.object.slice(1), title[0].toUpperCase() + title.slice(1));
-    }
-  }
   return { goal, lexicon: { nounId: original.id, modifierId: `${original.id}-${modifierIndex}`, verbId: `${original.id}-${verbIndex}`, title, action: goal[field] } };
 }
