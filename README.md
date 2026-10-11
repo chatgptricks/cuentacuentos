@@ -10,7 +10,7 @@ Cinco libros en un estante: Aventura, Acción, Relax, Amigos y **Mi familia**. U
 
 - 52 personajes: 32 animales y 20 de fantasía, con nombres, género gramatical y sonidos
 - Se conservan los 12 personajes originales y se suman 24 animales y 16 personajes de fantasía
-- 36 escenarios de acuarela: los 12 originales y 24 nuevos de naturaleza, pueblos y fantasía
+- 36 escenarios de acuarela con tres encuadres cada uno: panorámica, media y cercana (108 vistas)
 - 36 elementos: los 12 originales y 24 nuevos de exploración, creación y pequeños tesoros
 - 124 recursos del catálogo que participan en el texto y en las ilustraciones
 - 18, 36 o 54 páginas, según la duración elegida
@@ -22,7 +22,7 @@ Cinco libros en un estante: Aventura, Acción, Relax, Amigos y **Mi familia**. U
 
 Desde **Conoce a los 52 personajes**, la biblioteca abre una galería con las pestañas **Animales (32)** y **Fantasía (20)**. Cada ficha muestra su dibujo, nombre y tipo de personaje; al tocar el dibujo suena un efecto suave. Los sonidos de los nuevos personajes se sintetizan localmente y comparten timbres apropiados: chapoteos, pasos, cantos, ronroneos o magia.
 
-**Explora escenarios y elementos** abre otra galería con **Escenarios (36)** y **Elementos (36)**. Permite conocer todos los lugares y objetos, y escuchar su sonido al tocarlos. Los recursos nuevos amplían las historias: faroles y brújulas para explorar, cometas e instrumentos para jugar, materiales de dibujo y pequeños tesoros para descubrir o cuidar.
+**Explora escenarios y elementos** abre otra galería con **Escenarios (36)** y **Elementos (36)**. Permite conocer todos los lugares y objetos, ver los tres encuadres de cada lugar y escuchar su sonido al tocarlos. Las locaciones se muestran más grandes en el libro, con bordes de pigmento que se desvanecen suavemente en transparencia. Cada lugar alterna entre panorámica, media y cercana conforme aparece en las páginas, también al reanudar un cuento guardado. Los recursos nuevos amplían las historias: faroles y brújulas para explorar, cometas e instrumentos para jugar, materiales de dibujo y pequeños tesoros para descubrir o cuidar.
 
 **Mi familia** convierte al niño o la niña en protagonista de actividades cotidianas y aventuras pequeñas con un familiar por cuento. Su creador permite elegir un nombre, seis peinados, seis prendas, cinco tonos de piel y ocho colores favoritos para la ropa. Todas las opciones están disponibles para todos los personajes. Se puede agregar o quitar a papá, mamá, un bebé, un hermano o hermana de edad parecida y un adolescente; cada uno usa el mismo creador, con proporciones acordes a su edad. Antes de generar, se elige un familiar o **Un familiar sorpresa**. La configuración completa se conserva, pero la historia usa solo al protagonista y esa compañía. Si no hay familiares configurados, se añade Dani, hermano o hermana.
 
@@ -42,7 +42,7 @@ npm run build
 npm run dev
 ```
 
-La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` valida las cuadrículas y la transparencia de los 17 atlas, incluido el de los ocho villanos, comprueba que las ilustraciones nuevas no crucen los bordes de sus celdas, copia las fuentes y recursos a `dist` y crea un service worker con una versión calculada a partir del contenido.
+La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` valida las cuadrículas y la transparencia de los 26 atlas, incluidos los ocho villanos y los nueve atlas de encuadres de locaciones, comprueba que las ilustraciones nuevas no crucen los bordes de sus celdas, copia las fuentes y recursos a `dist` y crea un service worker con una versión calculada a partir del contenido. Los identificadores, archivos y posiciones de los atlas originales se conservan para mantener la compatibilidad de los cuentos guardados.
 
 **Siempre desplegar las mejoras solicitadas a producción**, tras pasar `npm test`, `npm run build` y la revisión visual. El usuario ya autorizó ese despliegue. El workflow [.github/workflows/pages.yml](.github/workflows/pages.yml) ejecuta las pruebas, compila y publica `dist` en GitHub Pages al subir cambios a `main`; también permite ejecución manual. Comprueba que termine correctamente y verifica la app publicada. Esta preferencia está recogida en [AGENTS.md](AGENTS.md).
 

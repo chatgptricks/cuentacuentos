@@ -1,5 +1,5 @@
 import { SCENES, getScene } from './world-catalog.js';
-export { SCENES, ITEMS, OBJECTS, WORLD_ATLASES, getScene, getItem } from './world-catalog.js';
+export { SCENES, ITEMS, OBJECTS, WORLD_ATLASES, SCENE_VIEW_LABELS, getScene, getSceneView, getSceneViewIndex, getItem } from './world-catalog.js';
 import { CHARACTERS, CHARACTER_NAMES, getCharacter } from './character-catalog.js';
 export { CHARACTERS, CHARACTER_ATLASES, CHARACTER_NAMES, getCharacter } from './character-catalog.js';
 import { VILLAINS, VILLAIN_NAMES, getVillain } from './villain-catalog.js';

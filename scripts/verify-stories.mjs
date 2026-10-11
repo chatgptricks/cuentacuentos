@@ -5,6 +5,7 @@ import { ADVENTURE_MENTORS, RELAX_MENTORS, ELIXIRS, TARGETS, VILLAIN_PLOTS } fro
 import { RELAX_GOALS, FRIEND_GOALS, FAMILY_GOALS } from '../src/story-blocks.js';
 import { createDefaultFamily } from '../src/family-characters.js';
 import { SOUND_ALIASES } from '../src/audio.js';
+import { SCENE_VIEW_LABELS, getSceneView, getSceneViewIndex } from '../src/world-catalog.js';
 
 const countWords = text => (text.match(/[\p{L}\p{N}]+(?:[’'-][\p{L}\p{N}]+)*/gu) || []).length;
 const textOf = story => story.pages.flatMap(page => page.paragraphs).join('\n');
@@ -113,9 +114,9 @@ assert.deepEqual(WORLD_ATLASES['extra-places'], { file: 'places-extra.png', colu
 assert.deepEqual(WORLD_ATLASES['main-objects'], { file: 'objects.png', columns: 4, rows: 3 });
 const addedWorldSheets = ['places-nature', 'places-village', 'places-wonder', 'objects-explore', 'objects-create', 'objects-treasure'];
 for (const sheet of addedWorldSheets) assert.deepEqual(WORLD_ATLASES[sheet], { file: `${sheet}.png`, columns: 4, rows: 2 });
-assert.equal(Object.keys(WORLD_ATLASES).length, 9);
-assert.equal(Object.keys(CHARACTER_ATLASES).length + Object.keys(WORLD_ATLASES).length, 16);
-assert.equal(new Set([...Object.values(CHARACTER_ATLASES), ...Object.values(WORLD_ATLASES)].map(atlas => atlas.file)).size, 16, 'Every registered atlas is a distinct offline resource.');
+assert.equal(Object.keys(WORLD_ATLASES).length, 18);
+assert.equal(Object.keys(CHARACTER_ATLASES).length + Object.keys(WORLD_ATLASES).length, 25);
+assert.equal(new Set([...Object.values(CHARACTER_ATLASES), ...Object.values(WORLD_ATLASES)].map(atlas => atlas.file)).size, 25, 'Every registered atlas is a distinct offline resource.');
 assert.ok(Object.isFrozen(WORLD_ATLASES) && Object.isFrozen(SCENES) && Object.isFrozen(ITEMS) && Object.isFrozen(OBJECTS));
 assert.deepEqual(OBJECTS.map(object => object.id), ITEMS.map(item => item.id));
 assert.equal(new Set([...SCENES, ...ITEMS].map(asset => `${asset.atlas.sheet}:${asset.atlas.x}:${asset.atlas.y}`)).size, 72);
@@ -134,14 +135,32 @@ for (const scene of SCENES) {
   assert.equal(scene.scene, scene.id);
   assert.ok(scene.name && scene.detail && Object.isFrozen(scene.tags) && scene.tags.length);
   assert.ok(scene.article === undefined || scene.article === 'la');
+  assert.ok(Object.isFrozen(scene.views) && scene.views.length === 3, `${scene.id}: panoramic, medium and close views are available.`);
+  for (const [index, view] of scene.views.entries()) {
+    assert.ok(Object.isFrozen(view));
+    const atlas = WORLD_ATLASES[view.sheet];
+    assert.ok(atlas && view.x >= 0 && view.x < atlas.columns && view.y === index && view.y < atlas.rows);
+    assert.equal(getSceneView(scene.id, index), view);
+  }
+  assert.equal(getSceneView(scene.id, 3), scene.views[0]);
+  assert.equal(getSceneView(scene.id, -1), scene.views[2]);
+  assert.equal(getSceneView(scene.id, NaN), scene.views[0]);
 }
+assert.deepEqual(SCENE_VIEW_LABELS, ['Panorámica', 'Media', 'Cercana']);
+assert.equal(new Set(SCENES.flatMap(scene => scene.views.map(view => `${view.sheet}:${view.x}:${view.y}`))).size, 108, 'Every place has three distinct painted cells.');
+const interleavedScenes = ['forest', 'lake', 'forest', 'lake', 'forest', 'forest', 'lake'].map(scene => ({ scene }));
+assert.deepEqual(interleavedScenes.map((_, index) => getSceneViewIndex(interleavedScenes, index)), [0, 0, 1, 1, 2, 0, 2], 'Each location cycles independently and keeps its view when resuming a book.');
+assert.deepEqual(JSON.parse(JSON.stringify(interleavedScenes)).map((_, index) => getSceneViewIndex(interleavedScenes, index)), [0, 0, 1, 1, 2, 0, 2]);
+assert.equal(getSceneViewIndex([{ paragraphs: ['A saved page without a scene.'] }], 0), 0);
+assert.equal(getSceneView('missing'), undefined);
 for (const item of ITEMS) {
   assert.equal(getItem(item.id), item);
   assert.ok(['el', 'la', 'los', 'las'].includes(item.article));
 }
 for (const [sheet, atlas] of Object.entries(WORLD_ATLASES)) {
   assert.ok(Object.isFrozen(atlas));
-  assert.equal([...SCENES, ...ITEMS].filter(asset => asset.atlas.sheet === sheet).length, atlas.columns * atlas.rows, `${sheet}: every cell maps to one world identity.`);
+  const cells = [...SCENES, ...ITEMS].map(asset => asset.atlas).concat(SCENES.flatMap(scene => scene.views));
+  assert.equal(cells.filter(cell => cell.sheet === sheet).length, atlas.columns * atlas.rows, `${sheet}: every cell maps to one world identity or one of its views.`);
 }
 assert.equal(getScene('missing'), undefined);
 assert.equal(getItem('missing'), undefined);

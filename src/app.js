@@ -1,6 +1,6 @@
 import { BOOKS, CHARACTERS, CHARACTER_ATLASES, VILLAINS, VILLAIN_ATLASES, PENDING_ART } from './story-engine.js';
 import { generateFreshStory, normalizeStoryHistory, rememberStory } from './story-selection.js';
-import { SCENES, ITEMS, WORLD_ATLASES, getScene, getItem } from './world-catalog.js';
+import { SCENES, ITEMS, WORLD_ATLASES, SCENE_VIEW_LABELS, getScene, getSceneView, getSceneViewIndex, getItem } from './world-catalog.js';
 import { HAIRSTYLES, OUTFITS, SKIN_TONES, FAVORITE_COLORS, FAMILY_ROLES, createDefaultFamily, createFamilyMember, normalizeFamily, renderHuman } from './family-characters.js';
 import { unlockAudio, playSound, setSoundEnabled, getSoundEnabled, stopSounds, startAmbient, stopAmbient, setMusicEnabled, getMusicEnabled } from './audio.js';
 
@@ -73,12 +73,19 @@ function humanSprite(character, { interactive = false, extra = '', label } = {})
     ? `<button type="button" class="character-sprite human-sprite ${extra}" data-sound="human" aria-label="Escuchar a ${escape(label || character.name)}">${art}<span class="sound-dot">${icon('volume')}</span></button>`
     : `<span class="character-sprite human-sprite ${extra}" role="img" aria-label="${escape(label || character.name)}">${art}</span>`;
 }
-function place(scene, interactive = false) {
+function place(scene, interactive = false, viewIndex = 0) {
   const location = getScene(scene) || getScene('forest');
-  const style = atlasStyle(location.atlas, WORLD_ATLASES);
+  const index = Number.isFinite(Number(viewIndex)) ? Math.trunc(Number(viewIndex)) : 0;
+  const view = (index % 3 + 3) % 3;
+  const style = atlasStyle(getSceneView(location.id, view), WORLD_ATLASES);
+  const attributes = `data-scene="${escape(location.id)}" data-scene-view="${view}"`;
+  const label = `${location.label}, vista ${SCENE_VIEW_LABELS[view].toLowerCase()}`;
   return interactive
-    ? `<button type="button" class="scene-sprite" style="${style}" data-sound="${location.sound}" data-sound-label="Suena ${escape(location.label)}" aria-label="Escuchar ${escape(location.label)}"></button>`
-    : `<span class="scene-sprite" style="${style}" role="img" aria-label="Ilustración: ${escape(location.label)}"></span>`;
+    ? `<button type="button" class="scene-sprite" style="${style}" ${attributes} data-sound="${location.sound}" data-sound-label="Suena ${escape(location.label)}" aria-label="Escuchar ${escape(label)}"></button>`
+    : `<span class="scene-sprite" style="${style}" ${attributes} role="img" aria-label="Ilustración: ${escape(label)}"></span>`;
+}
+function scenePages(pages) {
+  return pages.map((page, sourceIndex) => ({ ...page, sourceIndex, partIndex: 0, sceneView: getSceneViewIndex(pages, sourceIndex) }));
 }
 function objectSprite(id) {
   const obj = getItem(id);
@@ -158,7 +165,7 @@ function showWorldCatalog(category = 'scenes') {
   dialog.innerHTML = `<button class="icon-button dialog-close" data-action="close-dialog" aria-label="Cerrar">${icon('close')}</button>
     <div class="catalog-heading"><span class="eyebrow">LUGARES Y TESOROS POR DESCUBRIR</span><h2 id="dialog-title">Cada lugar.<br><em>Una nueva aventura.</em></h2><p>Explora los rincones y objetos de nuestros cuentos.<br>Toca una ilustración para escuchar su sonido.</p></div>
     <div class="catalog-filters" role="group" aria-label="Categoría de ilustraciones">${[['scenes', 'Escenarios', SCENES.length], ['items', 'Elementos', ITEMS.length]].map(([id, name, count]) => `<button type="button" data-action="world-filter" data-category="${id}" aria-pressed="${category === id}">${name}<span>${count}</span></button>`).join('')}</div>
-    <ul class="character-gallery world-gallery" aria-label="${category === 'scenes' ? 'Escenarios de los cuentos' : 'Elementos de los cuentos'}">${entries.map(entry => `<li>${category === 'scenes' ? place(entry.id, true) : objectSprite(entry.id)}<strong>${escape(category === 'scenes' ? entry.label.replace(/^(el|la) /, '') : entry.label)}</strong>${category === 'scenes' ? `<span>${escape(entry.name)}</span>` : ''}</li>`).join('')}</ul>`;
+    <ul class="character-gallery world-gallery ${category === 'scenes' ? 'scene-gallery' : ''}" aria-label="${category === 'scenes' ? 'Escenarios de los cuentos' : 'Elementos de los cuentos'}">${entries.map(entry => `<li>${category === 'scenes' ? `<div class="scene-views">${SCENE_VIEW_LABELS.map((label, index) => `<div>${place(entry.id, true, index)}<span>${label}</span></div>`).join('')}</div>` : objectSprite(entry.id)}<strong>${escape(category === 'scenes' ? entry.label.replace(/^(el|la) /, '') : entry.label)}</strong>${category === 'scenes' ? `<span>${escape(entry.name)}</span>` : ''}</li>`).join('')}</ul>`;
   if (!dialog.open) dialog.showModal();
   else dialog.querySelector(`[data-category="${category}"]`)?.focus({ preventScroll: true });
 }
@@ -255,9 +262,9 @@ async function generate() {
     state.story = generateFreshStory(state.bookId, state.duration, { family: state.family, companionRole: state.companionRole }, state.recentStories);
     document.querySelector('#loading-message').textContent = 'Preparando las páginas y sus ilustraciones…';
     const sheets = new Set((state.story.characters || [state.story.hero, state.story.companion]).filter(character => character && character.kind !== 'human' && hasArt(character)).map(character => PORTRAIT_ATLASES[character.atlas.sheet || 'main'].file));
-    for (const page of state.story.pages) {
+    for (const page of scenePages(state.story.pages)) {
       const scene = getScene(page.scene);
-      if (scene) sheets.add(WORLD_ATLASES[scene.atlas.sheet].file);
+      if (scene) sheets.add(WORLD_ATLASES[getSceneView(scene.id, page.sceneView).sheet].file);
       for (const id of page.objects || []) {
         const item = getItem(id);
         if (item) sheets.add(WORLD_ATLASES[item.atlas.sheet].file);
@@ -291,7 +298,8 @@ function pageHTML(page, i) {
     .filter(id => { const person = cast.find(c => c.id === id); return !person || person.kind === 'human' || hasArt(person); }).slice(0, 3);
   const labelFor = id => cast.find(c => c?.id === id)?.name || CHARACTERS.find(c => c.id === id)?.name;
   const elements = (Array.isArray(page.objects) ? page.objects : []).filter(id => getItem(id)).slice(0, 2);
-  return `<article class="storybook-page paper-page" data-page-index="${i + 1}"><div class="page-inner"><div class="page-art ${characters.length > 2 ? 'three-characters' : ''} ${elements.length ? 'has-objects' : ''} ${characters.length ? '' : 'no-characters'}">${page.scene ? place(page.scene, true) : ''}<div class="page-characters">${characters.map(id => sprite(id, { interactive: true, label: labelFor(id) })).join('')}</div><div class="page-objects">${elements.map(objectSprite).join('')}</div></div><div class="page-copy">${page.paragraphs.map(text => `<p>${escape(text)}</p>`).join('')}</div><span class="page-number">${i + 1}</span></div></article>`;
+  const viewIndex = getSceneViewIndex(s.pages, page.sourceIndex ?? i);
+  return `<article class="storybook-page paper-page" data-page-index="${i + 1}"><div class="page-inner"><div class="page-art ${characters.length > 2 ? 'three-characters' : ''} ${elements.length ? 'has-objects' : ''} ${characters.length ? '' : 'no-characters'}">${page.scene ? place(page.scene, true, viewIndex) : ''}<div class="page-characters">${characters.map(id => sprite(id, { interactive: true, label: labelFor(id) })).join('')}</div><div class="page-objects">${elements.map(objectSprite).join('')}</div></div><div class="page-copy">${page.paragraphs.map(text => `<p>${escape(text)}</p>`).join('')}</div><span class="page-number">${i + 1}</span></div></article>`;
 }
 function endHTML() {
   const p = palettes[state.story.bookId];
@@ -323,7 +331,7 @@ function createBook() {
   const height = Math.round(h);
   const current = state.displayPages?.[state.page - 1];
   const atEnd = state.displayPages && state.page > state.displayPages.length;
-  state.displayPages = state.story.pages.map((page, sourceIndex) => ({ ...page, sourceIndex, partIndex: 0 }));
+  state.displayPages = scenePages(state.story.pages);
   if (atEnd) state.page = state.displayPages.length + 1;
   else if (current) state.page = Math.max(1, state.displayPages.findIndex(p => p.sourceIndex === current.sourceIndex && p.partIndex === current.partIndex) + 1);
   el.innerHTML = coverHTML() + state.displayPages.map(pageHTML).join('') + endHTML();
@@ -333,7 +341,7 @@ function createBook() {
   el.style.setProperty('--book-ink', palettes[state.story.bookId].ink);
   el.style.setProperty('--copy-size', `${Math.max(20, Math.min(29, width / 16.5))}px`);
   el.style.setProperty('--page-padding', `${Math.max(28, Math.min(65, width * 0.11))}px`);
-  el.style.setProperty('--art-height', `${Math.max(120, Math.min(245, height * 0.3))}px`);
+  el.style.setProperty('--art-height', `${Math.max(140, Math.min(330, height * 0.36))}px`);
   // Measure every page before PageFlip hides and clones the inactive sheets.
   fitPageText();
   state.flip = new window.St.PageFlip(el, {
@@ -357,25 +365,37 @@ function createBook() {
   fitPageText();
 }
 function fitPageText() {
-    document.querySelectorAll('.page-copy').forEach(copy => {
-      const inner = copy.closest('.page-inner');
-      if (!inner || !inner.offsetHeight) return;
-      const art = inner.querySelector('.page-art');
-      // Hidden pages still have intrinsic CSS dimensions; fit to the fixed paper height.
-      const pageHeight = parseFloat(document.querySelector('#storybook')?.style.getPropertyValue('--page-height') || '540');
-      const padding = parseFloat(document.querySelector('#storybook')?.style.getPropertyValue('--page-padding') || '24');
-      let available = pageHeight - padding * 2 - art.offsetHeight - 28;
-      let size = parseFloat(getComputedStyle(copy).fontSize);
-      while (copy.scrollHeight > available && size > 14.5) { size -= 0.5; copy.style.fontSize = `${size}px`; }
-      if (copy.scrollHeight > available) {
-        const shrink = Math.min(art.offsetHeight - 60, copy.scrollHeight - available + 8);
-        if (shrink > 0) {
-          const nextHeight = art.offsetHeight - shrink;
-          art.style.height = `${nextHeight}px`;
-          art.style.setProperty('--sprite-limit', `${nextHeight}px`);
-        }
+  document.querySelectorAll('.page-copy').forEach(copy => {
+    const inner = copy.closest('.page-inner');
+    if (!inner || !inner.offsetHeight) return;
+    const art = inner.querySelector('.page-art');
+    copy.style.fontSize = '';
+    art.style.height = '';
+    art.style.removeProperty('--sprite-limit');
+    const layout = getComputedStyle(inner);
+    const horizontal = layout.flexDirection.startsWith('row');
+    const contentHeight = inner.clientHeight - parseFloat(layout.paddingTop) - parseFloat(layout.paddingBottom);
+    const gap = parseFloat(layout.rowGap) || 0;
+    let available = horizontal ? contentHeight : contentHeight - art.offsetHeight - gap;
+    let size = parseFloat(getComputedStyle(copy).fontSize);
+    while (copy.scrollHeight > available && size > 18) {
+      size -= 0.5;
+      copy.style.fontSize = `${size}px`;
+    }
+    if (!horizontal && copy.scrollHeight > available) {
+      const shrink = Math.min(Math.max(0, art.offsetHeight - 100), copy.scrollHeight - available + 8);
+      if (shrink > 0) {
+        const nextHeight = art.offsetHeight - shrink;
+        art.style.height = `${nextHeight}px`;
+        art.style.setProperty('--sprite-limit', `${nextHeight}px`);
+        available += shrink;
       }
-    });
+    }
+    while (copy.scrollHeight > available && size > 14.5) {
+      size -= 0.5;
+      copy.style.fontSize = `${size}px`;
+    }
+  });
 }
 function rebuildBook() {
   const old = state.flip;

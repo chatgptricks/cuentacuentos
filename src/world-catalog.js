@@ -1,9 +1,28 @@
 /** Shared, immutable world identities for stories, illustrations, sound and offline assets. */
+// Each column keeps one place; the three rows move from an establishing view to a detail.
+const sceneViewGroups = [
+  ['forest', 'lake', 'castle', 'garden'],
+  ['beach', 'mountain', 'treehouse', 'village'],
+  ['meadow', 'cave', 'river', 'clouds'],
+  ['waterfall', 'bamboo-grove', 'desert-oasis', 'snowy-valley'],
+  ['flower-field', 'mangrove', 'coral-reef', 'mushroom-grove'],
+  ['library', 'bakery', 'workshop', 'greenhouse'],
+  ['playground', 'orchard', 'windmill', 'harbor'],
+  ['crystal-cave', 'floating-island', 'enchanted-tower', 'star-observatory'],
+  ['moon-garden', 'rainbow-bridge', 'underwater-palace', 'giant-tree'],
+];
+const sceneViewSheets = sceneViewGroups.map((_, index) => `places-views-${String(index + 1).padStart(2, '0')}`);
+export const SCENE_VIEW_LABELS = Object.freeze(['Panorámica', 'Media', 'Cercana']);
+const sceneViews = Object.fromEntries(sceneViewGroups.flatMap((ids, index) => ids.map((id, x) => [id,
+  Object.freeze(SCENE_VIEW_LABELS.map((_, y) => Object.freeze({ sheet: sceneViewSheets[index], x, y }))),
+])));
+
 export const WORLD_ATLASES = Object.freeze(Object.fromEntries([
   ['main-places', 'places.png', 2, 2], ['extra-places', 'places-extra.png', 4, 2],
   ['main-objects', 'objects.png', 4, 3],
   ['places-nature', 'places-nature.png', 4, 2], ['places-village', 'places-village.png', 4, 2], ['places-wonder', 'places-wonder.png', 4, 2],
   ['objects-explore', 'objects-explore.png', 4, 2], ['objects-create', 'objects-create.png', 4, 2], ['objects-treasure', 'objects-treasure.png', 4, 2],
+  ...sceneViewSheets.map(sheet => [sheet, `${sheet}.png`, 4, 3]),
 ].map(([id, file, columns, rows]) => [id, Object.freeze({ file, columns, rows })])));
 
 const originalScenes = [
@@ -55,7 +74,7 @@ const sceneSheets = [
 const sceneEntries = [...originalScenes, ...sceneSheets.flatMap(([sheet, rows]) => rows.map(([id, label, name, article, detail, tags], index) => [id, label, name, article, sheet, index % 4, Math.floor(index / 4), detail, tags]))];
 export const SCENES = Object.freeze(sceneEntries.map(([id, label, name, article, sheet, x, y, detail, tags]) => Object.freeze({
   id, label, name, scene: id, ...(article ? { article } : {}), detail, tags: Object.freeze(tags),
-  atlas: Object.freeze({ sheet, x, y }), sound: id,
+  atlas: Object.freeze({ sheet, x, y }), views: sceneViews[id], sound: id,
 })));
 
 const itemSheets = [
@@ -83,4 +102,19 @@ export const ITEMS = Object.freeze(itemSheets.flatMap(([sheet, columns, rows]) =
 // Retain the existing engine API while the renderer can use the same records directly.
 export const OBJECTS = ITEMS;
 export const getScene = id => SCENES.find(scene => scene.id === id);
+/** Presentation only: saved scenes and their original atlas coordinates stay valid. */
+export const getSceneView = (id, index = 0) => {
+  const scene = getScene(id);
+  if (!scene) return undefined;
+  const view = Number.isInteger(index) ? ((index % 3) + 3) % 3 : 0;
+  return scene.views?.[view] || scene.atlas;
+};
+/** A place advances independently of other places, including when resuming a saved book. */
+export const getSceneViewIndex = (pages, sourceIndex) => {
+  const scene = pages?.[sourceIndex]?.scene;
+  if (!scene) return 0;
+  let appearances = 0;
+  for (let index = 0; index < sourceIndex; index += 1) if (pages[index]?.scene === scene) appearances += 1;
+  return appearances % SCENE_VIEW_LABELS.length;
+};
 export const getItem = id => ITEMS.find(item => item.id === id);
