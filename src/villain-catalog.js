@@ -7,7 +7,7 @@ export const VILLAIN_ATLASES = Object.freeze({
  * Art files that are registered but not yet painted. The build skips them while they are
  * missing and the reader shows no sprite for them; remove a file here once it is added.
  */
-export const PENDING_ART = Object.freeze(['villains.png']);
+export const PENDING_ART = Object.freeze([]);
 
 // Atlas order: top row left to right, then bottom row.
 const rows = [

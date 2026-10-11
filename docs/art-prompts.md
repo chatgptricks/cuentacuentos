@@ -260,9 +260,9 @@ The built-in image generator edited the initial exploration atlas to separate th
 Edit this object atlas preserving ALL EIGHT exact watercolor objects, colors, details, order, true transparent background and wide2:1 canvas. Change ONLY the packing. Reduce each entire object (including handle,straps,rope ends and tripod) about20% and CENTER it inside its own square cell of a precise4columns×2rows grid. Top row centers:12.5%/25%,37.5%/25%,62.5%/25%,87.5%/25%; bottom:12.5%/75%,37.5%/75%,62.5%/75%,87.5%/75%. Every complete object must fit within central75%ofcell, with12.5%totally transparent marginonall4sides. Keep a BROAD FULL WIDTH TRANSPARENT GUTTER around the horizontal midline: the lantern base and folded map must not extend into magnifying glass/backpack cellsbelow. Keep totally transparent vertical gutters at25%,50%,75%ofcanvaswidth. Preserve original order: lantern,compass,map,telescope; magnifying glass,backpack,coiled rope,pair of rainboots. No text, no border, no grid lines, no backgrounds, no new objects. All silhouettes whole and uncut, isolated from neighboring cells.
 ```
 
-## Villanos — `public/art/villains.png` (pendiente)
+## Villanos — `public/art/villains.png`
 
-Cuadrícula: 4 columnas × 2 filas, proporción 2:1, celdas cuadradas. Orden: trol gruñón, fantasma miedoso, cuervo coleccionista, gata pirata; ogro glotón, duende travieso, araña tejedora, gigante despistado. Son antagonistas suaves de Acción que al final se reconcilian: deben verse traviesos o enfurruñados, nunca aterradores. Mientras el archivo no exista, el lector oculta a los villanos y el build lo avisa. Al añadirlo, quita `'villains.png'` de `PENDING_ART` en `src/villain-catalog.js`.
+Cuadrícula: 4 columnas × 2 filas, proporción 2:1, celdas cuadradas. Orden: trol gruñón, fantasma miedoso, cuervo coleccionista, gata pirata; ogro glotón, duende travieso, araña tejedora, gigante despistado. Son antagonistas suaves de Acción que al final se reconcilian: deben verse traviesos o enfurruñados, nunca aterradores. Para registrar arte futuro antes de pintarlo, añade su archivo a `PENDING_ART` en `src/villain-catalog.js`: el lector lo oculta y el build avisa hasta que exista.
 
 ```text
 Use case: illustration-story

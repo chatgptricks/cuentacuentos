@@ -31,7 +31,7 @@ Cada parte tiene nueve frases escritas en orden de lectura y marcadas en tres ni
 
 ## Ilustraciones
 
-Cada página dibuja su escenario, los personajes que actúan y solo los elementos que su frase nombra. El villano aparece en las páginas donde actúa. Mientras falte `public/art/villains.png`, el lector oculta a los villanos (el texto se lee igual) y el build lo indica; cuando se añada el archivo, se quita de `PENDING_ART` en `src/villain-catalog.js`.
+Cada página dibuja su escenario, los personajes que actúan y solo los elementos que su frase nombra. El villano aparece en las páginas donde actúa, con su dibujo de `public/art/villains.png`.
 
 ## Pruebas automáticas
 

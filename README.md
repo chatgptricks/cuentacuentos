@@ -42,7 +42,7 @@ npm run build
 npm run dev
 ```
 
-La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` valida las cuadrículas y la transparencia de los 16 atlas (y del atlas de villanos cuando se añada), comprueba que las ilustraciones nuevas no crucen los bordes de sus celdas, copia las fuentes y recursos a `dist` y crea un service worker con una versión calculada a partir del contenido.
+La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` valida las cuadrículas y la transparencia de los 17 atlas, incluido el de los ocho villanos, comprueba que las ilustraciones nuevas no crucen los bordes de sus celdas, copia las fuentes y recursos a `dist` y crea un service worker con una versión calculada a partir del contenido.
 
 **Siempre desplegar las mejoras solicitadas a producción**, tras pasar `npm test`, `npm run build` y la revisión visual. El usuario ya autorizó ese despliegue. El workflow [.github/workflows/pages.yml](.github/workflows/pages.yml) ejecuta las pruebas, compila y publica `dist` en GitHub Pages al subir cambios a `main`; también permite ejecución manual. Comprueba que termine correctamente y verifica la app publicada. Esta preferencia está recogida en [AGENTS.md](AGENTS.md).
 
