@@ -278,6 +278,18 @@ for (const { id: bookId } of BOOKS) {
       assert.equal(story.pages.length % 2, 0, 'Tablet spreads need an even page count.');
       assert.equal(new Set(story.pages.map(page => page.id)).size, story.pages.length);
       assert.equal(new Set(paragraphs).size, paragraphs.length, 'Longer stories must add distinct passages.');
+      const causes = {
+        adventure: [[/invitó a .+ a buscar/u, /aceptó enseguida/u], [/^Acordaron .+ si encontraban/u, /^(?:Entre los dos|Para avanzar)/u], [/esperó en silencio/u, /sonrió, porque el regalo/u], [/^Guardaron .+ volvieron al jardín/u, /recordó en voz alta su parte favorita/u]],
+        action: [[/pidió ayuda a/u, /propuso buscar al guardián/u], [/^Encontraron a Olmo/u, /aconsejó respirar/u], [/aconsejó respirar/u, /Olmo murió/u], [/volvieron al lugar del problema/u, /^Respiraron tres veces/u]],
+        relax: [[/preguntó si podía acompañarle/u, /se sentó cerca para mirar/u], [/le recordó algo importante/u, /^No salió perfecto/u]],
+        friends: [[/ quería /u, /acordaron preparar la actividad/u], [/pareció una buena idea/u, /^\p{L}+ empezó a /u]],
+        family: [[/ quería /u, /a compartir aquel plan/u], [/pareció una buena idea/u, /^\p{L}+ empezó a /u]],
+      };
+      for (const [cause, effect] of causes[bookId]) {
+        const causeIndex = paragraphs.findIndex(paragraph => cause.test(paragraph));
+        const effectIndex = paragraphs.findIndex(paragraph => effect.test(paragraph));
+        if (causeIndex >= 0 && effectIndex >= 0) assert.ok(causeIndex < effectIndex, `${bookId}/${duration}/${seed}: ${cause} must be narrated before ${effect}.`);
+      }
       assert.ok(story.title.includes(story.hero.name));
       assert.ok(text.includes(story.hero.name) && text.includes(story.companion.name));
       assert.ok(!/undefined|null|NaN|\$\{|\{\{|\}\}|<[^>]+>/.test(text), 'No template remnants or HTML in story text.');
@@ -394,6 +406,10 @@ for (const { id: bookId } of BOOKS) {
         assert.deepEqual(story.characters, previousStory.characters);
         assert.deepEqual(story.family, previousStory.family);
         assert.ok(story.wordCount > previousStory.wordCount + 150);
+        const shorter = previousStory.pages.map(page => page.paragraphs[0]);
+        let cursor = 0;
+        for (const paragraph of paragraphs) if (paragraph === shorter[cursor]) cursor += 1;
+        assert.equal(cursor, shorter.length, `${bookId}/${seed}: a longer reading must keep every shorter sentence in the same order.`);
       }
       previousStory = story;
 

@@ -391,7 +391,7 @@ export function realizeActionPlot(plot, random) {
 export function actionDiscovery(plot, discoveryId) {
   const lines = {
     'tiny-test': `Olmo mostró con ${plot.model} que ${plot.fact}.`,
-    'new-angle': `Olmo cambió el punto de vista y mostró que ${plot.fact}.`,
+    'new-angle': `Olmo les pidió mirar desde otro lado y así descubrieron que ${plot.fact}.`,
     'leftover-surprise': `Olmo encontró ${plot.spare} y recordó que ${plot.fact}.`,
     'remembered-idea': `Olmo recordó otra reparación y explicó que ${plot.fact}.`,
     'shared-question': `Olmo escuchó sus preguntas y aclaró que ${plot.fact}.`,
