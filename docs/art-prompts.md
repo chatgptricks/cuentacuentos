@@ -640,3 +640,931 @@ Change ONLY packing and watercolorperimeters.
 Make EVERY FULL painting dramatically SMALLER: reduce each complete scene to EXACT60%ofits current width and height. This is essential. The12paintings must be much more separated, surrounded by HUGE whollytransparentblankgutters. Each painting including anyfadedwash MUST fit inside a280×280 area if output2400×1800, or170×170area ifoutput1448×1086. Centers remain x12.5%,37.5%,62.5%,87.5%; y16.667%,50%,83.333%. No pigment at all outside these280px/170pxsquares. The transparent gutters must be roughly AS WIDE AS one-thirdofeachpainting. All12images complete and uncut. Keep quiet foreground for appcharacters.
 Make each painting perimeter fluidandfeathery wet-on-wet watercolor: coloredpigments gently disappear into PARTIALALPHA, then TOTALALPHA, without ahardcircle/oval/rim. Remove ALLwhite/creamoutlineglows and allstraycoloredpixels outsidepainting. Background must be100%blankALPHA, no backgroundpaper,no grid,no shadow,no labels,no text. No newplaces, nopeopleoranimals. Keep richpastelpaintgrain and originaldetails inside, exactly12isolated scenes.
 ```
+
+## Ampliación de arte: 27 atlas (2026-10-11)
+Lote creado con la herramienta integrada ImageGen: 10 atlas de lugares (40 lugares y 120 vistas), 7 de personajes (56) y 10 de objetos (80). Todos los PNG originales generados se guardan directamente en `public/art/`, sin recortar, redimensionar ni modificar sus píxeles mediante código. Los atlas y posiciones anteriores se conservan.
+En los lugares, cada columna representa un mismo lugar. Las filas son **frontal, desde la izquierda y desde la derecha**, con escala y distancia de cámara comparables, edificios y elementos reconocibles entre las vistas. Esta elección de tres ángulos sustituye los encuadres panorámico, medio y cercano para el lote nuevo `10`–`19`. Los personajes y objetos se leen de izquierda a derecha, primero arriba y después abajo.
+Los 40 escenarios del checklist final están repartidos en los diez atlas de tres ángulos, con los nombres exactos del pedido de 27 archivos:
+| Grupo del checklist | Atlas entregados | Lugares |
+| --- | --- | --- |
+| Casa (`places-home.png`) | `places-views-10.png`, `places-views-11.png` | 8 |
+| Pueblo (`places-town.png`) | `places-views-12.png`, `places-views-13.png` | 8 |
+| Aventura (`places-journey.png`) | `places-views-14.png`, `places-views-15.png` | 8 |
+| Guaridas (`places-lairs.png`) | `places-views-16.png`, `places-views-17.png` | 8 |
+| Ensueño (`places-dream.png`) | `places-views-18.png`, `places-views-19.png` | 8 |
+El checklist enumera diez atlas de objetos, aunque su encabezado dice nueve: se entregan los diez y sus 80 objetos. Los abuelos, tíos y primos de Mi familia siguen usando el creador SVG.
+### Inventario y posiciones verificadas
+| Archivo en `public/art/` | Cuadrícula | Columnas 1–4 o fila superior 1–4 | Fila inferior 5–8 |
+| --- | --- | --- | --- |
+| [places-views-10.png](../public/art/places-views-10.png) | 4×3 | Dormitorio infantil · Cocina · Baño · Sala de estar | Las filas 2 y 3 repiten los cuatro lugares desde izquierda y derecha |
+| [places-views-11.png](../public/art/places-views-11.png) | 4×3 | Comedor · Desván · Cuarto de juegos · Porche de casa | Las filas 2 y 3 repiten los cuatro lugares desde izquierda y derecha |
+| [places-views-12.png](../public/art/places-views-12.png) | 4×3 | Escuela · Consulta amable · Estación de tren · Mercado | Las filas 2 y 3 repiten los cuatro lugares desde izquierda y derecha |
+| [places-views-13.png](../public/art/places-views-13.png) | 4×3 | Plaza de fiestas · Teatrito · Granja · Oficina de correos | Las filas 2 y 3 repiten los cuatro lugares desde izquierda y derecha |
+| [places-views-14.png](../public/art/places-views-14.png) | 4×3 | Puente colgante · Cruce de caminos · Acantilado con faro · Pantano | Las filas 2 y 3 repiten los cuatro lugares desde izquierda y derecha |
+| [places-views-15.png](../public/art/places-views-15.png) | 4×3 | Volcán dormido · Cañón · Pista de carreras con meta · Colina con vista | Las filas 2 y 3 repiten los cuatro lugares desde izquierda y derecha |
+| [places-views-16.png](../public/art/places-views-16.png) | 4×3 | Puente del trol · Barco pirata · Nido gigante del cuervo · Cueva del ogro | Las filas 2 y 3 repiten los cuatro lugares desde izquierda y derecha |
+| [places-views-17.png](../public/art/places-views-17.png) | 4×3 | Castillo de hielo · Rincón de telarañas · Casa del gigante en las nubes · Seta del duende | Las filas 2 y 3 repiten los cuatro lugares desde izquierda y derecha |
+| [places-views-18.png](../public/art/places-views-18.png) | 4×3 | Mar de nubes al atardecer · Campo de luciérnagas · Estanque de nenúfares · Colina de estrellas fugaces | Las filas 2 y 3 repiten los cuatro lugares desde izquierda y derecha |
+| [places-views-19.png](../public/art/places-views-19.png) | 4×3 | Bosque nevado de noche · Luna como barca · Playa al atardecer · Jardín de dientes de león | Las filas 2 y 3 repiten los cuatro lugares desde izquierda y derecha |
+| [animals-babies.png](../public/art/animals-babies.png) | 4×2 | Pollito · Patito · Cervatillo · Osezno | Potrillo · Cría de pingüino · Tortuguita marina · Cría de foca |
+| [villains-2.png](../public/art/villains-2.png) | 4×2 | Bruja del invierno · Tiburón refunfuñón · Cangrejo cascarrabias · Nube de tormenta | Rata ladrona · Espantapájaros enfadado · Mago envidioso · Serpiente presumida |
+| [town-folk.png](../public/art/town-folk.png) | 4×2 | Cartera · Panadero · Maestra · Dentista amable | Jardinera · Conductor de tren · Vendedora del mercado · Guardián del faro |
+| [tiny-creatures.png](../public/art/tiny-creatures.png) | 4×2 | Abeja · Mariposa · Mariquita · Hormiga | Caracol · Grillo · Luciérnaga · Libélula |
+| [pets.png](../public/art/pets.png) | 4×2 | Perrito · Gatito · Pez en pecera · Hámster | Canario · Cobaya · Tortuga de tierra · Conejito de orejas caídas |
+| [animals-farm.png](../public/art/animals-farm.png) | 4×2 | Vaca · Oveja · Cerdito · Gallina | Poni · Burro · Cabra · Perro pastor |
+| [night-creatures.png](../public/art/night-creatures.png) | 4×2 | Murciélago · Polilla · Topo · Lirón | Oso perezoso · Zarigüeya · Armadillo · Zorro ártico |
+| [objects-bedtime.png](../public/art/objects-bedtime.png) | 4×2 | Almohada · Osito de peluche · Lamparita de noche · Cepillo de dientes | Libro de cuentos · Vaso de leche · Reloj despertador · Zapatillas de casa |
+| [objects-party.png](../public/art/objects-party.png) | 4×2 | Caja de regalo · Globo · Guirnalda de banderines · Carta en sobre | Corona de flores · Sombrero de fiesta · Confeti · Piñata |
+| [objects-quest.png](../public/art/objects-quest.png) | 4×2 | Cofre del tesoro · Pergamino de pistas · Frasco de poción · Flor de hielo | Estrella caída · Piedra de luna · Reloj de arena · Señal de camino |
+| [objects-kitchen.png](../public/art/objects-kitchen.png) | 4×2 | Tarta de cumpleaños · Galletas · Cuenco con masa · Cuchara de madera | Jarra de leche · Barra de pan · Sopa caliente · Delantal |
+| [objects-sport.png](../public/art/objects-sport.png) | 4×2 | Medalla · Trofeo · Bandera de meta · Silbato | Pelota · Cuerda de saltar · Patinete · Cronómetro |
+| [objects-memories.png](../public/art/objects-memories.png) | 4×2 | Baúl antiguo · Foto antigua · Peonza · Muñeca de trapo | Canicas · Caja de música · Gafas del abuelo · Avión de papel |
+| [objects-firsts.png](../public/art/objects-firsts.png) | 4×2 | Bicicleta · Casco · Lonchera · Cuaderno con lápiz | Flotador · Zapatos nuevos · Pizarra pequeña · Estuche |
+| [objects-calm.png](../public/art/objects-calm.png) | 4×2 | Caja de preocupaciones · Piedra lisa · Tarro de la calma · Bolsa de agua caliente | Pañuelo · Tirita · Termómetro · Flores en un vaso |
+| [objects-night-sounds.png](../public/art/objects-night-sounds.png) | 4×2 | Cortina al viento · Grifo que gotea · Reloj de cuco · Campanilla de viento | Rama junto a la ventana · Puerta que cruje · Hojas secas · Tetera que silba |
+| [objects-home-tools.png](../public/art/objects-home-tools.png) | 4×2 | Red · Cubo · Pala · Carretilla | Escoba · Escalera de mano · Saco · Caja de cartón |
+
+La revisión visual del checklist incluye cama infantil, lavabo bajito, sofá y alfombra, mesa familiar, baúl y cajas en el desván, consulta acogedora, telón del teatrito, establo y buzón de correos. El puente colgante es de cuerdas y el del trol es de piedra. La cueva del ogro contiene sacos, mantas, migas y una cesta caída; el rincón tiene telarañas brillantes; la seta del duende tiene entrada al interior hueco; la luna creciente funciona como barca. Los personajes incluyen la rata con antifaz, la nube enfurruñada, el pez dentro de la pecera y el conejo de orejas caídas. Los objetos incluyen una estrella caída dorada y purpurina dentro del tarro de la calma. Todos mantienen un tono infantil amable.
+
+### Prompts completos de los 27 atlas
+Se guardan a continuación el prompt inicial y las correcciones de generación aplicadas a cada archivo. Las referencias de estilo son `places-views-01.png`, `villains.png` y `objects-explore.png`; `places-views-04.png` también orienta la separación de las viñetas de lugares.
+
+#### `public/art/places-views-10.png`
+
+```text
+Use case: illustration-story.
+Asset: ONE production landscape sprite atlas for Cuentacuentos, ages 3–7.
+Create EXACTLY TWELVE separate watercolor scenery paintings on one landscape canvas in EXACT aspect ratio 4:3, ideally 2400 × 1800. Transparent PNG, 8-bit RGBA, non-interlaced. The invisible layout is FOUR equal columns and THREE equal rows; every cell is square. No visible grid lines.
+References: Image 1 is a layout reference ONLY: use its generous transparent spaces between small vignettes. Image 2 is a watercolor style reference ONLY: match its gentle hand-painted pigment grain, natural pastel colors, cozy storybook atmosphere. Create entirely NEW locations below.
+
+The FOUR columns each show ONE specific place three times. TOP ROW: view from directly in front. MIDDLE ROW: new camera angle from the LEFT side, looking diagonally toward the same central landmark. BOTTOM ROW: new camera angle from the RIGHT side, looking diagonally toward the same central landmark. Camera distance, elevation, lens, and apparent scale must stay comparable between rows. These are THREE DIFFERENT ANGLES, never a panoramic/medium/close series, never zoom crops, duplicates, mirrored images or merely shifted details. Preserve the same location geometry, landmark designs, colors and spatial relationships coherently as the viewer moves around it. All landmarks remain recognizable in all three angles.
+
+Critical packing: Paint SMALL complete vignettes, each inside the CENTRAL 60% of its own square cell, centered EXACTLY at cell center. At least 20% of cell width and height on EVERY side is completely transparent. Whole-canvas centers X:12.5%,37.5%,62.5%,87.5%; Y:16.6667%,50%,83.3333%. Strict paint bounds: column 1 X5–20%, column 2 X30–45%, column 3 X55–70%, column 4 X80–95%. Top row Y6.667–26.667%, middle row Y40–60%, bottom row Y73.333–93.333%. Even very faint paint stays inside these bounds. Broad uninterrupted transparent vertical and horizontal gutters; absolutely ZERO alpha on all cell boundaries. No painting or pigment touches or crosses a cell border. Complete uncut scenes; do not enlarge scenes to fill empty spaces. These vignettes will be displayed separately at large size in the app.
+
+Style: traditional delicate children's picture-book watercolor, detailed but soft pastel pigment, gentle sunlight and fine grain only within paint. Very softly diluted, feathered outer edges: the outer 15–20% of each vignette gradually dissolves through translucent watercolor washes into true alpha. No sharp or hard scalloped cutout border, white halo, sticker edge or oval outline. Ground, sky and walls fade to transparency around each separate scene. Cozy, warm, safe and inviting, never frightening. Quiet clear foreground space inside each painting for app characters to stand.
+
+Background: TRUE alpha transparency outside all twelve scenery paintings, including all gutters. No paper sheet, white rectangle, checkerboard, tinted backdrop, grid lines, frames, text, captions, numbers, logos, watermark or cast shadows beyond a vignette. No people, characters or animals unless a location explicitly requires tiny firefly light dots; no faces on objects. No photorealism, 3D, flat vector shapes or harsh outlines.
+
+Subjects, exact column order:
+Column 1 — Dormitorio infantil: one cozy child's bedroom with a small cream wooden bed, sage-and-peach patchwork quilt, low toy shelf, rounded window and star mobile. Keep exact bed/window/shelf arrangement continuous around three angles; roomy open floor, no child.
+Column 2 — Cocina: one homey family kitchen with pastel sage lower cupboards, warm wood counter, pale blue sink under a square window, rounded little breakfast table and tidy crockery; same sink/window/cupboard arrangement at all angles, open safe floor.
+Column 3 — Baño: one cheerful clean bathroom with cream freestanding rounded bathtub, powder-blue tile trim, little wooden washbasin cabinet, round mirror and fluffy peach towel; coherent room layout, no person and no lettering.
+Column 4 — Sala de estar: one warm living room with a sage sofa, cream-and-peach rug, round low coffee table, bookcase and sunny window; keep identical furniture designs and their layout through front/left/right views, generous open foreground.
+Final reminder: ALL three rows must depict front / left / right ANGLES at the SAME camera distance, never a zoom sequence. Every scene is fully contained inside the CENTRAL60% of its cell; all painting edges gently fade into genuine alpha before the completely empty transparent gutters.
+
+Packing correction:
+Use case: illustration-story. Technical packing edit to this SAME transparent 12-scene atlas, not new scenery.
+Preserve every exact place identity, all landmark designs and pastel colors, FOUR columns and THREE rows, and the twelve DISTINCT camera angles. TOP ROW remains front view, MIDDLE from the left, BOTTOM from the right, with the SAME camera distance. Do not mirror, zoom-crop, change the angle, simplify or discard scene details.
+MANDATORY change: uniformly SHRINK EACH WHOLE PAINTING by 50% in BOTH width and height. The current paintings nearly fill their squares; they must become visibly much smaller, isolated miniature watercolor paintings with WIDE empty gutters. Each complete vignette, including all sky/ground/walls/soft edge pigment, must fit STRICTLY within the CENTRAL50% of its own equal square cell. Invisible grid EXACTLY FOUR equal columns × THREE equal rows on an EXACT4:3canvas, ideal2400×1800, or any native resolution with STRICTLY EXACT4:3ratio. Centers exactly X12.5%,37.5%,62.5%,87.5%; Y16.6667%,50%,83.3333%. Center EVERY whole painting, not its floor line. In particular, first row must be higher than currently, so its center is16.6667% ofcanvasheight, not22%.
+Leave COMPLETELY CLEAR zero-alpha25%cell margins on all FOUR sides of each miniature. Mandatory continuous empty transparent bands along x25%,50%,75% and y33.333%,66.667% of canvas, with absolutely NOpaint at any cell border, including very faint diluted haze. No overlap or clipping. Do not add paint to fill empty gaps. Keep all12scenes complete.
+Finish with very soft watercolor pigment edges that gradually dissolve into genuine alpha within each miniature's bounds, no hard scalloped cutout edge, white halo, oval border, sticker outline, paper or rectangular backdrop. Transparent PNG,8bitRGBA,noninterlaced. No text, labels, numerals, gridlines, frames, shadows outside scenes, people or creatures. Do not alter the canvas ratio.
+```
+
+#### `public/art/places-views-11.png`
+
+```text
+Use case: illustration-story.
+Asset: ONE production landscape sprite atlas for Cuentacuentos, ages 3–7.
+Create EXACTLY TWELVE separate watercolor scenery paintings on one landscape canvas in EXACT aspect ratio 4:3, ideally 2400 × 1800. Transparent PNG, 8-bit RGBA, non-interlaced. The invisible layout is FOUR equal columns and THREE equal rows; every cell is square. No visible grid lines.
+References: Image 1 is a layout reference ONLY: use its generous transparent spaces between small vignettes. Image 2 is a watercolor style reference ONLY: match its gentle hand-painted pigment grain, natural pastel colors, cozy storybook atmosphere. Create entirely NEW locations below.
+
+The FOUR columns each show ONE specific place three times. TOP ROW: view from directly in front. MIDDLE ROW: new camera angle from the LEFT side, looking diagonally toward the same central landmark. BOTTOM ROW: new camera angle from the RIGHT side, looking diagonally toward the same central landmark. Camera distance, elevation, lens, and apparent scale must stay comparable between rows. These are THREE DIFFERENT ANGLES, never a panoramic/medium/close series, never zoom crops, duplicates, mirrored images or merely shifted details. Preserve the same location geometry, landmark designs, colors and spatial relationships coherently as the viewer moves around it. All landmarks remain recognizable in all three angles.
+
+Critical packing: Paint SMALL complete vignettes, each inside the CENTRAL 60% of its own square cell, centered EXACTLY at cell center. At least 20% of cell width and height on EVERY side is completely transparent. Whole-canvas centers X:12.5%,37.5%,62.5%,87.5%; Y:16.6667%,50%,83.3333%. Strict paint bounds: column 1 X5–20%, column 2 X30–45%, column 3 X55–70%, column 4 X80–95%. Top row Y6.667–26.667%, middle row Y40–60%, bottom row Y73.333–93.333%. Even very faint paint stays inside these bounds. Broad uninterrupted transparent vertical and horizontal gutters; absolutely ZERO alpha on all cell boundaries. No painting or pigment touches or crosses a cell border. Complete uncut scenes; do not enlarge scenes to fill empty spaces. These vignettes will be displayed separately at large size in the app.
+
+Style: traditional delicate children's picture-book watercolor, detailed but soft pastel pigment, gentle sunlight and fine grain only within paint. Very softly diluted, feathered outer edges: the outer 15–20% of each vignette gradually dissolves through translucent watercolor washes into true alpha. No sharp or hard scalloped cutout border, white halo, sticker edge or oval outline. Ground, sky and walls fade to transparency around each separate scene. Cozy, warm, safe and inviting, never frightening. Quiet clear foreground space inside each painting for app characters to stand.
+
+Background: TRUE alpha transparency outside all twelve scenery paintings, including all gutters. No paper sheet, white rectangle, checkerboard, tinted backdrop, grid lines, frames, text, captions, numbers, logos, watermark or cast shadows beyond a vignette. No people, characters or animals unless a location explicitly requires tiny firefly light dots; no faces on objects. No photorealism, 3D, flat vector shapes or harsh outlines.
+
+Subjects, exact column order:
+Column 1 — Comedor: one cozy dining room with a honey-colored oval family dining table, four rounded chairs, cream sideboard and sunny arched window, gentle terracotta and sage palette; same room/furniture from three angles, open foreground.
+Column 2 — Desván: one welcoming bright attic under wooden sloping roof beams with a round skylight, two closed trunks, a rocking horse-shaped toy and folded blankets; warm honey and lavender, no spooky objects or creatures; same beams/skylight/trunks from three angles.
+Column 3 — Cuarto de juegos: one friendly playroom with low pastel toy shelves, a little cloth play tent, wooden blocks, a cream round rug and large window; repeated recognizable designs and coherent spatial positions from three angles, broad free play floor.
+Column 4 — Porche de casa: one peaceful cottage porch with cream walls, sage-green door, two wooden posts, a little bench and two terracotta flowerpots; maintain the same doorway/posts/bench design from front, left and right, quiet wide step or lawn in foreground.
+Final reminder: ALL three rows must depict front / left / right ANGLES at the SAME camera distance, never a zoom sequence. Every scene is fully contained inside the CENTRAL60% of its cell; all painting edges gently fade into genuine alpha before the completely empty transparent gutters.
+
+Packing correction:
+Use case: illustration-story. Technical packing edit to this SAME transparent 12-scene atlas, not new scenery.
+Preserve every exact place identity, all landmark designs and pastel colors, FOUR columns and THREE rows, and the twelve DISTINCT camera angles. TOP ROW remains front view, MIDDLE from the left, BOTTOM from the right, with the SAME camera distance. Do not mirror, zoom-crop, change the angle, simplify or discard scene details.
+MANDATORY change: uniformly SHRINK EACH WHOLE PAINTING by 50% in BOTH width and height. The current paintings nearly fill their squares; they must become visibly much smaller, isolated miniature watercolor paintings with WIDE empty gutters. Each complete vignette, including all sky/ground/walls/soft edge pigment, must fit STRICTLY within the CENTRAL50% of its own equal square cell. Invisible grid EXACTLY FOUR equal columns × THREE equal rows on an EXACT4:3canvas, ideal2400×1800, or any native resolution with STRICTLY EXACT4:3ratio. Centers exactly X12.5%,37.5%,62.5%,87.5%; Y16.6667%,50%,83.3333%. Center EVERY whole painting, not its floor line. In particular, first row must be higher than currently, so its center is16.6667% ofcanvasheight, not22%.
+Leave COMPLETELY CLEAR zero-alpha25%cell margins on all FOUR sides of each miniature. Mandatory continuous empty transparent bands along x25%,50%,75% and y33.333%,66.667% of canvas, with absolutely NOpaint at any cell border, including very faint diluted haze. No overlap or clipping. Do not add paint to fill empty gaps. Keep all12scenes complete.
+Finish with very soft watercolor pigment edges that gradually dissolve into genuine alpha within each miniature's bounds, no hard scalloped cutout edge, white halo, oval border, sticker outline, paper or rectangular backdrop. Transparent PNG,8bitRGBA,noninterlaced. No text, labels, numerals, gridlines, frames, shadows outside scenes, people or creatures. Do not alter the canvas ratio.
+
+Checklist boxes correction:
+Edit this SAME transparent twelve-view watercolor atlas. Preserve all twelve small separated paintings, all THREE distinct camera angles (front top row, left middle row, right bottom row), same scene sizes/positions/colors/lighting, EXACT4:3canvas and FOUR columns×THREE rows layout. Change ONLY the attic scenes in COLUMN2: add two small closed pale cardboard storage boxes next to the familiar blue chest and wooden trunk, placed coherently in all three angles. The attic must visibly include an old chest AND storage boxes. Boxes stay entirely INSIDE the existing painted attic miniature, never in the transparent gutters; do not enlarge any vignette or spread pigment. Keep dining room, playroom and porch columns unchanged. Very soft watercolor edges, real genuine transparent alpha, absolutely NO pigment alpha>=32 on ANY cell boundary; preserve generous margins and all12vignettes complete. Transparent8bitRGBA noninterlacedPNG, exact4:3ratio, no text, labels, people, characters, added scenery or animals.
+```
+
+#### `public/art/places-views-12.png`
+
+```text
+Use case: illustration-story.
+Asset: ONE production landscape sprite atlas for Cuentacuentos, ages 3–7.
+Create EXACTLY TWELVE separate watercolor scenery paintings on one landscape canvas in EXACT aspect ratio 4:3, ideally 2400 × 1800. Transparent PNG, 8-bit RGBA, non-interlaced. The invisible layout is FOUR equal columns and THREE equal rows; every cell is square. No visible grid lines.
+References: Image 1 is a layout reference ONLY: use its generous transparent spaces between small vignettes. Image 2 is a watercolor style reference ONLY: match its gentle hand-painted pigment grain, natural pastel colors, cozy storybook atmosphere. Create entirely NEW locations below.
+
+The FOUR columns each show ONE specific place three times. TOP ROW: view from directly in front. MIDDLE ROW: new camera angle from the LEFT side, looking diagonally toward the same central landmark. BOTTOM ROW: new camera angle from the RIGHT side, looking diagonally toward the same central landmark. Camera distance, elevation, lens, and apparent scale must stay comparable between rows. These are THREE DIFFERENT ANGLES, never a panoramic/medium/close series, never zoom crops, duplicates, mirrored images or merely shifted details. Preserve the same location geometry, landmark designs, colors and spatial relationships coherently as the viewer moves around it. All landmarks remain recognizable in all three angles.
+
+Critical packing: Paint SMALL complete vignettes, each inside the CENTRAL 60% of its own square cell, centered EXACTLY at cell center. At least 20% of cell width and height on EVERY side is completely transparent. Whole-canvas centers X:12.5%,37.5%,62.5%,87.5%; Y:16.6667%,50%,83.3333%. Strict paint bounds: column 1 X5–20%, column 2 X30–45%, column 3 X55–70%, column 4 X80–95%. Top row Y6.667–26.667%, middle row Y40–60%, bottom row Y73.333–93.333%. Even very faint paint stays inside these bounds. Broad uninterrupted transparent vertical and horizontal gutters; absolutely ZERO alpha on all cell boundaries. No painting or pigment touches or crosses a cell border. Complete uncut scenes; do not enlarge scenes to fill empty spaces. These vignettes will be displayed separately at large size in the app.
+
+Style: traditional delicate children's picture-book watercolor, detailed but soft pastel pigment, gentle sunlight and fine grain only within paint. Very softly diluted, feathered outer edges: the outer 15–20% of each vignette gradually dissolves through translucent watercolor washes into true alpha. No sharp or hard scalloped cutout border, white halo, sticker edge or oval outline. Ground, sky and walls fade to transparency around each separate scene. Cozy, warm, safe and inviting, never frightening. Quiet clear foreground space inside each painting for app characters to stand.
+
+Background: TRUE alpha transparency outside all twelve scenery paintings, including all gutters. No paper sheet, white rectangle, checkerboard, tinted backdrop, grid lines, frames, text, captions, numbers, logos, watermark or cast shadows beyond a vignette. No people, characters or animals unless a location explicitly requires tiny firefly light dots; no faces on objects. No photorealism, 3D, flat vector shapes or harsh outlines.
+
+Subjects, exact column order:
+Column 1 — Escuela: one gentle small school building with cream plaster, coral-pink tiled roof, blue double doors, rounded windows, a tiny bell and open sunny courtyard; no signs/letters, no pupils; the same façade and entrance from three directions.
+Column 2 — Consulta amable: one reassuring pastel medical room with a low rounded examination couch, warm wooden desk, pale blue cupboard, round window and a few simple harmless medical objects, no needle; no people or lettering; warm clean inviting room with clear floor, the same room from three directions.
+Column 3 — Estación de tren: one charming small railway station with a sage-and-cream shelter, terracotta roof, rounded clock face without lettering, wooden platform bench and a little stationary pale blue train; same station/platform/train geometry from front, left, right; no people or text.
+Column 4 — Mercado: one friendly outdoor market square with three little stalls and pastel cream, peach and sage awnings, baskets of apples, pears and bread, low stone paving and quiet open walkway; same stalls and awning designs from three directions, no merchants or letters.
+Final reminder: ALL three rows must depict front / left / right ANGLES at the SAME camera distance, never a zoom sequence. Every scene is fully contained inside the CENTRAL60% of its cell; all painting edges gently fade into genuine alpha before the completely empty transparent gutters.
+
+Packing correction:
+Use case: illustration-story. Technical packing edit to this SAME transparent 12-scene atlas, not new scenery.
+Preserve every exact place identity, all landmark designs and pastel colors, FOUR columns and THREE rows, and the twelve DISTINCT camera angles. TOP ROW remains front view, MIDDLE from the left, BOTTOM from the right, with the SAME camera distance. Do not mirror, zoom-crop, change the angle, simplify or discard scene details.
+MANDATORY change: uniformly SHRINK EACH WHOLE PAINTING by 50% in BOTH width and height. The current paintings nearly fill their squares; they must become visibly much smaller, isolated miniature watercolor paintings with WIDE empty gutters. Each complete vignette, including all sky/ground/walls/soft edge pigment, must fit STRICTLY within the CENTRAL50% of its own equal square cell. Invisible grid EXACTLY FOUR equal columns × THREE equal rows on an EXACT4:3canvas, ideal2400×1800, or any native resolution with STRICTLY EXACT4:3ratio. Centers exactly X12.5%,37.5%,62.5%,87.5%; Y16.6667%,50%,83.3333%. Center EVERY whole painting, not its floor line. In particular, first row must be higher than currently, so its center is16.6667% ofcanvasheight, not22%.
+Leave COMPLETELY CLEAR zero-alpha25%cell margins on all FOUR sides of each miniature. Mandatory continuous empty transparent bands along x25%,50%,75% and y33.333%,66.667% of canvas, with absolutely NOpaint at any cell border, including very faint diluted haze. No overlap or clipping. Do not add paint to fill empty gaps. Keep all12scenes complete.
+Finish with very soft watercolor pigment edges that gradually dissolve into genuine alpha within each miniature's bounds, no hard scalloped cutout edge, white halo, oval border, sticker outline, paper or rectangular backdrop. Transparent PNG,8bitRGBA,noninterlaced. No text, labels, numerals, gridlines, frames, shadows outside scenes, people or creatures. Do not alter the canvas ratio.
+```
+
+#### `public/art/places-views-13.png`
+
+```text
+Use case: illustration-story.
+Asset: ONE production landscape sprite atlas for Cuentacuentos, ages 3–7.
+Create EXACTLY TWELVE separate watercolor scenery paintings on one landscape canvas in EXACT aspect ratio 4:3, ideally 2400 × 1800. Transparent PNG, 8-bit RGBA, non-interlaced. The invisible layout is FOUR equal columns and THREE equal rows; every cell is square. No visible grid lines.
+References: Image 1 is a layout reference ONLY: use its generous transparent spaces between small vignettes. Image 2 is a watercolor style reference ONLY: match its gentle hand-painted pigment grain, natural pastel colors, cozy storybook atmosphere. Create entirely NEW locations below.
+
+The FOUR columns each show ONE specific place three times. TOP ROW: view from directly in front. MIDDLE ROW: new camera angle from the LEFT side, looking diagonally toward the same central landmark. BOTTOM ROW: new camera angle from the RIGHT side, looking diagonally toward the same central landmark. Camera distance, elevation, lens, and apparent scale must stay comparable between rows. These are THREE DIFFERENT ANGLES, never a panoramic/medium/close series, never zoom crops, duplicates, mirrored images or merely shifted details. Preserve the same location geometry, landmark designs, colors and spatial relationships coherently as the viewer moves around it. All landmarks remain recognizable in all three angles.
+
+Critical packing: Paint SMALL complete vignettes, each inside the CENTRAL 60% of its own square cell, centered EXACTLY at cell center. At least 20% of cell width and height on EVERY side is completely transparent. Whole-canvas centers X:12.5%,37.5%,62.5%,87.5%; Y:16.6667%,50%,83.3333%. Strict paint bounds: column 1 X5–20%, column 2 X30–45%, column 3 X55–70%, column 4 X80–95%. Top row Y6.667–26.667%, middle row Y40–60%, bottom row Y73.333–93.333%. Even very faint paint stays inside these bounds. Broad uninterrupted transparent vertical and horizontal gutters; absolutely ZERO alpha on all cell boundaries. No painting or pigment touches or crosses a cell border. Complete uncut scenes; do not enlarge scenes to fill empty spaces. These vignettes will be displayed separately at large size in the app.
+
+Style: traditional delicate children's picture-book watercolor, detailed but soft pastel pigment, gentle sunlight and fine grain only within paint. Very softly diluted, feathered outer edges: the outer 15–20% of each vignette gradually dissolves through translucent watercolor washes into true alpha. No sharp or hard scalloped cutout border, white halo, sticker edge or oval outline. Ground, sky and walls fade to transparency around each separate scene. Cozy, warm, safe and inviting, never frightening. Quiet clear foreground space inside each painting for app characters to stand.
+
+Background: TRUE alpha transparency outside all twelve scenery paintings, including all gutters. No paper sheet, white rectangle, checkerboard, tinted backdrop, grid lines, frames, text, captions, numbers, logos, watermark or cast shadows beyond a vignette. No people, characters or animals unless a location explicitly requires tiny firefly light dots; no faces on objects. No photorealism, 3D, flat vector shapes or harsh outlines.
+
+Subjects, exact column order:
+Column 1 — Plaza de fiestas: one cheerful village party square with pale stone paving, a small round fountain, pastel bunting stretched between two poles, little flower beds and a distant cream cottage; no partygoers or text; preserve fountain/bunting/building layout from three directions, open foreground.
+Column 2 — Teatrito: one cozy little open-air puppet-style theater stage with curved warm wooden proscenium, dusty-rose curtains, low benches and a little step, no puppets or performers; same stage/curtain design in front, left, right views, warm inviting mood.
+Column 3 — Granja con establo: one gentle farm with a small cream stable barn with red-brown roof and an OPEN rounded doorway showing safe hay-lined wooden stalls inside, a wooden fence, tiny vegetable plot, haystack and open earthy courtyard; no animals or farmers; same barn/fence/plot geography from three angles.
+Column 4 — Oficina de correos: one charming village post office with cream stone façade, a muted blue door, one red rounded mailbox, a little parcel counter visible through an open window and flowerpots; no signs, words, stamped labels or people; same mailbox/door/window layout from three angles.
+Final reminder: ALL three rows must depict front / left / right ANGLES at the SAME camera distance, never a zoom sequence. Every scene is fully contained inside the CENTRAL60% of its cell; all painting edges gently fade into genuine alpha before the completely empty transparent gutters.
+
+Packing correction:
+Use case: illustration-story. Technical packing edit to this SAME transparent 12-scene atlas, not new scenery.
+Preserve every exact place identity, all landmark designs and pastel colors, FOUR columns and THREE rows, and the twelve DISTINCT camera angles. TOP ROW remains front view, MIDDLE from the left, BOTTOM from the right, with the SAME camera distance. Do not mirror, zoom-crop, change the angle, simplify or discard scene details.
+MANDATORY change: uniformly SHRINK EACH WHOLE PAINTING by 50% in BOTH width and height. The current paintings nearly fill their squares; they must become visibly much smaller, isolated miniature watercolor paintings with WIDE empty gutters. Each complete vignette, including all sky/ground/walls/soft edge pigment, must fit STRICTLY within the CENTRAL50% of its own equal square cell. Invisible grid EXACTLY FOUR equal columns × THREE equal rows on an EXACT4:3canvas, ideal2400×1800, or any native resolution with STRICTLY EXACT4:3ratio. Centers exactly X12.5%,37.5%,62.5%,87.5%; Y16.6667%,50%,83.3333%. Center EVERY whole painting, not its floor line. In particular, first row must be higher than currently, so its center is16.6667% ofcanvasheight, not22%.
+Leave COMPLETELY CLEAR zero-alpha25%cell margins on all FOUR sides of each miniature. Mandatory continuous empty transparent bands along x25%,50%,75% and y33.333%,66.667% of canvas, with absolutely NOpaint at any cell border, including very faint diluted haze. No overlap or clipping. Do not add paint to fill empty gaps. Keep all12scenes complete.
+Finish with very soft watercolor pigment edges that gradually dissolve into genuine alpha within each miniature's bounds, no hard scalloped cutout edge, white halo, oval border, sticker outline, paper or rectangular backdrop. Transparent PNG,8bitRGBA,noninterlaced. No text, labels, numerals, gridlines, frames, shadows outside scenes, people or creatures. Do not alter the canvas ratio.
+```
+
+#### `public/art/places-views-14.png`
+
+```text
+Use case: illustration-story.
+Asset: ONE production landscape sprite atlas for Cuentacuentos, ages 3–7.
+Create EXACTLY TWELVE separate watercolor scenery paintings on one landscape canvas in EXACT aspect ratio 4:3, ideally 2400 × 1800. Transparent PNG, 8-bit RGBA, non-interlaced. The invisible layout is FOUR equal columns and THREE equal rows; every cell is square. No visible grid lines.
+References: Image 1 is a layout reference ONLY: use its generous transparent spaces between small vignettes. Image 2 is a watercolor style reference ONLY: match its gentle hand-painted pigment grain, natural pastel colors, cozy storybook atmosphere. Create entirely NEW locations below.
+
+The FOUR columns each show ONE specific place three times. TOP ROW: view from directly in front. MIDDLE ROW: new camera angle from the LEFT side, looking diagonally toward the same central landmark. BOTTOM ROW: new camera angle from the RIGHT side, looking diagonally toward the same central landmark. Camera distance, elevation, lens, and apparent scale must stay comparable between rows. These are THREE DIFFERENT ANGLES, never a panoramic/medium/close series, never zoom crops, duplicates, mirrored images or merely shifted details. Preserve the same location geometry, landmark designs, colors and spatial relationships coherently as the viewer moves around it. All landmarks remain recognizable in all three angles.
+
+Critical packing: Paint SMALL complete vignettes, each inside the CENTRAL 60% of its own square cell, centered EXACTLY at cell center. At least 20% of cell width and height on EVERY side is completely transparent. Whole-canvas centers X:12.5%,37.5%,62.5%,87.5%; Y:16.6667%,50%,83.3333%. Strict paint bounds: column 1 X5–20%, column 2 X30–45%, column 3 X55–70%, column 4 X80–95%. Top row Y6.667–26.667%, middle row Y40–60%, bottom row Y73.333–93.333%. Even very faint paint stays inside these bounds. Broad uninterrupted transparent vertical and horizontal gutters; absolutely ZERO alpha on all cell boundaries. No painting or pigment touches or crosses a cell border. Complete uncut scenes; do not enlarge scenes to fill empty spaces. These vignettes will be displayed separately at large size in the app.
+
+Style: traditional delicate children's picture-book watercolor, detailed but soft pastel pigment, gentle sunlight and fine grain only within paint. Very softly diluted, feathered outer edges: the outer 15–20% of each vignette gradually dissolves through translucent watercolor washes into true alpha. No sharp or hard scalloped cutout border, white halo, sticker edge or oval outline. Ground, sky and walls fade to transparency around each separate scene. Cozy, warm, safe and inviting, never frightening. Quiet clear foreground space inside each painting for app characters to stand.
+
+Background: TRUE alpha transparency outside all twelve scenery paintings, including all gutters. No paper sheet, white rectangle, checkerboard, tinted backdrop, grid lines, frames, text, captions, numbers, logos, watermark or cast shadows beyond a vignette. No people, characters or animals unless a location explicitly requires tiny firefly light dots; no faces on objects. No photorealism, 3D, flat vector shapes or harsh outlines.
+
+Subjects, exact column order:
+Column 1 — Puente colgante: one safe gently curved hanging footbridge with warm wooden planks, thick tidy rope rails, strong rounded wooden posts over a shallow turquoise stream; mossy grassy banks and open approach; front/left/right angles of the same bridge, never precarious or frightening.
+Column 2 — Cruce de caminos: one welcoming fork of three broad ochre paths through soft grassy countryside with a little blank wooden direction post, daisies and one rounded leafy tree; no writing on signs; preserve branching geometry and landmark tree from three angles.
+Column 3 — Acantilado con faro: one peaceful grassy seaside cliff with rounded cream lighthouse topped by a coral roof and pale blue lantern, tiny stone path and calm turquoise sea; safe welcoming rounded landforms, no dangerous precipice foreground; same lighthouse/cliff from three angles.
+Column 4 — Pantano: one gentle sunlit wetland with shallow sage-teal pools, reeds, rounded mossy stones, distant willow and a small safe wooden boardwalk; warm friendly pastel scenery, no scary fog or creatures; same pools/willow/boardwalk geography from three angles.
+Final reminder: ALL three rows must depict front / left / right ANGLES at the SAME camera distance, never a zoom sequence. Every scene is fully contained inside the CENTRAL60% of its cell; all painting edges gently fade into genuine alpha before the completely empty transparent gutters.
+
+Packing correction:
+Use case: illustration-story. Technical packing edit to this SAME transparent 12-scene atlas, not new scenery.
+Preserve every exact place identity, all landmark designs and pastel colors, FOUR columns and THREE rows, and the twelve DISTINCT camera angles. TOP ROW remains front view, MIDDLE from the left, BOTTOM from the right, with the SAME camera distance. Do not mirror, zoom-crop, change the angle, simplify or discard scene details.
+MANDATORY change: uniformly SHRINK EACH WHOLE PAINTING by 50% in BOTH width and height. The current paintings nearly fill their squares; they must become visibly much smaller, isolated miniature watercolor paintings with WIDE empty gutters. Each complete vignette, including all sky/ground/walls/soft edge pigment, must fit STRICTLY within the CENTRAL50% of its own equal square cell. Invisible grid EXACTLY FOUR equal columns × THREE equal rows on an EXACT4:3canvas, ideal2400×1800, or any native resolution with STRICTLY EXACT4:3ratio. Centers exactly X12.5%,37.5%,62.5%,87.5%; Y16.6667%,50%,83.3333%. Center EVERY whole painting, not its floor line. In particular, first row must be higher than currently, so its center is16.6667% ofcanvasheight, not22%.
+Leave COMPLETELY CLEAR zero-alpha25%cell margins on all FOUR sides of each miniature. Mandatory continuous empty transparent bands along x25%,50%,75% and y33.333%,66.667% of canvas, with absolutely NOpaint at any cell border, including very faint diluted haze. No overlap or clipping. Do not add paint to fill empty gaps. Keep all12scenes complete.
+Finish with very soft watercolor pigment edges that gradually dissolve into genuine alpha within each miniature's bounds, no hard scalloped cutout edge, white halo, oval border, sticker outline, paper or rectangular backdrop. Transparent PNG,8bitRGBA,noninterlaced. No text, labels, numerals, gridlines, frames, shadows outside scenes, people or creatures. Do not alter the canvas ratio.
+```
+
+#### `public/art/places-views-15.png`
+
+```text
+Use case: illustration-story.
+Asset: ONE production landscape sprite atlas for Cuentacuentos, ages 3–7.
+Create EXACTLY TWELVE separate watercolor scenery paintings on one landscape canvas in EXACT aspect ratio 4:3, ideally 2400 × 1800. Transparent PNG, 8-bit RGBA, non-interlaced. The invisible layout is FOUR equal columns and THREE equal rows; every cell is square. No visible grid lines.
+References: Image 1 is a layout reference ONLY: use its generous transparent spaces between small vignettes. Image 2 is a watercolor style reference ONLY: match its gentle hand-painted pigment grain, natural pastel colors, cozy storybook atmosphere. Create entirely NEW locations below.
+
+The FOUR columns each show ONE specific place three times. TOP ROW: view from directly in front. MIDDLE ROW: new camera angle from the LEFT side, looking diagonally toward the same central landmark. BOTTOM ROW: new camera angle from the RIGHT side, looking diagonally toward the same central landmark. Camera distance, elevation, lens, and apparent scale must stay comparable between rows. These are THREE DIFFERENT ANGLES, never a panoramic/medium/close series, never zoom crops, duplicates, mirrored images or merely shifted details. Preserve the same location geometry, landmark designs, colors and spatial relationships coherently as the viewer moves around it. All landmarks remain recognizable in all three angles.
+
+Critical packing: Paint SMALL complete vignettes, each inside the CENTRAL 60% of its own square cell, centered EXACTLY at cell center. At least 20% of cell width and height on EVERY side is completely transparent. Whole-canvas centers X:12.5%,37.5%,62.5%,87.5%; Y:16.6667%,50%,83.3333%. Strict paint bounds: column 1 X5–20%, column 2 X30–45%, column 3 X55–70%, column 4 X80–95%. Top row Y6.667–26.667%, middle row Y40–60%, bottom row Y73.333–93.333%. Even very faint paint stays inside these bounds. Broad uninterrupted transparent vertical and horizontal gutters; absolutely ZERO alpha on all cell boundaries. No painting or pigment touches or crosses a cell border. Complete uncut scenes; do not enlarge scenes to fill empty spaces. These vignettes will be displayed separately at large size in the app.
+
+Style: traditional delicate children's picture-book watercolor, detailed but soft pastel pigment, gentle sunlight and fine grain only within paint. Very softly diluted, feathered outer edges: the outer 15–20% of each vignette gradually dissolves through translucent watercolor washes into true alpha. No sharp or hard scalloped cutout border, white halo, sticker edge or oval outline. Ground, sky and walls fade to transparency around each separate scene. Cozy, warm, safe and inviting, never frightening. Quiet clear foreground space inside each painting for app characters to stand.
+
+Background: TRUE alpha transparency outside all twelve scenery paintings, including all gutters. No paper sheet, white rectangle, checkerboard, tinted backdrop, grid lines, frames, text, captions, numbers, logos, watermark or cast shadows beyond a vignette. No people, characters or animals unless a location explicitly requires tiny firefly light dots; no faces on objects. No photorealism, 3D, flat vector shapes or harsh outlines.
+
+Subjects, exact column order:
+Column 1 — Volcán dormido: one peaceful dormant rounded volcanic mountain, warm ochre and dusty rose slopes, a green grassy foothill path and tiny closed crater, pale blue sky; no smoke, lava or eruption; same mountain/crater/path from front, left, right, gentle and safe.
+Column 2 — Cañón: one calm pastel sandstone canyon with rounded terracotta and peach cliffs, a broad safe sandy floor and a shallow winding turquoise stream; gentle sage plants; same canyon curves and distinctive rounded rock arch from three angles, no frightening sharp drops.
+Column 3 — Pista de carreras con meta: one cheerful small outdoor race track made from a wide ochre dirt loop on green lawn, a simple finish arch with a pastel checkered pennant, tiny rounded stands and open foreground; no words, numerals, competitors or vehicles; same loop and finish arch from three directions.
+Column 4 — Colina con vista: one peaceful rounded grassy hill with a broad gentle path, low wooden bench and one small leafy tree overlooking pastel countryside and distant lilac mountains; same hilltop tree/bench/path from three angles, safe open grassy foreground.
+Final reminder: ALL three rows must depict front / left / right ANGLES at the SAME camera distance, never a zoom sequence. Every scene is fully contained inside the CENTRAL60% of its cell; all painting edges gently fade into genuine alpha before the completely empty transparent gutters.
+
+Packing correction:
+Use case: illustration-story. Technical packing edit to this SAME transparent 12-scene atlas, not new scenery.
+Preserve every exact place identity, all landmark designs and pastel colors, FOUR columns and THREE rows, and the twelve DISTINCT camera angles. TOP ROW remains front view, MIDDLE from the left, BOTTOM from the right, with the SAME camera distance. Do not mirror, zoom-crop, change the angle, simplify or discard scene details.
+MANDATORY change: uniformly SHRINK EACH WHOLE PAINTING by 50% in BOTH width and height. The current paintings nearly fill their squares; they must become visibly much smaller, isolated miniature watercolor paintings with WIDE empty gutters. Each complete vignette, including all sky/ground/walls/soft edge pigment, must fit STRICTLY within the CENTRAL50% of its own equal square cell. Invisible grid EXACTLY FOUR equal columns × THREE equal rows on an EXACT4:3canvas, ideal2400×1800, or any native resolution with STRICTLY EXACT4:3ratio. Centers exactly X12.5%,37.5%,62.5%,87.5%; Y16.6667%,50%,83.3333%. Center EVERY whole painting, not its floor line. In particular, first row must be higher than currently, so its center is16.6667% ofcanvasheight, not22%.
+Leave COMPLETELY CLEAR zero-alpha25%cell margins on all FOUR sides of each miniature. Mandatory continuous empty transparent bands along x25%,50%,75% and y33.333%,66.667% of canvas, with absolutely NOpaint at any cell border, including very faint diluted haze. No overlap or clipping. Do not add paint to fill empty gaps. Keep all12scenes complete.
+Finish with very soft watercolor pigment edges that gradually dissolve into genuine alpha within each miniature's bounds, no hard scalloped cutout edge, white halo, oval border, sticker outline, paper or rectangular backdrop. Transparent PNG,8bitRGBA,noninterlaced. No text, labels, numerals, gridlines, frames, shadows outside scenes, people or creatures. Do not alter the canvas ratio.
+```
+
+#### `public/art/places-views-16.png`
+
+```text
+Use case: illustration-story.
+Asset: ONE production landscape sprite atlas for Cuentacuentos, ages 3–7.
+Create EXACTLY TWELVE separate watercolor scenery paintings on one landscape canvas in EXACT aspect ratio 4:3, ideally 2400 × 1800. Transparent PNG, 8-bit RGBA, non-interlaced. The invisible layout is FOUR equal columns and THREE equal rows; every cell is square. No visible grid lines.
+References: Image 1 is a layout reference ONLY: use its generous transparent spaces between small vignettes. Image 2 is a watercolor style reference ONLY: match its gentle hand-painted pigment grain, natural pastel colors, cozy storybook atmosphere. Create entirely NEW locations below.
+
+The FOUR columns each show ONE specific place three times. TOP ROW: view from directly in front. MIDDLE ROW: new camera angle from the LEFT side, looking diagonally toward the same central landmark. BOTTOM ROW: new camera angle from the RIGHT side, looking diagonally toward the same central landmark. Camera distance, elevation, lens, and apparent scale must stay comparable between rows. These are THREE DIFFERENT ANGLES, never a panoramic/medium/close series, never zoom crops, duplicates, mirrored images or merely shifted details. Preserve the same location geometry, landmark designs, colors and spatial relationships coherently as the viewer moves around it. All landmarks remain recognizable in all three angles.
+
+Critical packing: Paint SMALL complete vignettes, each inside the CENTRAL 60% of its own square cell, centered EXACTLY at cell center. At least 20% of cell width and height on EVERY side is completely transparent. Whole-canvas centers X:12.5%,37.5%,62.5%,87.5%; Y:16.6667%,50%,83.3333%. Strict paint bounds: column 1 X5–20%, column 2 X30–45%, column 3 X55–70%, column 4 X80–95%. Top row Y6.667–26.667%, middle row Y40–60%, bottom row Y73.333–93.333%. Even very faint paint stays inside these bounds. Broad uninterrupted transparent vertical and horizontal gutters; absolutely ZERO alpha on all cell boundaries. No painting or pigment touches or crosses a cell border. Complete uncut scenes; do not enlarge scenes to fill empty spaces. These vignettes will be displayed separately at large size in the app.
+
+Style: traditional delicate children's picture-book watercolor, detailed but soft pastel pigment, gentle sunlight and fine grain only within paint. Very softly diluted, feathered outer edges: the outer 15–20% of each vignette gradually dissolves through translucent watercolor washes into true alpha. No sharp or hard scalloped cutout border, white halo, sticker edge or oval outline. Ground, sky and walls fade to transparency around each separate scene. Cozy, warm, safe and inviting, never frightening. Quiet clear foreground space inside each painting for app characters to stand.
+
+Background: TRUE alpha transparency outside all twelve scenery paintings, including all gutters. No paper sheet, white rectangle, checkerboard, tinted backdrop, grid lines, frames, text, captions, numbers, logos, watermark or cast shadows beyond a vignette. No people, characters or animals unless a location explicitly requires tiny firefly light dots; no faces on objects. No photorealism, 3D, flat vector shapes or harsh outlines.
+
+Subjects, exact column order:
+Column 1 — Puente de piedra del trol: one cozy storybook rounded stone bridge over a little clear stream, mossy stone arch with a tiny arched dwelling door below its side, daisies and broad grassy approach; no troll or other character; same recognizable stone arch/door geography from three angles, never frightening.
+Column 2 — Barco de la gata pirata: one friendly little wooden pirate sailing ship with rounded warm brown hull, cream patched sails, dusty-rose pennant without emblem, safe wooden deck, small rail and calm blue water; no people, weapons or skulls; front-left/right views of the exact same ship with hull/mast/sail arrangement continuous.
+Column 3 — Nido gigante del cuervo: one giant cozy nest of twigs perched in the low branches of an enormous gentle old oak, with a few tiny shiny harmless colored pebbles among twigs, a broad path below; no crow or eggs with faces; same nest/tree branch geometry viewed from three directions, inviting and safe.
+Column 4 — Cueva desordenada del ogro: one welcoming broad bright cave mouth in a rounded mossy hill, a slightly untidy wooden pantry shelf inside with pumpkins and bread, a few harmless empty sacks and rumpled soft blankets in the lateral corners, scattered tiny bread crumbs and a toppled empty rounded basket at one side, visibly charming messy den, soft warm light and wide open dirt clearing; no ogre, bones, weapons or darkness; exact same cave/food shelf design from three angles.
+Final reminder: ALL three rows must depict front / left / right ANGLES at the SAME camera distance, never a zoom sequence. Every scene is fully contained inside the CENTRAL60% of its cell; all painting edges gently fade into genuine alpha before the completely empty transparent gutters.
+
+Packing correction:
+Use case: illustration-story. Technical packing edit to this SAME transparent 12-scene atlas, not new scenery.
+Preserve every exact place identity, all landmark designs and pastel colors, FOUR columns and THREE rows, and the twelve DISTINCT camera angles. TOP ROW remains front view, MIDDLE from the left, BOTTOM from the right, with the SAME camera distance. Do not mirror, zoom-crop, change the angle, simplify or discard scene details.
+MANDATORY change: uniformly SHRINK EACH WHOLE PAINTING by 50% in BOTH width and height. The current paintings nearly fill their squares; they must become visibly much smaller, isolated miniature watercolor paintings with WIDE empty gutters. Each complete vignette, including all sky/ground/walls/soft edge pigment, must fit STRICTLY within the CENTRAL50% of its own equal square cell. Invisible grid EXACTLY FOUR equal columns × THREE equal rows on an EXACT4:3canvas, ideal2400×1800, or any native resolution with STRICTLY EXACT4:3ratio. Centers exactly X12.5%,37.5%,62.5%,87.5%; Y16.6667%,50%,83.3333%. Center EVERY whole painting, not its floor line. In particular, first row must be higher than currently, so its center is16.6667% ofcanvasheight, not22%.
+Leave COMPLETELY CLEAR zero-alpha25%cell margins on all FOUR sides of each miniature. Mandatory continuous empty transparent bands along x25%,50%,75% and y33.333%,66.667% of canvas, with absolutely NOpaint at any cell border, including very faint diluted haze. No overlap or clipping. Do not add paint to fill empty gaps. Keep all12scenes complete.
+Finish with very soft watercolor pigment edges that gradually dissolve into genuine alpha within each miniature's bounds, no hard scalloped cutout edge, white halo, oval border, sticker outline, paper or rectangular backdrop. Transparent PNG,8bitRGBA,noninterlaced. No text, labels, numerals, gridlines, frames, shadows outside scenes, people or creatures. Do not alter the canvas ratio.
+```
+
+#### `public/art/places-views-17.png`
+
+```text
+Use case: illustration-story.
+Asset: ONE production landscape sprite atlas for Cuentacuentos, ages 3–7.
+Create EXACTLY TWELVE separate watercolor scenery paintings on one landscape canvas in EXACT aspect ratio 4:3, ideally 2400 × 1800. Transparent PNG, 8-bit RGBA, non-interlaced. The invisible layout is FOUR equal columns and THREE equal rows; every cell is square. No visible grid lines.
+References: Image 1 is a layout reference ONLY: use its generous transparent spaces between small vignettes. Image 2 is a watercolor style reference ONLY: match its gentle hand-painted pigment grain, natural pastel colors, cozy storybook atmosphere. Create entirely NEW locations below.
+
+The FOUR columns each show ONE specific place three times. TOP ROW: view from directly in front. MIDDLE ROW: new camera angle from the LEFT side, looking diagonally toward the same central landmark. BOTTOM ROW: new camera angle from the RIGHT side, looking diagonally toward the same central landmark. Camera distance, elevation, lens, and apparent scale must stay comparable between rows. These are THREE DIFFERENT ANGLES, never a panoramic/medium/close series, never zoom crops, duplicates, mirrored images or merely shifted details. Preserve the same location geometry, landmark designs, colors and spatial relationships coherently as the viewer moves around it. All landmarks remain recognizable in all three angles.
+
+Critical packing: Paint SMALL complete vignettes, each inside the CENTRAL 60% of its own square cell, centered EXACTLY at cell center. At least 20% of cell width and height on EVERY side is completely transparent. Whole-canvas centers X:12.5%,37.5%,62.5%,87.5%; Y:16.6667%,50%,83.3333%. Strict paint bounds: column 1 X5–20%, column 2 X30–45%, column 3 X55–70%, column 4 X80–95%. Top row Y6.667–26.667%, middle row Y40–60%, bottom row Y73.333–93.333%. Even very faint paint stays inside these bounds. Broad uninterrupted transparent vertical and horizontal gutters; absolutely ZERO alpha on all cell boundaries. No painting or pigment touches or crosses a cell border. Complete uncut scenes; do not enlarge scenes to fill empty spaces. These vignettes will be displayed separately at large size in the app.
+
+Style: traditional delicate children's picture-book watercolor, detailed but soft pastel pigment, gentle sunlight and fine grain only within paint. Very softly diluted, feathered outer edges: the outer 15–20% of each vignette gradually dissolves through translucent watercolor washes into true alpha. No sharp or hard scalloped cutout border, white halo, sticker edge or oval outline. Ground, sky and walls fade to transparency around each separate scene. Cozy, warm, safe and inviting, never frightening. Quiet clear foreground space inside each painting for app characters to stand.
+
+Background: TRUE alpha transparency outside all twelve scenery paintings, including all gutters. No paper sheet, white rectangle, checkerboard, tinted backdrop, grid lines, frames, text, captions, numbers, logos, watermark or cast shadows beyond a vignette. No people, characters or animals unless a location explicitly requires tiny firefly light dots; no faces on objects. No photorealism, 3D, flat vector shapes or harsh outlines.
+
+Subjects, exact column order:
+Column 1 — Castillo de hielo: one friendly small ice castle with three rounded pale blue icy towers, translucent lavender accents, a broad arched doorway, snowy rounded courtyard and soft sky; no sharp threatening spires or people; same tower count, gate and layout from three angles.
+Column 2 — Rincón de telarañas brillantes: one friendly sunlit mossy woodland corner with a large delicate dew-spangled silvery spiderweb between two low curved branches, soft flowers and an open path; no spider or other creature; web and branch geometry continuous across three angles, not spooky.
+Column 3 — Casa del gigante en las nubes: one large cozy cream cottage with a pastel peach rounded roof and oversized blue door on a soft grassy cloud island, gentle cloud puffs and tiny wide porch; no giant, faces or precarious scary ledge; same cottage/island/door design from three angles.
+Column 4 — Seta hueca del duende: one cozy mushroom house shaped as a big coral-red mushroom cap with cream dots over a warm cream stem, tiny round sage OPEN door revealing a hollow warm interior and a little round window, moss, daisies and an open leaf path; no elf; same door/window positions and cap design from front/left/right, warm and magical.
+Final reminder: ALL three rows must depict front / left / right ANGLES at the SAME camera distance, never a zoom sequence. Every scene is fully contained inside the CENTRAL60% of its cell; all painting edges gently fade into genuine alpha before the completely empty transparent gutters.
+
+Packing correction:
+Use case: illustration-story. Technical packing edit to this SAME transparent 12-scene atlas, not new scenery.
+Preserve every exact place identity, all landmark designs and pastel colors, FOUR columns and THREE rows, and the twelve DISTINCT camera angles. TOP ROW remains front view, MIDDLE from the left, BOTTOM from the right, with the SAME camera distance. Do not mirror, zoom-crop, change the angle, simplify or discard scene details.
+MANDATORY change: uniformly SHRINK EACH WHOLE PAINTING by 50% in BOTH width and height. The current paintings nearly fill their squares; they must become visibly much smaller, isolated miniature watercolor paintings with WIDE empty gutters. Each complete vignette, including all sky/ground/walls/soft edge pigment, must fit STRICTLY within the CENTRAL50% of its own equal square cell. Invisible grid EXACTLY FOUR equal columns × THREE equal rows on an EXACT4:3canvas, ideal2400×1800, or any native resolution with STRICTLY EXACT4:3ratio. Centers exactly X12.5%,37.5%,62.5%,87.5%; Y16.6667%,50%,83.3333%. Center EVERY whole painting, not its floor line. In particular, first row must be higher than currently, so its center is16.6667% ofcanvasheight, not22%.
+Leave COMPLETELY CLEAR zero-alpha25%cell margins on all FOUR sides of each miniature. Mandatory continuous empty transparent bands along x25%,50%,75% and y33.333%,66.667% of canvas, with absolutely NOpaint at any cell border, including very faint diluted haze. No overlap or clipping. Do not add paint to fill empty gaps. Keep all12scenes complete.
+Finish with very soft watercolor pigment edges that gradually dissolve into genuine alpha within each miniature's bounds, no hard scalloped cutout edge, white halo, oval border, sticker outline, paper or rectangular backdrop. Transparent PNG,8bitRGBA,noninterlaced. No text, labels, numerals, gridlines, frames, shadows outside scenes, people or creatures. Do not alter the canvas ratio.
+```
+
+#### `public/art/places-views-18.png`
+
+```text
+Use case: illustration-story.
+Asset: ONE production landscape sprite atlas for Cuentacuentos, ages 3–7.
+Create EXACTLY TWELVE separate watercolor scenery paintings on one landscape canvas in EXACT aspect ratio 4:3, ideally 2400 × 1800. Transparent PNG, 8-bit RGBA, non-interlaced. The invisible layout is FOUR equal columns and THREE equal rows; every cell is square. No visible grid lines.
+References: Image 1 is a layout reference ONLY: use its generous transparent spaces between small vignettes. Image 2 is a watercolor style reference ONLY: match its gentle hand-painted pigment grain, natural pastel colors, cozy storybook atmosphere. Create entirely NEW locations below.
+
+The FOUR columns each show ONE specific place three times. TOP ROW: view from directly in front. MIDDLE ROW: new camera angle from the LEFT side, looking diagonally toward the same central landmark. BOTTOM ROW: new camera angle from the RIGHT side, looking diagonally toward the same central landmark. Camera distance, elevation, lens, and apparent scale must stay comparable between rows. These are THREE DIFFERENT ANGLES, never a panoramic/medium/close series, never zoom crops, duplicates, mirrored images or merely shifted details. Preserve the same location geometry, landmark designs, colors and spatial relationships coherently as the viewer moves around it. All landmarks remain recognizable in all three angles.
+
+Critical packing: Paint SMALL complete vignettes, each inside the CENTRAL 60% of its own square cell, centered EXACTLY at cell center. At least 20% of cell width and height on EVERY side is completely transparent. Whole-canvas centers X:12.5%,37.5%,62.5%,87.5%; Y:16.6667%,50%,83.3333%. Strict paint bounds: column 1 X5–20%, column 2 X30–45%, column 3 X55–70%, column 4 X80–95%. Top row Y6.667–26.667%, middle row Y40–60%, bottom row Y73.333–93.333%. Even very faint paint stays inside these bounds. Broad uninterrupted transparent vertical and horizontal gutters; absolutely ZERO alpha on all cell boundaries. No painting or pigment touches or crosses a cell border. Complete uncut scenes; do not enlarge scenes to fill empty spaces. These vignettes will be displayed separately at large size in the app.
+
+Style: traditional delicate children's picture-book watercolor, detailed but soft pastel pigment, gentle sunlight and fine grain only within paint. Very softly diluted, feathered outer edges: the outer 15–20% of each vignette gradually dissolves through translucent watercolor washes into true alpha. No sharp or hard scalloped cutout border, white halo, sticker edge or oval outline. Ground, sky and walls fade to transparency around each separate scene. Cozy, warm, safe and inviting, never frightening. Quiet clear foreground space inside each painting for app characters to stand.
+
+Background: TRUE alpha transparency outside all twelve scenery paintings, including all gutters. No paper sheet, white rectangle, checkerboard, tinted backdrop, grid lines, frames, text, captions, numbers, logos, watermark or cast shadows beyond a vignette. No people, characters or animals unless a location explicitly requires tiny firefly light dots; no faces on objects. No photorealism, 3D, flat vector shapes or harsh outlines.
+
+Subjects, exact column order:
+Column 1 — Mar de nubes al atardecer: one tranquil sea of soft cream and lavender clouds beneath a peach-pink sunset, a small safe rounded grassy overlook with one little wooden bench; same overlook/cloud formations/sun direction coherently from front/left/right, gentle quiet foreground.
+Column 2 — Campo de luciérnagas: one peaceful twilight meadow with rounded pale grass, little white and pink flowers, a curving path, distant leafy hedge and tiny warm golden firefly LIGHT DOTS floating softly within the scene; no visible insect bodies, no people; same meadow/path from three directions, inviting blue-lilac night.
+Column 3 — Estanque de nenúfares: one calm small turquoise pond with round sage lily pads and peach/white waterlily blossoms, a few rounded bank stones, reeds and a soft curved grassy shore; preserve distinctive pads/shore/reeds identity from three angles, quiet bank foreground.
+Column 4 — Colina de estrellas fugaces: one rounded safe grassy hill with a little curved bench and small tree under a gentle pale indigo night sky with three delicate golden shooting stars, distant lavender mountains; same hill/tree/bench and sky mood from three directions, peaceful and welcoming.
+Final reminder: ALL three rows must depict front / left / right ANGLES at the SAME camera distance, never a zoom sequence. Every scene is fully contained inside the CENTRAL60% of its cell; all painting edges gently fade into genuine alpha before the completely empty transparent gutters.
+
+CORRECTION PROMPT:
+Edit ONLY atlas packing and transparent margins in this exact watercolor scenery atlas. Preserve ALL TWELVE existing paintings, their four place identities, landmarks, colors, lighting, soft watercolor details and row-major order. Each column is one place; retain row1 FRONT, row2 LEFT-SIDE, row3 RIGHT-SIDE views at the same camera distance. Do not change the internal scene composition, redraw a zoom series, mirror, duplicate, or lose any landmark. Exact 4:3 landscape canvas, four columns and three rows, RGBA8 PNG with genuine alpha.
+
+MANDATORY PACKING CORRECTION: REDUCE EACH ENTIRE PAINTED VIGNETTE TO HALF ITS CURRENT WIDTH AND HALF ITS CURRENT HEIGHT, including ALL its outer translucent watercolor edges and speckles. Treat each painting as one whole unit, not a crop. Center the shrunken whole painting EXACTLY at its own cell center: X12.5%,37.5%,62.5%,87.5%, Y16.6667%,50%,83.3333% of the canvas. Each of the twelve paintings must be SMALL and completely isolated, occupying no more than the CENTRAL60% WIDTH AND CENTRAL60% HEIGHT of its own square cell. At least20% of each cell width and height is EMPTY FULLY TRANSPARENT ALPHA ZERO margin on every side. Do not expand the paintings to fill that empty space.
+
+REMOVE ALL the low-opacity color wash, white or gray halo, bright colored fringes and stray pigment speckles BETWEEN the twelve vignettes. There must be broad uninterrupted EMPTY transparent gutters around every vertical boundary at X25%,50%,75%, and horizontal boundary at Y33.333%,66.667%. NO PIXEL of watercolor, even a faint speck, may touch a cell boundary or a canvas edge. No residue or background wash in these margins. Retain the beautiful soft watercolor fade INSIDE each reduced vignette, tapering pigment to transparent alpha before the empty margin.
+
+Do not introduce any new objects, characters, animals, text, labels, numbers, frames, grid, shadows, white paper, opaque background or checkerboard. Preserve complete uncut scenery and all three real directions. This is technical spacing cleanup of the same art, not a redesign.
+```
+
+#### `public/art/places-views-19.png`
+
+```text
+Use case: illustration-story.
+Asset: ONE production landscape sprite atlas for Cuentacuentos, ages 3–7.
+Create EXACTLY TWELVE separate watercolor scenery paintings on one landscape canvas in EXACT aspect ratio 4:3, ideally 2400 × 1800. Transparent PNG, 8-bit RGBA, non-interlaced. The invisible layout is FOUR equal columns and THREE equal rows; every cell is square. No visible grid lines.
+References: Image 1 is a layout reference ONLY: use its generous transparent spaces between small vignettes. Image 2 is a watercolor style reference ONLY: match its gentle hand-painted pigment grain, natural pastel colors, cozy storybook atmosphere. Create entirely NEW locations below.
+
+The FOUR columns each show ONE specific place three times. TOP ROW: view from directly in front. MIDDLE ROW: new camera angle from the LEFT side, looking diagonally toward the same central landmark. BOTTOM ROW: new camera angle from the RIGHT side, looking diagonally toward the same central landmark. Camera distance, elevation, lens, and apparent scale must stay comparable between rows. These are THREE DIFFERENT ANGLES, never a panoramic/medium/close series, never zoom crops, duplicates, mirrored images or merely shifted details. Preserve the same location geometry, landmark designs, colors and spatial relationships coherently as the viewer moves around it. All landmarks remain recognizable in all three angles.
+
+Critical packing: Paint SMALL complete vignettes, each inside the CENTRAL 60% of its own square cell, centered EXACTLY at cell center. At least 20% of cell width and height on EVERY side is completely transparent. Whole-canvas centers X:12.5%,37.5%,62.5%,87.5%; Y:16.6667%,50%,83.3333%. Strict paint bounds: column 1 X5–20%, column 2 X30–45%, column 3 X55–70%, column 4 X80–95%. Top row Y6.667–26.667%, middle row Y40–60%, bottom row Y73.333–93.333%. Even very faint paint stays inside these bounds. Broad uninterrupted transparent vertical and horizontal gutters; absolutely ZERO alpha on all cell boundaries. No painting or pigment touches or crosses a cell border. Complete uncut scenes; do not enlarge scenes to fill empty spaces. These vignettes will be displayed separately at large size in the app.
+
+Style: traditional delicate children's picture-book watercolor, detailed but soft pastel pigment, gentle sunlight and fine grain only within paint. Very softly diluted, feathered outer edges: the outer 15–20% of each vignette gradually dissolves through translucent watercolor washes into true alpha. No sharp or hard scalloped cutout border, white halo, sticker edge or oval outline. Ground, sky and walls fade to transparency around each separate scene. Cozy, warm, safe and inviting, never frightening. Quiet clear foreground space inside each painting for app characters to stand.
+
+Background: TRUE alpha transparency outside all twelve scenery paintings, including all gutters. No paper sheet, white rectangle, checkerboard, tinted backdrop, grid lines, frames, text, captions, numbers, logos, watermark or cast shadows beyond a vignette. No people, characters or animals unless a location explicitly requires tiny firefly light dots; no faces on objects. No photorealism, 3D, flat vector shapes or harsh outlines.
+
+Subjects, exact column order:
+Column 1 — Bosque nevado de noche: one gentle snowy woodland at night with small rounded snow-covered pine trees, a wide curved white path, pale lilac distant hills and soft indigo moonlit sky; tiny warm glints of light in snow, no danger or figures; same trees/path geometry from three angles.
+Column 2 — Luna creciente como barca: one dreamy large pale golden crescent moon gently floating like a boat on a quiet lavender-blue cloud lake, a little smooth cloud dock and delicate distant stars; no person or face; the same crescent moon-boat and dock from front/left/right, comparable camera distance, safe tender magical mood.
+Column 3 — Playa al atardecer: one peaceful sandy beach with calm turquoise waves, a softly curved cream shoreline, one small rounded driftwood piece and distant pastel lilac headland under peach-pink sunset; same shoreline/driftwood/headland from three angles, broad quiet sandy foreground.
+Column 4 — Jardín de dientes de león: one sunny gentle garden with soft sage grass, fluffy white dandelion seed heads, tiny yellow flowers, a curved stepping-stone path and a low warm wooden gate; a few delicate seeds drifting only inside the vignette; same path/gate geometry from three directions, no people or animals.
+Final reminder: ALL three rows must depict front / left / right ANGLES at the SAME camera distance, never a zoom sequence. Every scene is fully contained inside the CENTRAL60% of its cell; all painting edges gently fade into genuine alpha before the completely empty transparent gutters.
+
+CORRECTION PROMPT:
+Edit ONLY atlas packing and transparent margins in this exact watercolor scenery atlas. Preserve ALL TWELVE existing paintings, their four place identities, landmarks, colors, lighting, soft watercolor details and row-major order. Each column is one place; retain row1 FRONT, row2 LEFT-SIDE, row3 RIGHT-SIDE views at the same camera distance. Do not change the internal scene composition, redraw a zoom series, mirror, duplicate, or lose any landmark. Exact 4:3 landscape canvas, four columns and three rows, RGBA8 PNG with genuine alpha.
+
+MANDATORY PACKING CORRECTION: REDUCE EACH ENTIRE PAINTED VIGNETTE TO HALF ITS CURRENT WIDTH AND HALF ITS CURRENT HEIGHT, including ALL its outer translucent watercolor edges and speckles. Treat each painting as one whole unit, not a crop. Center the shrunken whole painting EXACTLY at its own cell center: X12.5%,37.5%,62.5%,87.5%, Y16.6667%,50%,83.3333% of the canvas. Each of the twelve paintings must be SMALL and completely isolated, occupying no more than the CENTRAL60% WIDTH AND CENTRAL60% HEIGHT of its own square cell. At least20% of each cell width and height is EMPTY FULLY TRANSPARENT ALPHA ZERO margin on every side. Do not expand the paintings to fill that empty space.
+
+REMOVE ALL the low-opacity color wash, white or gray halo, bright colored fringes and stray pigment speckles BETWEEN the twelve vignettes. There must be broad uninterrupted EMPTY transparent gutters around every vertical boundary at X25%,50%,75%, and horizontal boundary at Y33.333%,66.667%. NO PIXEL of watercolor, even a faint speck, may touch a cell boundary or a canvas edge. No residue or background wash in these margins. Retain the beautiful soft watercolor fade INSIDE each reduced vignette, tapering pigment to transparent alpha before the empty margin.
+
+Do not introduce any new objects, characters, animals, text, labels, numbers, frames, grid, shadows, white paper, opaque background or checkerboard. Preserve complete uncut scenery and all three real directions. This is technical spacing cleanup of the same art, not a redesign.
+```
+
+#### `public/art/animals-babies.png`
+
+```text
+Use case: illustration-story.
+Asset type: production character sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: ONE precisely aligned FOUR-column × TWO-row atlas, EXACT landscape aspect ratio 2:1 and eight equal SQUARE cells, containing exactly EIGHT distinct COMPLETE FULL-BODY characters in the specified order. Deliver PNG 8-bit RGBA, genuine alpha transparency, noninterlaced. Create new subjects, not copies of reference characters.
+Input reference: use the supplied existing character atlas ONLY for its traditional watercolor medium, pastel natural pigments, endearing expressive eyes and warm storybook charm. Match this established illustration set.
+Mandatory invisible grid and packing: column centers are x12.5%,37.5%,62.5%,87.5% of canvas width; row centers y25%,75%. Each COMPLETE silhouette, including tails, ears, wings, antennae, props, hat and feet, fits ONLY within CENTRAL60% width and height of its own SQUARE cell. Leave at least20% of every cell FULLY TRANSPARENT on all four sides. No pigment may touch any cell edge or spill into its neighbors. Same apparent character scale throughout, full uncropped body and generous transparent gutters. Do not draw the grid. Exact eight distinct subjects, row-major order.
+Style/medium: delicate traditional hand-painted children's book watercolor, soft irregular pigment edges, translucent color variation, subtle authentic watercolor paper grain ONLY inside painted figures, minimal fine pencil details, muted sage, dusty peach, warm cream, pale blue, lavender and natural soft browns. Friendly rounded proportions, gentle eyes and inviting expression, clearly legible at small size. Full front or subtle three-quarter poses, all feet/paws visible. Cozy ages 3–7.
+Scene/backdrop: real transparent alpha background. Separate isolated figures with wholly transparent negative space and gutters. NO surrounding paper, white background, checkerboard, floor, scenery, vignette, frame, text, letters, labels, numbers or watermark. Do not paint cast shadows beyond the figures. No harsh outlines, plastic gloss, 3D, vector-flat style, realistic scary faces, weapons, blood or sharp exposed teeth.
+
+EXACT subjects top row left to right:
+(1) a tiny fluffy yellow CHICK, little orange pointed beak, two short orange legs, small wings and rounded baby body, cheerful face;
+(2) a fluffy cream-yellow DUCKLING, distinctly broad flat orange duck beak, two visible orange WEBBED feet and a short soft duck tail, sweet face, distinct from chick;
+(3) a gentle brown FAWN, big soft ears, tiny white coat spots, four slender full legs with rounded hooves, no antlers, complete tail;
+(4) a cuddly small honey-brown BEAR CUB, round ears, soft cream muzzle and chubby paws, full body sitting or standing, innocent expression.
+Bottom row left to right:
+(5) a little warm chestnut FOAL, short pale mane, four full slender legs with rounded hooves and full soft tail, no tack, tiny baby proportions;
+(6) a fluffy gray-and-cream BABY PENGUIN, round head, short black beak, little flippers, two stubby visible feet, no adult dramatic markings;
+(7) a cute very young SEA TURTLE, soft sage shell with muted cream pattern, rounded head and FOUR broad swimming flippers visibly distinct from land tortoise legs, all limbs complete;
+(8) a cuddly BABY SEAL, soft cream-white fur, round muzzle, two short front flippers and softly paired back flippers, entire body visible. No water or surrounding ice.
+Eight separate baby animals, no clothing or additional toys.
+
+PACKING CORRECTION
+Use case: precise-object-edit.
+Repair ONLY the layout of this eight-character watercolor atlas. Preserve all eight exact baby animals, colors, details, friendly expressions and exact order. Preserve genuine PNG alpha transparency and the EXACT 2:1 landscape canvas with FOUR columns and TWO rows of equal SQUARE cells.
+The current animals are too large and some touch the middle crop boundary. Make EVERY COMPLETE animal HALF its current width and HALF its current height, and CENTER each entire animal in its exact cell. This substantial reduction is mandatory. No cropping and no change inside the animal. Include the entire ears, tail, flippers and feet in the resize.
+Precise centers: x12.5%,37.5%,62.5%,87.5% of full canvas; y25%,75%. Every entire animal and all watercolor fringe must fit within central 55% of the cell, leaving 22.5% completely empty transparent margin above, below, left and right. Exact allowed painted bounds in canvas percentages: columns x5.625–19.375%,30.625–44.375%,55.625–69.375%,80.625–94.375%; rows y11.25–38.75%,61.25–88.75%. These are invisible technical bounds, DO NOT draw boxes. All background and gutters outside those eight boxes MUST be alpha zero, no speckles.
+Top row left to right: chick, duckling, fawn, bear cub. Bottom row: foal, baby penguin, baby sea turtle, baby seal. Exactly eight separate full figures, no overlap. Keep the fawn and foal's four full legs; sea turtle has four flippers.
+No scenery, floor, shadow, background paper, checkerboard, grid, lines, labels, letters, words, new objects or extra animals. Preserve watercolor style and warm color. Keep PNG 8-bit RGBA, noninterlaced, ratio exactly 2:1.
+```
+
+#### `public/art/villains-2.png`
+
+```text
+Use case: illustration-story.
+Asset type: production character sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: ONE precisely aligned FOUR-column × TWO-row atlas, EXACT landscape aspect ratio 2:1 and eight equal SQUARE cells, containing exactly EIGHT distinct COMPLETE FULL-BODY characters in the specified order. Deliver PNG 8-bit RGBA, genuine alpha transparency, noninterlaced. Create new subjects, not copies of reference characters.
+Input reference: use the supplied existing character atlas ONLY for its traditional watercolor medium, pastel natural pigments, endearing expressive eyes and warm storybook charm. Match this established illustration set.
+Mandatory invisible grid and packing: column centers are x12.5%,37.5%,62.5%,87.5% of canvas width; row centers y25%,75%. Each COMPLETE silhouette, including tails, ears, wings, antennae, props, hat and feet, fits ONLY within CENTRAL60% width and height of its own SQUARE cell. Leave at least20% of every cell FULLY TRANSPARENT on all four sides. No pigment may touch any cell edge or spill into its neighbors. Same apparent character scale throughout, full uncropped body and generous transparent gutters. Do not draw the grid. Exact eight distinct subjects, row-major order.
+Style/medium: delicate traditional hand-painted children's book watercolor, soft irregular pigment edges, translucent color variation, subtle authentic watercolor paper grain ONLY inside painted figures, minimal fine pencil details, muted sage, dusty peach, warm cream, pale blue, lavender and natural soft browns. Friendly rounded proportions, gentle eyes and inviting expression, clearly legible at small size. Full front or subtle three-quarter poses, all feet/paws visible. Cozy ages 3–7.
+Scene/backdrop: real transparent alpha background. Separate isolated figures with wholly transparent negative space and gutters. NO surrounding paper, white background, checkerboard, floor, scenery, vignette, frame, text, letters, labels, numbers or watermark. Do not paint cast shadows beyond the figures. No harsh outlines, plastic gloss, 3D, vector-flat style, realistic scary faces, weapons, blood or sharp exposed teeth.
+
+Gentle redeemable antagonists: mischievous, grumpy or worried but harmless, never terrifying. Match villain reference expressions and watercolor quality.
+EXACT subjects top row left to right:
+(1) a female WINTER WITCH with pale silver hair, a soft icy-blue pointed hat, lavender-blue long cloak, rosy nose and pursed mildly grumpy smile, mittens, full feet visible, no weapons, no broom;
+(2) a round pale blue-gray GRUMBLING SHARK, full friendly side/three-quarter body with complete fins and tail, tiny frown but NO visible sharp teeth or open predatory mouth, no water;
+(3) a small warm coral-orange CRANKY CRAB, two rounded friendly claws, all short legs contained, tiny crossed expression, never realistic frightening;
+(4) a fluffy blue-gray STORM CLOUD character with a small pouty friendly face and a compact few pale raindrops contained directly beneath, no lightning, everything wholly within its cell.
+Bottom row left to right:
+(5) a little gray THIEVING RAT with rounded ears, soft full tail curled close to body, a tiny plain fabric pouch held in its paws, cheeky apologetic smile, no weapon;
+(6) a grumpy-but-friendly SCARECROW with floppy straw hat, patched moss-green shirt and warm brown trousers, soft straw tufts, simple face with an annoyed eyebrow, complete body and soft boots, no pole;
+(7) a male ENVIOUS WIZARD, short soft beard, muted plum pointed hat and robe, folded arms and pouty lips, complete feet visible, no staff/weapon, never malicious;
+(8) a proud PRETENTIOUS SNAKE, small sage-green rounded coiled full body with short head raised, pastel golden scarf held close around neck, smug-but-friendly smile, no fangs, no tongue sticking out.
+No scary details or magic attacks. Each is full isolated character, consistent apparent size, no scenery.
+
+PACKING CORRECTION
+Use case: precise-object-edit.
+Repair ONLY the layout of this eight-character watercolor atlas. Preserve all eight exact gentle antagonists, colors, details, friendly expressions and exact order. Preserve genuine PNG alpha transparency and the EXACT 2:1 landscape canvas with FOUR columns and TWO rows of equal SQUARE cells.
+The current characters are too large and some touch the middle crop boundary. Make EVERY COMPLETE character HALF its current width and HALF its current height, and CENTER each entire character in its exact cell. This substantial reduction is mandatory. No cropping and no change inside the character. Include the entire ears, tail, flippers and feet in the resize.
+Precise centers: x12.5%,37.5%,62.5%,87.5% of full canvas; y25%,75%. Every entire character and all watercolor fringe must fit within central 55% of the cell, leaving 22.5% completely empty transparent margin above, below, left and right. Exact allowed painted bounds in canvas percentages: columns x5.625–19.375%,30.625–44.375%,55.625–69.375%,80.625–94.375%; rows y11.25–38.75%,61.25–88.75%. These are invisible technical bounds, DO NOT draw boxes. All background and gutters outside those eight boxes MUST be alpha zero, no speckles.
+Top row left to right: female winter witch, grumbling shark, cranky crab, storm cloud. Bottom row: thieving rat, angry scarecrow, envious male wizard, pretentious snake. Exactly eight separate full figures, no overlap. Keep the shark's complete fins and tail, the cloud's complete raindrops, and every character's full hat, ears, feet and tail. Preserve the harmless grumpy/mischievous expressions. No fangs or weapons.
+No scenery, floor, shadow, background paper, checkerboard, grid, lines, labels, letters, words, new objects or extra characters. Preserve watercolor style and warm color. Keep PNG 8-bit RGBA, noninterlaced, ratio exactly 2:1.
+
+RAT EYE MASK AND SULKY CLOUD DETAILS
+Use case: precise-object-edit.
+Edit ONLY TWO small character details in this transparent watercolor atlas. Preserve the exact 2:1 canvas, four columns and two rows, every character's position and full silhouette, all eight characters, their order, their colors, their sizes, generous existing transparent margins and genuine alpha background. Preserve the watercolor style.
+In bottom-row FIRST cell, the small gray thieving rat must wear a simple soft CHARCOAL EYE MASK with two large eye openings: a tiny friendly cartoon burglar mask fitted around its existing eyes, with a fine strap around its head. Keep its sweet cheeky face, pouch, full tail, ears, clothes and body exactly as they are. The mask makes it a harmless storybook thief, never scary.
+In top-row FOURTH cell, the blue-gray storm cloud must look MILDLY SULKY AND GRUMPY, with gently angled eyebrows and a little pout; keep the cute face, blush, rounded full cloud silhouette and contained raindrops. No lightning, no frightening expression.
+ALL SIX other characters remain unchanged, including the female winter witch, full shark with no teeth, crab, scarecrow, male wizard and full coiled snake. No extra marks, scenery, backgrounds, shadows, text, grid or weapons. Keep PNG 8-bit RGBA noninterlaced and all cell boundaries fully transparent.
+```
+
+#### `public/art/town-folk.png`
+
+```text
+Use case: illustration-story.
+Asset type: production character sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: ONE precisely aligned FOUR-column × TWO-row atlas, EXACT landscape aspect ratio 2:1 and eight equal SQUARE cells, containing exactly EIGHT distinct COMPLETE FULL-BODY characters in the specified order. Deliver PNG 8-bit RGBA, genuine alpha transparency, noninterlaced. Create new subjects, not copies of reference characters.
+Input reference: use the supplied existing character atlas ONLY for its traditional watercolor medium, pastel natural pigments, endearing expressive eyes and warm storybook charm. Match this established illustration set.
+Mandatory invisible grid and packing: column centers are x12.5%,37.5%,62.5%,87.5% of canvas width; row centers y25%,75%. Each COMPLETE silhouette, including tails, ears, wings, antennae, props, hat and feet, fits ONLY within CENTRAL60% width and height of its own SQUARE cell. Leave at least20% of every cell FULLY TRANSPARENT on all four sides. No pigment may touch any cell edge or spill into its neighbors. Same apparent character scale throughout, full uncropped body and generous transparent gutters. Do not draw the grid. Exact eight distinct subjects, row-major order.
+Style/medium: delicate traditional hand-painted children's book watercolor, soft irregular pigment edges, translucent color variation, subtle authentic watercolor paper grain ONLY inside painted figures, minimal fine pencil details, muted sage, dusty peach, warm cream, pale blue, lavender and natural soft browns. Friendly rounded proportions, gentle eyes and inviting expression, clearly legible at small size. Full front or subtle three-quarter poses, all feet/paws visible. Cozy ages 3–7.
+Scene/backdrop: real transparent alpha background. Separate isolated figures with wholly transparent negative space and gutters. NO surrounding paper, white background, checkerboard, floor, scenery, vignette, frame, text, letters, labels, numbers or watermark. Do not paint cast shadows beyond the figures. No harsh outlines, plastic gloss, 3D, vector-flat style, realistic scary faces, weapons, blood or sharp exposed teeth.
+
+EXACT subjects top row left to right; preserve specified adult genders. Humans have gentle rounded picturebook proportions, natural modest clothes, complete arms and feet and cozy helpful expressions:
+(1) a female MAIL CARRIER, dusty blue cardigan/jacket and soft cap, warm brown shoulder satchel, holding one blank envelope, smiling;
+(2) a male BAKER, cream chef cap, warm cream shirt and dusty peach apron, holding one small loaf of bread, rosy cheeks;
+(3) a female TEACHER, warm lavender cardigan and sage skirt/trousers, holding a little closed book with completely blank cover, friendly gentle smile;
+(4) a male KIND DENTIST, pale blue coat over warm cream clothes, no mask hiding face, holding one little friendly tooth model as a prop, no frightening medical instruments.
+Bottom row left to right:
+(5) a female GARDENER, soft straw sunhat, sage-green apron, terracotta trousers, holding a small potted seedling, welcoming smile;
+(6) a male TRAIN CONDUCTOR, muted navy cap and jacket with brass buttons, warm brown trousers, holding a small plain ticket/card with NO text, cheerful helpful face;
+(7) a female MARKET VENDOR, dusty peach blouse and sage apron, holding one small basket of soft colorful produce, warm friendly face;
+(8) a male LIGHTHOUSE KEEPER, pale cream cable-knit sweater, muted blue cap and warm boots, holding a small brass lantern, gentle beard and welcoming face.
+No stand, backdrop, scenery or other people. Clothing diverse in soft natural colors, no logos or writing. Props stay close to each character and fit completely inside its own central 60% of the cell.
+
+PACKING CORRECTION
+Use case: precise-object-edit.
+Repair ONLY the layout of this eight-character watercolor atlas. Preserve all eight exact town people, colors, details, friendly expressions and exact order. Preserve genuine PNG alpha transparency and the EXACT 2:1 landscape canvas with FOUR columns and TWO rows of equal SQUARE cells.
+The current persons are too large and some touch the middle crop boundary. Make EVERY COMPLETE person HALF its current width and HALF its current height, and CENTER each entire person in its exact cell. This substantial reduction is mandatory. No cropping and no change inside the person. Include the entire ears, tail, flippers and feet in the resize.
+Precise centers: x12.5%,37.5%,62.5%,87.5% of full canvas; y25%,75%. Every entire person and all watercolor fringe must fit within central 55% of the cell, leaving 22.5% completely empty transparent margin above, below, left and right. Exact allowed painted bounds in canvas percentages: columns x5.625–19.375%,30.625–44.375%,55.625–69.375%,80.625–94.375%; rows y11.25–38.75%,61.25–88.75%. These are invisible technical bounds, DO NOT draw boxes. All background and gutters outside those eight boxes MUST be alpha zero, no speckles.
+Top row left to right: female mail carrier, male baker, female teacher, male kind dentist. Bottom row: female gardener, male train conductor, female market vendor, male lighthouse keeper. Preserve all genders, complete props, full hands, hats, arms, legs and shoes; exactly eight separate full figures with no overlap.
+No scenery, floor, shadow, background paper, checkerboard, grid, lines, labels, letters, words, new objects or extra persons. Preserve watercolor style and warm color. Keep PNG 8-bit RGBA, noninterlaced, ratio exactly 2:1.
+```
+
+#### `public/art/tiny-creatures.png`
+
+```text
+Use case: illustration-story.
+Asset type: production character sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: ONE precisely aligned FOUR-column × TWO-row atlas, EXACT landscape aspect ratio 2:1 and eight equal SQUARE cells, containing exactly EIGHT distinct COMPLETE FULL-BODY characters in the specified order. Deliver PNG 8-bit RGBA, genuine alpha transparency, noninterlaced. Create new subjects, not copies of reference characters.
+Input reference: use the supplied existing character atlas ONLY for its traditional watercolor medium, pastel natural pigments, endearing expressive eyes and warm storybook charm. Match this established illustration set.
+Mandatory invisible grid and packing: column centers are x12.5%,37.5%,62.5%,87.5% of canvas width; row centers y25%,75%. Each COMPLETE silhouette, including tails, ears, wings, antennae, props, hat and feet, fits ONLY within CENTRAL60% width and height of its own SQUARE cell. Leave at least20% of every cell FULLY TRANSPARENT on all four sides. No pigment may touch any cell edge or spill into its neighbors. Same apparent character scale throughout, full uncropped body and generous transparent gutters. Do not draw the grid. Exact eight distinct subjects, row-major order.
+Style/medium: delicate traditional hand-painted children's book watercolor, soft irregular pigment edges, translucent color variation, subtle authentic watercolor paper grain ONLY inside painted figures, minimal fine pencil details, muted sage, dusty peach, warm cream, pale blue, lavender and natural soft browns. Friendly rounded proportions, gentle eyes and inviting expression, clearly legible at small size. Full front or subtle three-quarter poses, all feet/paws visible. Cozy ages 3–7.
+Scene/backdrop: real transparent alpha background. Separate isolated figures with wholly transparent negative space and gutters. NO surrounding paper, white background, checkerboard, floor, scenery, vignette, frame, text, letters, labels, numbers or watermark. Do not paint cast shadows beyond the figures. No harsh outlines, plastic gloss, 3D, vector-flat style, realistic scary faces, weapons, blood or sharp exposed teeth.
+
+EXACT subjects top row left to right, make each insect/creature a charming complete fullbody sprite at same apparent scale as others, all anatomy soft and friendly:
+(1) a chubby honey-yellow BEE with soft charcoal stripes, two tiny translucent pale blue wings, six tiny legs and full rounded antennae, gentle friendly face, no stinger shown;
+(2) a pastel peach-and-lavender BUTTERFLY with all FOUR rounded wings open, thin soft body, delicate curled antennae and friendly face;
+(3) a round rosy-red LADYBUG with muted dark spots on closed wing covers, tiny black head, six short soft legs and contained antennae;
+(4) a little warm terracotta ANT with recognizable head, thorax and rounded abdomen, six tiny legs and complete short curved antennae, friendly face, no carrying objects.
+Bottom row left to right:
+(5) a sage-and-cream SNAIL, complete soft body with warm brown spiral shell, two raised eye stalks and short second pair of feelers, no slime trail;
+(6) a small moss-green CRICKET, complete rounded body, two folded long back jumping legs and four tiny front legs, short full antennae curving inside its cell, friendly eyes;
+(7) a gentle FIREFLY, warm olive body, small complete wings and legs, pale golden glowing abdomen; all glow contained inside creature silhouette, no surrounding glow/cloud;
+(8) a pastel blue-and-lavender DRAGONFLY, full long slender body, all FOUR translucent rounded wings and six tiny legs, short antennae, wide friendly eyes.
+No leaves, branches, scenery, flowers, sky or additional objects. Each tiny creature enlarged consistently for recognizable friendly storybook scale, isolated on real alpha transparency.
+
+PACKING CORRECTION
+Use case: precise-object-edit.
+Repair ONLY the layout of this eight-character watercolor atlas. Preserve all eight exact tiny creatures, colors, details, friendly expressions and exact order. Preserve genuine PNG alpha transparency and the EXACT 2:1 landscape canvas with FOUR columns and TWO rows of equal SQUARE cells.
+The current creatures are too large and some touch the middle crop boundary. Make EVERY COMPLETE creature HALF its current width and HALF its current height, and CENTER each entire creature in its exact cell. This substantial reduction is mandatory. No cropping and no change inside the creature. Include the entire ears, tail, flippers and feet in the resize.
+Precise centers: x12.5%,37.5%,62.5%,87.5% of full canvas; y25%,75%. Every entire creature and all watercolor fringe must fit within central 55% of the cell, leaving 22.5% completely empty transparent margin above, below, left and right. Exact allowed painted bounds in canvas percentages: columns x5.625–19.375%,30.625–44.375%,55.625–69.375%,80.625–94.375%; rows y11.25–38.75%,61.25–88.75%. These are invisible technical bounds, DO NOT draw boxes. All background and gutters outside those eight boxes MUST be alpha zero, no speckles.
+Top row left to right: bee, butterfly, ladybug, ant. Bottom row: snail, cricket, firefly, dragonfly. Preserve all complete wings, antennae, legs, body segments, eyes, snail stalks and shell. Exactly eight separate complete creatures with no overlap.
+No scenery, floor, shadow, background paper, checkerboard, grid, lines, labels, letters, words, new objects or extra creatures. Preserve watercolor style and warm color. Keep PNG 8-bit RGBA, noninterlaced, ratio exactly 2:1.
+```
+
+#### `public/art/pets.png`
+
+```text
+Use case: illustration-story.
+Asset type: production character sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: ONE precisely aligned FOUR-column × TWO-row atlas, EXACT landscape aspect ratio 2:1 and eight equal SQUARE cells, containing exactly EIGHT distinct COMPLETE FULL-BODY characters in the specified order. Deliver PNG 8-bit RGBA, genuine alpha transparency, noninterlaced. Create new subjects, not copies of reference characters.
+Input reference: use the supplied existing character atlas ONLY for its traditional watercolor medium, pastel natural pigments, endearing expressive eyes and warm storybook charm. Match this established illustration set.
+Mandatory invisible grid and packing: column centers are x12.5%,37.5%,62.5%,87.5% of canvas width; row centers y25%,75%. Each COMPLETE silhouette, including tails, ears, wings, antennae, props, hat and feet, fits ONLY within CENTRAL60% width and height of its own SQUARE cell. Leave at least20% of every cell FULLY TRANSPARENT on all four sides. No pigment may touch any cell edge or spill into its neighbors. Same apparent character scale throughout, full uncropped body and generous transparent gutters. Do not draw the grid. Exact eight distinct subjects, row-major order.
+Style/medium: delicate traditional hand-painted children's book watercolor, soft irregular pigment edges, translucent color variation, subtle authentic watercolor paper grain ONLY inside painted figures, minimal fine pencil details, muted sage, dusty peach, warm cream, pale blue, lavender and natural soft browns. Friendly rounded proportions, gentle eyes and inviting expression, clearly legible at small size. Full front or subtle three-quarter poses, all feet/paws visible. Cozy ages 3–7.
+Scene/backdrop: real transparent alpha background. Separate isolated figures with wholly transparent negative space and gutters. NO surrounding paper, white background, checkerboard, floor, scenery, vignette, frame, text, letters, labels, numbers or watermark. Do not paint cast shadows beyond the figures. No harsh outlines, plastic gloss, 3D, vector-flat style, realistic scary faces, weapons, blood or sharp exposed teeth.
+
+EXACT subjects top row left to right:
+(1) a cuddly golden-brown PUPPY, floppy ears, cream muzzle and chest, complete short paws and tail, sweet gentle face, no collar tag writing;
+(2) a small cream-and-ginger KITTEN, round face, little ears, complete paws and full tail curling close to body, friendly eyes;
+(3) one small friendly orange GOLDFISH inside one small COMPLETE round clear glass FISHBOWL, pale turquoise water fully contained within bowl, one little soft aquatic sprig inside bowl, no stand or water outside; fish and bowl together are one sprite and entirely within own cell;
+(4) a small golden-and-cream HAMSTER, soft round cheeks, round ears, complete little paws, full body sitting, no food props.
+Bottom row left to right:
+(5) a small yellow CANARY, pale orange short beak and two visible little feet, full wings and complete short tail, no cage, perch or scenery;
+(6) a cuddly brown-and-cream GUINEA PIG, round full body, little rounded ears, complete small paws, no long tail;
+(7) a little LAND TORTOISE, warm brown/sage domed shell and FOUR sturdy short walking legs with round toes, full head and small tail, clearly distinct from sea turtle;
+(8) a cuddly cream-and-dusty-peach LOP-EARED RABBIT with two long ears hanging downward at the sides, complete chubby paws and small full tail, gentle baby face.
+No clothing, cages, floor or toy props. All isolated full animals with consistent apparent scale, fishbowl wholly within margins.
+
+PACKING CORRECTION
+Use case: precise-object-edit.
+Repair ONLY the layout of this eight-character watercolor atlas. Preserve all eight exact pets, colors, details, friendly expressions and exact order. Preserve genuine PNG alpha transparency and the EXACT 2:1 landscape canvas with FOUR columns and TWO rows of equal SQUARE cells.
+The current pets are too large and some touch the middle crop boundary. Make EVERY COMPLETE pet HALF its current width and HALF its current height, and CENTER each entire pet in its exact cell. This substantial reduction is mandatory. No cropping and no change inside the pet. Include the entire ears, tail, flippers and feet in the resize.
+Precise centers: x12.5%,37.5%,62.5%,87.5% of full canvas; y25%,75%. Every entire pet and all watercolor fringe must fit within central 55% of the cell, leaving 22.5% completely empty transparent margin above, below, left and right. Exact allowed painted bounds in canvas percentages: columns x5.625–19.375%,30.625–44.375%,55.625–69.375%,80.625–94.375%; rows y11.25–38.75%,61.25–88.75%. These are invisible technical bounds, DO NOT draw boxes. All background and gutters outside those eight boxes MUST be alpha zero, no speckles.
+Top row left to right: puppy, kitten, goldfish inside complete glass fishbowl, hamster. Bottom row: canary, guinea pig, land tortoise, lop-eared rabbit. Preserve all full tails, ears, legs, feet, shell, fins and entire fishbowl; exactly eight separate complete pet sprites with no overlap. The fishbowl stays one whole sprite, including all contained water and plants, with no separate surrounding water.
+No scenery, floor, shadow, background paper, checkerboard, grid, lines, labels, letters, words, new objects or extra pets. Preserve watercolor style and warm color. Keep PNG 8-bit RGBA, noninterlaced, ratio exactly 2:1.
+```
+
+#### `public/art/animals-farm.png`
+
+```text
+Use case: illustration-story.
+Asset type: production character sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: ONE precisely aligned FOUR-column × TWO-row atlas, EXACT landscape aspect ratio 2:1 and eight equal SQUARE cells, containing exactly EIGHT distinct COMPLETE FULL-BODY characters in the specified order. Deliver PNG 8-bit RGBA, genuine alpha transparency, noninterlaced. Create new subjects, not copies of reference characters.
+Input reference: use the supplied existing character atlas ONLY for its traditional watercolor medium, pastel natural pigments, endearing expressive eyes and warm storybook charm. Match this established illustration set.
+Mandatory invisible grid and packing: column centers are x12.5%,37.5%,62.5%,87.5% of canvas width; row centers y25%,75%. Each COMPLETE silhouette, including tails, ears, wings, antennae, props, hat and feet, fits ONLY within CENTRAL60% width and height of its own SQUARE cell. Leave at least20% of every cell FULLY TRANSPARENT on all four sides. No pigment may touch any cell edge or spill into its neighbors. Same apparent character scale throughout, full uncropped body and generous transparent gutters. Do not draw the grid. Exact eight distinct subjects, row-major order.
+Style/medium: delicate traditional hand-painted children's book watercolor, soft irregular pigment edges, translucent color variation, subtle authentic watercolor paper grain ONLY inside painted figures, minimal fine pencil details, muted sage, dusty peach, warm cream, pale blue, lavender and natural soft browns. Friendly rounded proportions, gentle eyes and inviting expression, clearly legible at small size. Full front or subtle three-quarter poses, all feet/paws visible. Cozy ages 3–7.
+Scene/backdrop: real transparent alpha background. Separate isolated figures with wholly transparent negative space and gutters. NO surrounding paper, white background, checkerboard, floor, scenery, vignette, frame, text, letters, labels, numbers or watermark. Do not paint cast shadows beyond the figures. No harsh outlines, plastic gloss, 3D, vector-flat style, realistic scary faces, weapons, blood or sharp exposed teeth.
+
+EXACT subjects top row left to right:
+(1) a gentle cream COW with muted warm brown patches, soft small curved horns, rounded muzzle, FOUR full sturdy legs and complete tail held close;
+(2) a cuddly white-and-cream SHEEP with fluffy round fleece, soft gray muzzle, four complete little legs, no large horns;
+(3) a cheerful dusty-pink PIGLET, round little snout, short full ears, four complete short legs and contained curly tail, no clothing;
+(4) a warm cream-and-terracotta HEN with soft red comb, complete closed feathered wings, full soft tail and two short legs, no nest or eggs.
+Bottom row left to right:
+(5) a friendly little chestnut PONY, short pale mane, four complete compact legs and full soft tail, round picturebook proportions, no saddle;
+(6) a friendly soft gray DONKEY with long full upright ears, pale muzzle, four complete short legs and full tail tucked close, no tack;
+(7) a friendly cream GOAT with small gentle curved horns, short beard, four complete small legs and contained full tail;
+(8) a gentle black-white-and-tan SHEPHERD DOG, soft border-collie coloring, attentive eyes, four full paws and complete fluffy tail, no hat or human clothing.
+All entire animals in soft natural three-quarter poses, same apparent scale even cow and hen, no grass, hay, barn, fences or scenery.
+
+PACKING CORRECTION
+Use case: precise-object-edit.
+Repair ONLY the layout of this eight-character watercolor atlas. Preserve all eight exact farm animals, colors, details, friendly expressions and exact order. Preserve genuine PNG alpha transparency and the EXACT 2:1 landscape canvas with FOUR columns and TWO rows of equal SQUARE cells.
+The current animals are too large and some touch the middle crop boundary. Make EVERY COMPLETE animal HALF its current width and HALF its current height, and CENTER each entire animal in its exact cell. This substantial reduction is mandatory. No cropping and no change inside the animal. Include the entire ears, tail, flippers and feet in the resize.
+Precise centers: x12.5%,37.5%,62.5%,87.5% of full canvas; y25%,75%. Every entire animal and all watercolor fringe must fit within central 55% of the cell, leaving 22.5% completely empty transparent margin above, below, left and right. Exact allowed painted bounds in canvas percentages: columns x5.625–19.375%,30.625–44.375%,55.625–69.375%,80.625–94.375%; rows y11.25–38.75%,61.25–88.75%. These are invisible technical bounds, DO NOT draw boxes. All background and gutters outside those eight boxes MUST be alpha zero, no speckles.
+Top row left to right: cow, sheep, piglet, hen. Bottom row: pony, donkey, goat, shepherd dog. Preserve each animal's complete horns, long ears, four full legs/paws, mane and entire tail; hen has two complete feet. Exactly eight separate complete farm animals with no overlap.
+No scenery, floor, shadow, background paper, checkerboard, grid, lines, labels, letters, words, new objects or extra animals. Preserve watercolor style and warm color. Keep PNG 8-bit RGBA, noninterlaced, ratio exactly 2:1.
+```
+
+#### `public/art/night-creatures.png`
+
+```text
+Use case: illustration-story.
+Asset type: production character sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: ONE precisely aligned FOUR-column × TWO-row atlas, EXACT landscape aspect ratio 2:1 and eight equal SQUARE cells, containing exactly EIGHT distinct COMPLETE FULL-BODY characters in the specified order. Deliver PNG 8-bit RGBA, genuine alpha transparency, noninterlaced. Create new subjects, not copies of reference characters.
+Input reference: use the supplied existing character atlas ONLY for its traditional watercolor medium, pastel natural pigments, endearing expressive eyes and warm storybook charm. Match this established illustration set.
+Mandatory invisible grid and packing: column centers are x12.5%,37.5%,62.5%,87.5% of canvas width; row centers y25%,75%. Each COMPLETE silhouette, including tails, ears, wings, antennae, props, hat and feet, fits ONLY within CENTRAL60% width and height of its own SQUARE cell. Leave at least20% of every cell FULLY TRANSPARENT on all four sides. No pigment may touch any cell edge or spill into its neighbors. Same apparent character scale throughout, full uncropped body and generous transparent gutters. Do not draw the grid. Exact eight distinct subjects, row-major order.
+Style/medium: delicate traditional hand-painted children's book watercolor, soft irregular pigment edges, translucent color variation, subtle authentic watercolor paper grain ONLY inside painted figures, minimal fine pencil details, muted sage, dusty peach, warm cream, pale blue, lavender and natural soft browns. Friendly rounded proportions, gentle eyes and inviting expression, clearly legible at small size. Full front or subtle three-quarter poses, all feet/paws visible. Cozy ages 3–7.
+Scene/backdrop: real transparent alpha background. Separate isolated figures with wholly transparent negative space and gutters. NO surrounding paper, white background, checkerboard, floor, scenery, vignette, frame, text, letters, labels, numbers or watermark. Do not paint cast shadows beyond the figures. No harsh outlines, plastic gloss, 3D, vector-flat style, realistic scary faces, weapons, blood or sharp exposed teeth.
+
+EXACT subjects top row left to right, nocturnal and quiet animals must remain adorable, friendly and never frightening:
+(1) a cuddly lavender-gray BAT, full rounded head and body, two fully visible small wings softly spread, big friendly ears, little feet, no visible sharp teeth, no cave;
+(2) a warm cream-and-dusty-peach MOTH with four softly patterned fuzzy wings open and complete feathery antennae, gentle small body, no moon;
+(3) a little taupe MOLE, velvety fur, round pink nose, tiny friendly eyes, complete soft broad front paws and full short legs, no sharp exposed claws or shovel;
+(4) a cuddly small DORMOUSE, warm brown fur, round ears, cream belly, large sleepy kind eyes and a full fluffy tail curled close, distinct from hamster.
+Bottom row left to right:
+(5) a gentle gray-brown SLOTH, rounded cream face patch, full body sitting upright with all arms and legs visible, rounded paws and no sharp extended claws, no branch;
+(6) a friendly pale gray OPOSSUM, cream face, pink round nose and complete long pale pink tail curled CLOSE around its full body, small ears and all paws visible, no scary teeth;
+(7) a small warm sandy ARMADILLO, softly rounded segmented armor shell, long soft ears, full short legs and complete tail curled close, never sharp;
+(8) a friendly white-and-pale-lavender ARCTIC FOX, fluffy winter coat, small ears, warm gentle eyes, four complete paws and full fluffy tail curving CLOSE around body, no snow scenery.
+No clothing, night backgrounds, branches, scenery or moons. All eight complete and isolated, full tails/wings/antennae within generous margins.
+
+PACKING CORRECTION
+Use case: precise-object-edit.
+Repair ONLY the layout of this eight-character watercolor atlas. Preserve all eight exact gentle night creatures, colors, details, friendly expressions and exact order. Preserve genuine PNG alpha transparency and the EXACT 2:1 landscape canvas with FOUR columns and TWO rows of equal SQUARE cells.
+The current creatures are too large and some touch the middle crop boundary. Make EVERY COMPLETE creature HALF its current width and HALF its current height, and CENTER each entire creature in its exact cell. This substantial reduction is mandatory. No cropping and no change inside the creature. Include the entire ears, tail, flippers and feet in the resize.
+Precise centers: x12.5%,37.5%,62.5%,87.5% of full canvas; y25%,75%. Every entire creature and all watercolor fringe must fit within central 55% of the cell, leaving 22.5% completely empty transparent margin above, below, left and right. Exact allowed painted bounds in canvas percentages: columns x5.625–19.375%,30.625–44.375%,55.625–69.375%,80.625–94.375%; rows y11.25–38.75%,61.25–88.75%. These are invisible technical bounds, DO NOT draw boxes. All background and gutters outside those eight boxes MUST be alpha zero, no speckles.
+Top row left to right: bat, moth, mole, dormouse. Bottom row: sloth, opossum, armadillo, arctic fox. Preserve all complete wings, antennae, ears, shell/body segments, full arms/legs and entire tails. Exactly eight separate complete night creatures with no overlap. Keep the mole and sloth claws gentle and rounded, never frightening.
+No scenery, floor, shadow, background paper, checkerboard, grid, lines, labels, letters, words, new objects or extra creatures. Preserve watercolor style and warm color. Keep PNG 8-bit RGBA, noninterlaced, ratio exactly 2:1.
+```
+
+#### `public/art/objects-bedtime.png`
+
+```text
+Use case: illustration-story.
+Asset type: production watercolor object sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: create ONE NEW image with EXACTLY EIGHT distinct complete isolated objects, in an EXACT WIDE 2:1 canvas, FOUR equal columns and TWO equal rows, eight SQUARE cells, no visible grid. Ideal 2400 × 1200 pixels; exact 2:1 aspect ratio is mandatory.
+Input image: the provided objects-explore.png atlas is ONLY a STYLE REFERENCE for delicate hand-painted watercolor, nuanced natural colors, subtle pencil details, fine paper grain inside the paint, softness and warm storybook charm. Create the NEW objects specified below. Do not reproduce the reference objects.
+Composition: each entire complete object, including handles, straps, ropes, tassels, antennae, steam, droplets and other attached parts, must fit entirely INSIDE THE CENTRAL 60% WIDTH AND CENTRAL 60% HEIGHT of its own square cell. Keep at least 20% of the cell width and height as FULLY TRANSPARENT empty margin on all four sides. Nothing touches a cell boundary. No part crosses into another cell, and no overlapping objects. Exact cell centers: X12.5%,37.5%,62.5%,87.5% of the full canvas and Y25%,75%. Objects centered at these points, consistent readable scale. Small paired/grouped items requested below are ONE compact sprite centered together.
+Background: TRUE transparent alpha, fully transparent alpha-zero space around every object and in broad continuous horizontal and vertical gutters. No white paper, no gray wash, no checkerboard, no backdrop, no floor, no frame, no grid, no text, letters, numbers or watermark. NO cast shadows, no stray specks outside an object's silhouette. Subtle natural watercolor softness remains inside the isolated object edges.
+Style: traditional watercolor picturebook illustration, gentle warm natural pastel colors, delicate pigment grain and restrained pencil details, lovingly painted and readable even as small icons. Objects softly angled for depth, never flat vector, 3D plastic or photorealism. Cozy, reassuring and safe.
+Constraints: RGBA 8-bit non-interlaced PNG with actual transparency. EXACTLY eight specified subjects in the exact row-major order. No extra objects or people, except a requested toy doll or the complete minimal object grouping stated below. All silhouettes and all attached parts are completely visible and uncut. Generous margins are essential for CSS atlas cropping. No scenery or full rooms; a window/curtain/door requested below must be a SMALL COMPLETE INDEPENDENT MINI-OBJECT VIGNETTE contained in one cell.
+
+Exact subjects and cell order:
+TOP ROW, left to right:
+1. Almohada: one plump cream sleeping pillow, soft pale blue piping, no bed.
+2. Osito de peluche: one small warm brown teddy bear toy sitting, round ears and stitched gentle face, no additional toy.
+3. Lamparita de noche: one little bedside night light with a simple golden crescent-shaped shade on a small sage base, gentle warm glow confined inside its silhouette.
+4. Cepillo de dientes: one pastel aqua toothbrush, entire handle and soft white bristles shown, no tube.
+BOTTOM ROW, left to right:
+5. Libro de cuentos: one closed cozy terracotta storybook with a simple painted moon-and-star cover decoration, no letters or writing.
+6. Vaso de leche: one small clear glass filled with white milk, no other food.
+7. Reloj despertador: one round old-fashioned dusty rose alarm clock with two bells, plain clock hands and small abstract hour dots, no numerals or lettering.
+8. Zapatillas de casa: one compact PAIR of soft sage-green slippers, side by side as a single sprite.
+
+CORRECTION PROMPT:
+Correct ONLY spacing and transparent margins in this watercolor 4-column × 2-row object atlas. Preserve all EIGHT exact objects, all details, colors, subjects and row-major order. Keep the exact wide 2:1 canvas, eight square cells, RGBA 8-bit non-interlaced PNG and true transparent background.
+
+MANDATORY technical correction: shrink EACH ENTIRE object, including all straps, ribbons, bristles, cloth edges and attached parts, by approximately 25% around the exact center of its OWN square cell. CENTER each complete object exactly at top-row X12.5%,37.5%,62.5%,87.5% / Y25%, and bottom-row same X / Y75% of the whole canvas. Each object must fit in the CENTRAL60% width and CENTRAL60% height of its assigned cell, with at least20% cell width and height as COMPLETELY EMPTY ALPHA ZERO margin on ALL FOUR SIDES.
+
+Remove every stray watercolor speck or low-opacity pigment from the margins. Absolutely no pixel of pigment, no dot, no ribbon tip, no edge fringe, nothing may touch any cell boundary. Make broad continuous fully transparent gutters at canvas X25%,50%,75% and Y50%. Every object and every attached part stays whole and complete, never cropped. Do not move anything into a neighboring cell.
+
+Preserve the exact charming watercolor style and eight identities. Do not add any objects, text, numbers, borders, grid, background paper, shadows or checkerboard. This is the same art with safer packing, not a redesign.
+```
+
+#### `public/art/objects-party.png`
+
+```text
+Use case: illustration-story.
+Asset type: production watercolor object sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: create ONE NEW image with EXACTLY EIGHT distinct complete isolated objects, in an EXACT WIDE 2:1 canvas, FOUR equal columns and TWO equal rows, eight SQUARE cells, no visible grid. Ideal 2400 × 1200 pixels; exact 2:1 aspect ratio is mandatory.
+Input image: the provided objects-explore.png atlas is ONLY a STYLE REFERENCE for delicate hand-painted watercolor, nuanced natural colors, subtle pencil details, fine paper grain inside the paint, softness and warm storybook charm. Create the NEW objects specified below. Do not reproduce the reference objects.
+Composition: each entire complete object, including handles, straps, ropes, tassels, antennae, steam, droplets and other attached parts, must fit entirely INSIDE THE CENTRAL 60% WIDTH AND CENTRAL 60% HEIGHT of its own square cell. Keep at least 20% of the cell width and height as FULLY TRANSPARENT empty margin on all four sides. Nothing touches a cell boundary. No part crosses into another cell, and no overlapping objects. Exact cell centers: X12.5%,37.5%,62.5%,87.5% of the full canvas and Y25%,75%. Objects centered at these points, consistent readable scale. Small paired/grouped items requested below are ONE compact sprite centered together.
+Background: TRUE transparent alpha, fully transparent alpha-zero space around every object and in broad continuous horizontal and vertical gutters. No white paper, no gray wash, no checkerboard, no backdrop, no floor, no frame, no grid, no text, letters, numbers or watermark. NO cast shadows, no stray specks outside an object's silhouette. Subtle natural watercolor softness remains inside the isolated object edges.
+Style: traditional watercolor picturebook illustration, gentle warm natural pastel colors, delicate pigment grain and restrained pencil details, lovingly painted and readable even as small icons. Objects softly angled for depth, never flat vector, 3D plastic or photorealism. Cozy, reassuring and safe.
+Constraints: RGBA 8-bit non-interlaced PNG with actual transparency. EXACTLY eight specified subjects in the exact row-major order. No extra objects or people, except a requested toy doll or the complete minimal object grouping stated below. All silhouettes and all attached parts are completely visible and uncut. Generous margins are essential for CSS atlas cropping. No scenery or full rooms; a window/curtain/door requested below must be a SMALL COMPLETE INDEPENDENT MINI-OBJECT VIGNETTE contained in one cell.
+
+Exact subjects and cell order:
+TOP ROW, left to right:
+1. Caja de regalo: one peach gift box with a soft sage ribbon and bow, complete lid, no letters.
+2. Globo: one pale lavender inflated party balloon with a short curved ribbon, the ENTIRE ribbon contained in its central cell area.
+3. Guirnalda de banderines: one short curved string of FIVE pastel triangular bunting flags, all complete, no lettering, both short string ends visible and contained.
+4. Carta en sobre: one cream envelope with a pale peach letter partly peeking out, no text or address.
+BOTTOM ROW, left to right:
+5. Corona de flores: one ring-shaped flower crown of small pink blossoms and green leaves, no head or person.
+6. Sombrero de fiesta: one small striped peach-and-sage cone party hat with a soft pompom, no lettering.
+7. Confeti: one compact centered CLUSTER of a few pastel confetti paper squares and curls, no particles outside the central cell area.
+8. Piñata: one colorful papier-mâché FIVE-POINTED STAR piñata with gentle pastel fringe and very short ribbons, complete star and all fringe contained, no people or stick.
+
+CORRECTION PROMPT:
+Correct ONLY spacing and transparent margins in this watercolor 4-column × 2-row object atlas. Preserve all EIGHT exact objects, all details, colors, subjects and row-major order. Keep the exact wide 2:1 canvas, eight square cells, RGBA 8-bit non-interlaced PNG and true transparent background.
+
+MANDATORY technical correction: shrink EACH ENTIRE object, including all straps, ribbons, bristles, cloth edges and attached parts, by approximately 25% around the exact center of its OWN square cell. CENTER each complete object exactly at top-row X12.5%,37.5%,62.5%,87.5% / Y25%, and bottom-row same X / Y75% of the whole canvas. Each object must fit in the CENTRAL60% width and CENTRAL60% height of its assigned cell, with at least20% cell width and height as COMPLETELY EMPTY ALPHA ZERO margin on ALL FOUR SIDES.
+
+Remove every stray watercolor speck or low-opacity pigment from the margins. Absolutely no pixel of pigment, no dot, no ribbon tip, no edge fringe, nothing may touch any cell boundary. Make broad continuous fully transparent gutters at canvas X25%,50%,75% and Y50%. Every object and every attached part stays whole and complete, never cropped. Do not move anything into a neighboring cell.
+
+Preserve the exact charming watercolor style and eight identities. Do not add any objects, text, numbers, borders, grid, background paper, shadows or checkerboard. This is the same art with safer packing, not a redesign.
+```
+
+#### `public/art/objects-quest.png`
+
+```text
+Use case: illustration-story.
+Asset type: production watercolor object sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: create ONE NEW image with EXACTLY EIGHT distinct complete isolated objects, in an EXACT WIDE 2:1 canvas, FOUR equal columns and TWO equal rows, eight SQUARE cells, no visible grid. Ideal 2400 × 1200 pixels; exact 2:1 aspect ratio is mandatory.
+Input image: the provided objects-explore.png atlas is ONLY a STYLE REFERENCE for delicate hand-painted watercolor, nuanced natural colors, subtle pencil details, fine paper grain inside the paint, softness and warm storybook charm. Create the NEW objects specified below. Do not reproduce the reference objects.
+Composition: each entire complete object, including handles, straps, ropes, tassels, antennae, steam, droplets and other attached parts, must fit entirely INSIDE THE CENTRAL 60% WIDTH AND CENTRAL 60% HEIGHT of its own square cell. Keep at least 20% of the cell width and height as FULLY TRANSPARENT empty margin on all four sides. Nothing touches a cell boundary. No part crosses into another cell, and no overlapping objects. Exact cell centers: X12.5%,37.5%,62.5%,87.5% of the full canvas and Y25%,75%. Objects centered at these points, consistent readable scale. Small paired/grouped items requested below are ONE compact sprite centered together.
+Background: TRUE transparent alpha, fully transparent alpha-zero space around every object and in broad continuous horizontal and vertical gutters. No white paper, no gray wash, no checkerboard, no backdrop, no floor, no frame, no grid, no text, letters, numbers or watermark. NO cast shadows, no stray specks outside an object's silhouette. Subtle natural watercolor softness remains inside the isolated object edges.
+Style: traditional watercolor picturebook illustration, gentle warm natural pastel colors, delicate pigment grain and restrained pencil details, lovingly painted and readable even as small icons. Objects softly angled for depth, never flat vector, 3D plastic or photorealism. Cozy, reassuring and safe.
+Constraints: RGBA 8-bit non-interlaced PNG with actual transparency. EXACTLY eight specified subjects in the exact row-major order. No extra objects or people, except a requested toy doll or the complete minimal object grouping stated below. All silhouettes and all attached parts are completely visible and uncut. Generous margins are essential for CSS atlas cropping. No scenery or full rooms; a window/curtain/door requested below must be a SMALL COMPLETE INDEPENDENT MINI-OBJECT VIGNETTE contained in one cell.
+
+Exact subjects and cell order:
+TOP ROW, left to right:
+1. Cofre del tesoro: one small wooden treasure chest with brass edging and lid slightly open, a few golden coins visibly INSIDE the chest, no scattered coins outside.
+2. Pergamino de pistas: one short cream parchment scroll partially unrolled, simple abstract dotted path and tiny mountain symbols, NO letters or words, entire rolled ends contained.
+3. Frasco de poción: one little round glass potion bottle with cork and pale lilac liquid, no label, no bubbles outside.
+4. Flor de hielo: one delicate crystalline pale blue flower on a very short translucent stem, all petals and stem contained.
+BOTTOM ROW, left to right:
+5. Estrella caída: one small five-pointed warm golden fallen star with subtly rounded corners, no trailing comet tail or extra sparkles.
+6. Piedra lunar: one smooth rounded pearly lavender moonstone with a subtle crescent marking, no stars around it.
+7. Reloj de arena: one small antique wooden hourglass with golden sand, full top and bottom shown.
+8. Señal de camino: one small short wooden wayfinding post with two arrow-shaped boards pointing opposite directions, NO text or letters, complete base.
+```
+
+#### `public/art/objects-kitchen.png`
+
+```text
+Use case: illustration-story.
+Asset type: production watercolor object sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: create ONE NEW image with EXACTLY EIGHT distinct complete isolated objects, in an EXACT WIDE 2:1 canvas, FOUR equal columns and TWO equal rows, eight SQUARE cells, no visible grid. Ideal 2400 × 1200 pixels; exact 2:1 aspect ratio is mandatory.
+Input image: the provided objects-explore.png atlas is ONLY a STYLE REFERENCE for delicate hand-painted watercolor, nuanced natural colors, subtle pencil details, fine paper grain inside the paint, softness and warm storybook charm. Create the NEW objects specified below. Do not reproduce the reference objects.
+Composition: each entire complete object, including handles, straps, ropes, tassels, antennae, steam, droplets and other attached parts, must fit entirely INSIDE THE CENTRAL 60% WIDTH AND CENTRAL 60% HEIGHT of its own square cell. Keep at least 20% of the cell width and height as FULLY TRANSPARENT empty margin on all four sides. Nothing touches a cell boundary. No part crosses into another cell, and no overlapping objects. Exact cell centers: X12.5%,37.5%,62.5%,87.5% of the full canvas and Y25%,75%. Objects centered at these points, consistent readable scale. Small paired/grouped items requested below are ONE compact sprite centered together.
+Background: TRUE transparent alpha, fully transparent alpha-zero space around every object and in broad continuous horizontal and vertical gutters. No white paper, no gray wash, no checkerboard, no backdrop, no floor, no frame, no grid, no text, letters, numbers or watermark. NO cast shadows, no stray specks outside an object's silhouette. Subtle natural watercolor softness remains inside the isolated object edges.
+Style: traditional watercolor picturebook illustration, gentle warm natural pastel colors, delicate pigment grain and restrained pencil details, lovingly painted and readable even as small icons. Objects softly angled for depth, never flat vector, 3D plastic or photorealism. Cozy, reassuring and safe.
+Constraints: RGBA 8-bit non-interlaced PNG with actual transparency. EXACTLY eight specified subjects in the exact row-major order. No extra objects or people, except a requested toy doll or the complete minimal object grouping stated below. All silhouettes and all attached parts are completely visible and uncut. Generous margins are essential for CSS atlas cropping. No scenery or full rooms; a window/curtain/door requested below must be a SMALL COMPLETE INDEPENDENT MINI-OBJECT VIGNETTE contained in one cell.
+
+Exact subjects and cell order:
+TOP ROW, left to right:
+1. Tarta de cumpleaños: one little round cream birthday cake with peach frosting and three short pastel candles, complete cake, flames tiny and fully contained.
+2. Galletas: one compact GROUP of three round golden cookies with tiny dark chocolate dots, no plate, no other food.
+3. Cuenco de masa: one simple sage ceramic mixing bowl holding soft golden dough, no extra whisk.
+4. Cuchara de madera: one complete short wooden cooking spoon with round bowl and warm brown grain, no pot.
+BOTTOM ROW, left to right:
+5. Jarra de leche: one small cream ceramic milk jug with a rounded handle and tiny spout, milk visible at the mouth, no lettering.
+6. Barra de pan: one complete golden crusty baguette with three soft scoring lines, horizontal or gently diagonal, no cut slices.
+7. Sopa caliente: one small terracotta soup bowl filled with golden soup and two SHORT gentle steam curls close above it, all steam contained well inside the central cell area, no spoon.
+8. Delantal: one small folded-friendly pale blue cooking apron fully spread, straps and waist ties SHORT and fully contained, no person.
+```
+
+#### `public/art/objects-sport.png`
+
+```text
+Use case: illustration-story.
+Asset type: production watercolor object sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: create ONE NEW image with EXACTLY EIGHT distinct complete isolated objects, in an EXACT WIDE 2:1 canvas, FOUR equal columns and TWO equal rows, eight SQUARE cells, no visible grid. Ideal 2400 × 1200 pixels; exact 2:1 aspect ratio is mandatory.
+Input image: the provided objects-explore.png atlas is ONLY a STYLE REFERENCE for delicate hand-painted watercolor, nuanced natural colors, subtle pencil details, fine paper grain inside the paint, softness and warm storybook charm. Create the NEW objects specified below. Do not reproduce the reference objects.
+Composition: each entire complete object, including handles, straps, ropes, tassels, antennae, steam, droplets and other attached parts, must fit entirely INSIDE THE CENTRAL 60% WIDTH AND CENTRAL 60% HEIGHT of its own square cell. Keep at least 20% of the cell width and height as FULLY TRANSPARENT empty margin on all four sides. Nothing touches a cell boundary. No part crosses into another cell, and no overlapping objects. Exact cell centers: X12.5%,37.5%,62.5%,87.5% of the full canvas and Y25%,75%. Objects centered at these points, consistent readable scale. Small paired/grouped items requested below are ONE compact sprite centered together.
+Background: TRUE transparent alpha, fully transparent alpha-zero space around every object and in broad continuous horizontal and vertical gutters. No white paper, no gray wash, no checkerboard, no backdrop, no floor, no frame, no grid, no text, letters, numbers or watermark. NO cast shadows, no stray specks outside an object's silhouette. Subtle natural watercolor softness remains inside the isolated object edges.
+Style: traditional watercolor picturebook illustration, gentle warm natural pastel colors, delicate pigment grain and restrained pencil details, lovingly painted and readable even as small icons. Objects softly angled for depth, never flat vector, 3D plastic or photorealism. Cozy, reassuring and safe.
+Constraints: RGBA 8-bit non-interlaced PNG with actual transparency. EXACTLY eight specified subjects in the exact row-major order. No extra objects or people, except a requested toy doll or the complete minimal object grouping stated below. All silhouettes and all attached parts are completely visible and uncut. Generous margins are essential for CSS atlas cropping. No scenery or full rooms; a window/curtain/door requested below must be a SMALL COMPLETE INDEPENDENT MINI-OBJECT VIGNETTE contained in one cell.
+
+Exact subjects and cell order:
+TOP ROW, left to right:
+1. Medalla: one small golden medal on a SHORT folded sage-and-peach ribbon, a simple star relief, no letters or numbers, entire ribbon contained.
+2. Trofeo: one small golden trophy cup with two rounded handles and a short wooden base, no engraving.
+3. Bandera de meta: one small black-and-cream checkered finish flag on a short complete wooden pole with rounded base, no scenery.
+4. Silbato: one little silver-blue whistle with a small ring, no long lanyard.
+BOTTOM ROW, left to right:
+5. Pelota: one soft blue-and-peach child's rubber ball with simple broad panels, no logo.
+6. Cuerda de saltar: one COMPLETE short jumping rope arranged in a neat compact oval loop with two small wooden handles alongside it, all rope contained in its central square area.
+7. Patinete: one complete small sage kick scooter with two wheels, a short upright peach handlebar and deck, NO rider, full handlebar and both wheels visible.
+8. Cronómetro: one small round brass stopwatch with a top button, plain dark hands and abstract tick marks, no numerals or letters.
+```
+
+#### `public/art/objects-memories.png`
+
+```text
+Use case: illustration-story.
+Asset type: production watercolor object sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: create ONE NEW image with EXACTLY EIGHT distinct complete isolated objects, in an EXACT WIDE 2:1 canvas, FOUR equal columns and TWO equal rows, eight SQUARE cells, no visible grid. Ideal 2400 × 1200 pixels; exact 2:1 aspect ratio is mandatory.
+Input image: the provided objects-explore.png atlas is ONLY a STYLE REFERENCE for delicate hand-painted watercolor, nuanced natural colors, subtle pencil details, fine paper grain inside the paint, softness and warm storybook charm. Create the NEW objects specified below. Do not reproduce the reference objects.
+Composition: each entire complete object, including handles, straps, ropes, tassels, antennae, steam, droplets and other attached parts, must fit entirely INSIDE THE CENTRAL 60% WIDTH AND CENTRAL 60% HEIGHT of its own square cell. Keep at least 20% of the cell width and height as FULLY TRANSPARENT empty margin on all four sides. Nothing touches a cell boundary. No part crosses into another cell, and no overlapping objects. Exact cell centers: X12.5%,37.5%,62.5%,87.5% of the full canvas and Y25%,75%. Objects centered at these points, consistent readable scale. Small paired/grouped items requested below are ONE compact sprite centered together.
+Background: TRUE transparent alpha, fully transparent alpha-zero space around every object and in broad continuous horizontal and vertical gutters. No white paper, no gray wash, no checkerboard, no backdrop, no floor, no frame, no grid, no text, letters, numbers or watermark. NO cast shadows, no stray specks outside an object's silhouette. Subtle natural watercolor softness remains inside the isolated object edges.
+Style: traditional watercolor picturebook illustration, gentle warm natural pastel colors, delicate pigment grain and restrained pencil details, lovingly painted and readable even as small icons. Objects softly angled for depth, never flat vector, 3D plastic or photorealism. Cozy, reassuring and safe.
+Constraints: RGBA 8-bit non-interlaced PNG with actual transparency. EXACTLY eight specified subjects in the exact row-major order. No extra objects or people, except a requested toy doll or the complete minimal object grouping stated below. All silhouettes and all attached parts are completely visible and uncut. Generous margins are essential for CSS atlas cropping. No scenery or full rooms; a window/curtain/door requested below must be a SMALL COMPLETE INDEPENDENT MINI-OBJECT VIGNETTE contained in one cell.
+
+Exact subjects and cell order:
+TOP ROW, left to right:
+1. Baúl antiguo: one small antique dark honey-colored wooden trunk with curved lid and brass latch, complete closed trunk.
+2. Foto antigua: one small sepia vintage photograph with softly scalloped cream paper edge, showing a tiny recognizable OLD FAMILY HOUSE and a tree, no people, no lettering, no frame beyond the photo itself.
+3. Peonza: one complete old-fashioned wooden spinning top with muted peach and sage painted bands, tiny spindle and pointed base.
+4. Muñeca de trapo: one small cloth rag doll toy with yarn hair, stitched gentle face, simple peach dress and short fabric arms and legs, complete body.
+BOTTOM ROW, left to right:
+5. Canicas: one compact GROUP of four rounded translucent glass marbles with subtle blue and gold swirls, all grouped at the cell center.
+6. Caja de música: one small wooden music box with lid raised, tiny simple brass musical mechanism INSIDE, no extra dancer figure and no floating notes.
+7. Gafas del abuelo: one pair of gently worn gold-rimmed round grandfather spectacles, temples partly folded and fully contained, no person.
+8. Avión de papel: one complete folded cream paper airplane with delicate fold lines, gently diagonal, no motion trail.
+```
+
+#### `public/art/objects-firsts.png`
+
+```text
+Use case: illustration-story.
+Asset type: production watercolor object sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: create ONE NEW image with EXACTLY EIGHT distinct complete isolated objects, in an EXACT WIDE 2:1 canvas, FOUR equal columns and TWO equal rows, eight SQUARE cells, no visible grid. Ideal 2400 × 1200 pixels; exact 2:1 aspect ratio is mandatory.
+Input image: the provided objects-explore.png atlas is ONLY a STYLE REFERENCE for delicate hand-painted watercolor, nuanced natural colors, subtle pencil details, fine paper grain inside the paint, softness and warm storybook charm. Create the NEW objects specified below. Do not reproduce the reference objects.
+Composition: each entire complete object, including handles, straps, ropes, tassels, antennae, steam, droplets and other attached parts, must fit entirely INSIDE THE CENTRAL 60% WIDTH AND CENTRAL 60% HEIGHT of its own square cell. Keep at least 20% of the cell width and height as FULLY TRANSPARENT empty margin on all four sides. Nothing touches a cell boundary. No part crosses into another cell, and no overlapping objects. Exact cell centers: X12.5%,37.5%,62.5%,87.5% of the full canvas and Y25%,75%. Objects centered at these points, consistent readable scale. Small paired/grouped items requested below are ONE compact sprite centered together.
+Background: TRUE transparent alpha, fully transparent alpha-zero space around every object and in broad continuous horizontal and vertical gutters. No white paper, no gray wash, no checkerboard, no backdrop, no floor, no frame, no grid, no text, letters, numbers or watermark. NO cast shadows, no stray specks outside an object's silhouette. Subtle natural watercolor softness remains inside the isolated object edges.
+Style: traditional watercolor picturebook illustration, gentle warm natural pastel colors, delicate pigment grain and restrained pencil details, lovingly painted and readable even as small icons. Objects softly angled for depth, never flat vector, 3D plastic or photorealism. Cozy, reassuring and safe.
+Constraints: RGBA 8-bit non-interlaced PNG with actual transparency. EXACTLY eight specified subjects in the exact row-major order. No extra objects or people, except a requested toy doll or the complete minimal object grouping stated below. All silhouettes and all attached parts are completely visible and uncut. Generous margins are essential for CSS atlas cropping. No scenery or full rooms; a window/curtain/door requested below must be a SMALL COMPLETE INDEPENDENT MINI-OBJECT VIGNETTE contained in one cell.
+
+Exact subjects and cell order:
+TOP ROW, left to right:
+1. Bicicleta: one COMPLETE small sage-green child's bicycle with peach saddle and handlebars, two wheels, all parts visible, no rider and no background.
+2. Casco: one small rounded pale blue bicycle helmet with a few ventilation slots and SHORT chin straps contained, no head or person.
+3. Lonchera: one small peach lunchbox with a tiny sage handle and latch, closed, no writing.
+4. Cuaderno con lápiz: one closed cream-and-sage school notebook and one SHORT ochre pencil resting diagonally on it, a compact paired object, no text.
+BOTTOM ROW, left to right:
+5. Flotador: one small round peach inflatable swimming ring with a subtle sage stripe, no person, no water.
+6. Zapatos nuevos: one compact PAIR of little tan-and-cream children's shoes, short laces, side by side, full shoes.
+7. Pizarra pequeña: one little sage-framed rectangular school chalkboard, plain dark green surface with a tiny simple star drawing, no lettering or numbers, no easel.
+8. Estuche: one small pale blue zippered pencil case, closed, short zipper tab, no extra pens outside.
+
+CORRECTION PROMPT:
+Correct ONLY spacing and transparent margins in this watercolor 4-column × 2-row object atlas. Preserve all EIGHT exact objects, all details, colors, subjects and row-major order. Keep the exact wide 2:1 canvas, eight square cells, RGBA 8-bit non-interlaced PNG and true transparent background.
+
+MANDATORY technical correction: shrink EACH ENTIRE object, including all straps, ribbons, bristles, cloth edges and attached parts, by approximately 25% around the exact center of its OWN square cell. CENTER each complete object exactly at top-row X12.5%,37.5%,62.5%,87.5% / Y25%, and bottom-row same X / Y75% of the whole canvas. Each object must fit in the CENTRAL60% width and CENTRAL60% height of its assigned cell, with at least20% cell width and height as COMPLETELY EMPTY ALPHA ZERO margin on ALL FOUR SIDES.
+
+Remove every stray watercolor speck or low-opacity pigment from the margins. Absolutely no pixel of pigment, no dot, no ribbon tip, no edge fringe, nothing may touch any cell boundary. Make broad continuous fully transparent gutters at canvas X25%,50%,75% and Y50%. Every object and every attached part stays whole and complete, never cropped. Do not move anything into a neighboring cell.
+
+Preserve the exact charming watercolor style and eight identities. Do not add any objects, text, numbers, borders, grid, background paper, shadows or checkerboard. This is the same art with safer packing, not a redesign.
+```
+
+#### `public/art/objects-calm.png`
+
+```text
+Use case: illustration-story.
+Asset type: production watercolor object sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: create ONE NEW image with EXACTLY EIGHT distinct complete isolated objects, in an EXACT WIDE 2:1 canvas, FOUR equal columns and TWO equal rows, eight SQUARE cells, no visible grid. Ideal 2400 × 1200 pixels; exact 2:1 aspect ratio is mandatory.
+Input image: the provided objects-explore.png atlas is ONLY a STYLE REFERENCE for delicate hand-painted watercolor, nuanced natural colors, subtle pencil details, fine paper grain inside the paint, softness and warm storybook charm. Create the NEW objects specified below. Do not reproduce the reference objects.
+Composition: each entire complete object, including handles, straps, ropes, tassels, antennae, steam, droplets and other attached parts, must fit entirely INSIDE THE CENTRAL 60% WIDTH AND CENTRAL 60% HEIGHT of its own square cell. Keep at least 20% of the cell width and height as FULLY TRANSPARENT empty margin on all four sides. Nothing touches a cell boundary. No part crosses into another cell, and no overlapping objects. Exact cell centers: X12.5%,37.5%,62.5%,87.5% of the full canvas and Y25%,75%. Objects centered at these points, consistent readable scale. Small paired/grouped items requested below are ONE compact sprite centered together.
+Background: TRUE transparent alpha, fully transparent alpha-zero space around every object and in broad continuous horizontal and vertical gutters. No white paper, no gray wash, no checkerboard, no backdrop, no floor, no frame, no grid, no text, letters, numbers or watermark. NO cast shadows, no stray specks outside an object's silhouette. Subtle natural watercolor softness remains inside the isolated object edges.
+Style: traditional watercolor picturebook illustration, gentle warm natural pastel colors, delicate pigment grain and restrained pencil details, lovingly painted and readable even as small icons. Objects softly angled for depth, never flat vector, 3D plastic or photorealism. Cozy, reassuring and safe.
+Constraints: RGBA 8-bit non-interlaced PNG with actual transparency. EXACTLY eight specified subjects in the exact row-major order. No extra objects or people, except a requested toy doll or the complete minimal object grouping stated below. All silhouettes and all attached parts are completely visible and uncut. Generous margins are essential for CSS atlas cropping. No scenery or full rooms; a window/curtain/door requested below must be a SMALL COMPLETE INDEPENDENT MINI-OBJECT VIGNETTE contained in one cell.
+
+Exact subjects and cell order:
+TOP ROW, left to right:
+1. Caja de preocupaciones: one small reassuring peach cardboard keepsake box with a lid and simple little heart drawing, no text, no floating thoughts.
+2. Piedra lisa: one smooth oval sage-gray river stone, softly rounded, no background.
+3. Tarro de calma: one clear small glass calming jar with a sage lid, pale blue water and a few tiny gold flecks INSIDE, no particles outside the jar.
+4. Bolsa de agua caliente: one soft dusty rose hot-water bottle with a ribbed knitted cover and tiny cap, complete full bottle, no cord.
+BOTTOM ROW, left to right:
+5. Pañuelo: one small cream handkerchief folded into a soft triangular shape with pale blue edging.
+6. Tirita: one friendly little peach adhesive bandage strip with a cream padded center and tiny perforation dots, complete rounded ends.
+7. Termómetro: one small white-and-sage digital thermometer with a short rounded tip and blank pale blue display, no numbers or letters, no fever indicators.
+8. Flores en vaso: one small clear glass holding three short-stemmed pink and lavender flowers with a few green leaves, complete grouped arrangement, no petals outside.
+```
+
+#### `public/art/objects-night-sounds.png`
+
+```text
+Use case: illustration-story.
+Asset type: production watercolor object sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: create ONE NEW image with EXACTLY EIGHT distinct complete isolated objects, in an EXACT WIDE 2:1 canvas, FOUR equal columns and TWO equal rows, eight SQUARE cells, no visible grid. Ideal 2400 × 1200 pixels; exact 2:1 aspect ratio is mandatory.
+Input image: the provided objects-explore.png atlas is ONLY a STYLE REFERENCE for delicate hand-painted watercolor, nuanced natural colors, subtle pencil details, fine paper grain inside the paint, softness and warm storybook charm. Create the NEW objects specified below. Do not reproduce the reference objects.
+Composition: each entire complete object, including handles, straps, ropes, tassels, antennae, steam, droplets and other attached parts, must fit entirely INSIDE THE CENTRAL 60% WIDTH AND CENTRAL 60% HEIGHT of its own square cell. Keep at least 20% of the cell width and height as FULLY TRANSPARENT empty margin on all four sides. Nothing touches a cell boundary. No part crosses into another cell, and no overlapping objects. Exact cell centers: X12.5%,37.5%,62.5%,87.5% of the full canvas and Y25%,75%. Objects centered at these points, consistent readable scale. Small paired/grouped items requested below are ONE compact sprite centered together.
+Background: TRUE transparent alpha, fully transparent alpha-zero space around every object and in broad continuous horizontal and vertical gutters. No white paper, no gray wash, no checkerboard, no backdrop, no floor, no frame, no grid, no text, letters, numbers or watermark. NO cast shadows, no stray specks outside an object's silhouette. Subtle natural watercolor softness remains inside the isolated object edges.
+Style: traditional watercolor picturebook illustration, gentle warm natural pastel colors, delicate pigment grain and restrained pencil details, lovingly painted and readable even as small icons. Objects softly angled for depth, never flat vector, 3D plastic or photorealism. Cozy, reassuring and safe.
+Constraints: RGBA 8-bit non-interlaced PNG with actual transparency. EXACTLY eight specified subjects in the exact row-major order. No extra objects or people, except a requested toy doll or the complete minimal object grouping stated below. All silhouettes and all attached parts are completely visible and uncut. Generous margins are essential for CSS atlas cropping. No scenery or full rooms; a window/curtain/door requested below must be a SMALL COMPLETE INDEPENDENT MINI-OBJECT VIGNETTE contained in one cell.
+
+Exact subjects and cell order:
+TOP ROW, left to right:
+1. Cortina al viento: one COMPLETE SMALL MINI-OBJECT VIGNETTE of a little square cream window frame, a short curtain rod and TWO pale blue curtains billowing gently inward. No wall, room or exterior scenery. Entire window, curtain rod and all cloth contained well inside its own cell.
+2. Grifo que gotea: one isolated small brass water faucet with a SHORT spout and two tiny blue droplets close below it, all contained; no sink, wall or room.
+3. Reloj de cuco: one small complete wooden cuckoo clock with a triangular roof, round clock face, plain hands and abstract hour dots, one tiny decorative wooden cuckoo peeking from its door, SHORT pendulum, no numbers or letters.
+4. Campanilla de viento: one short compact wind chime with a small wooden top, THREE tiny brass tubes and a sage leaf-shaped wind catcher, all strings short and all parts contained.
+BOTTOM ROW, left to right:
+5. Rama junto a ventana: one COMPLETE SMALL MINI-OBJECT VIGNETTE of a little rectangular cream window frame with a short leafy branch brushing its outer edge. No surrounding wall, house or full scene, all leaves and branch ends contained in this one cell.
+6. Puerta que cruje: one COMPLETE SMALL MINI-OBJECT VIGNETTE of a small honey-colored wooden door slightly ajar in its simple freestanding cream frame, tiny brass handle, no wall, hallway, room or sound text. Full door and frame contained.
+7. Hojas secas: one compact centered GROUP of three warm ochre, rust and brown dried autumn leaves, complete stems and edges, no scattered debris outside.
+8. Tetera que silba: one little sage tea kettle with a complete curved handle and short spout, two SHORT soft steam curls directly above the spout, all steam contained in central cell area, no stovetop.
+
+CORRECTION PROMPT:
+Correct ONLY spacing and transparent margins in this watercolor 4-column × 2-row object atlas. Preserve all EIGHT exact objects, all details, colors, subjects and row-major order. Keep the exact wide 2:1 canvas, eight square cells, RGBA 8-bit non-interlaced PNG and true transparent background.
+
+MANDATORY technical correction: shrink EACH ENTIRE object, including all straps, ribbons, bristles, cloth edges and attached parts, by approximately 25% around the exact center of its OWN square cell. CENTER each complete object exactly at top-row X12.5%,37.5%,62.5%,87.5% / Y25%, and bottom-row same X / Y75% of the whole canvas. Each object must fit in the CENTRAL60% width and CENTRAL60% height of its assigned cell, with at least20% cell width and height as COMPLETELY EMPTY ALPHA ZERO margin on ALL FOUR SIDES.
+
+Remove every stray watercolor speck or low-opacity pigment from the margins. Absolutely no pixel of pigment, no dot, no ribbon tip, no edge fringe, nothing may touch any cell boundary. Make broad continuous fully transparent gutters at canvas X25%,50%,75% and Y50%. Every object and every attached part stays whole and complete, never cropped. Do not move anything into a neighboring cell.
+
+Preserve the exact charming watercolor style and eight identities. Do not add any objects, text, numbers, borders, grid, background paper, shadows or checkerboard. This is the same art with safer packing, not a redesign.
+Keep the curtain billowing visibly, the tap droplets, the cuckoo and pendulum, the three wind-chime tubes, the branch beside its entire window, the ajar door inside its complete frame, the dry leaves, and the whistling kettle steam; EVERY attached part belongs INSIDE its object's same central60% area. No surrounding rooms or scenery.
+```
+
+#### `public/art/objects-home-tools.png`
+
+```text
+Use case: illustration-story.
+Asset type: production watercolor object sprite atlas for a cozy children's picturebook app, ages 3–7.
+Primary request: create ONE NEW image with EXACTLY EIGHT distinct complete isolated objects, in an EXACT WIDE 2:1 canvas, FOUR equal columns and TWO equal rows, eight SQUARE cells, no visible grid. Ideal 2400 × 1200 pixels; exact 2:1 aspect ratio is mandatory.
+Input image: the provided objects-explore.png atlas is ONLY a STYLE REFERENCE for delicate hand-painted watercolor, nuanced natural colors, subtle pencil details, fine paper grain inside the paint, softness and warm storybook charm. Create the NEW objects specified below. Do not reproduce the reference objects.
+Composition: each entire complete object, including handles, straps, ropes, tassels, antennae, steam, droplets and other attached parts, must fit entirely INSIDE THE CENTRAL 60% WIDTH AND CENTRAL 60% HEIGHT of its own square cell. Keep at least 20% of the cell width and height as FULLY TRANSPARENT empty margin on all four sides. Nothing touches a cell boundary. No part crosses into another cell, and no overlapping objects. Exact cell centers: X12.5%,37.5%,62.5%,87.5% of the full canvas and Y25%,75%. Objects centered at these points, consistent readable scale. Small paired/grouped items requested below are ONE compact sprite centered together.
+Background: TRUE transparent alpha, fully transparent alpha-zero space around every object and in broad continuous horizontal and vertical gutters. No white paper, no gray wash, no checkerboard, no backdrop, no floor, no frame, no grid, no text, letters, numbers or watermark. NO cast shadows, no stray specks outside an object's silhouette. Subtle natural watercolor softness remains inside the isolated object edges.
+Style: traditional watercolor picturebook illustration, gentle warm natural pastel colors, delicate pigment grain and restrained pencil details, lovingly painted and readable even as small icons. Objects softly angled for depth, never flat vector, 3D plastic or photorealism. Cozy, reassuring and safe.
+Constraints: RGBA 8-bit non-interlaced PNG with actual transparency. EXACTLY eight specified subjects in the exact row-major order. No extra objects or people, except a requested toy doll or the complete minimal object grouping stated below. All silhouettes and all attached parts are completely visible and uncut. Generous margins are essential for CSS atlas cropping. No scenery or full rooms; a window/curtain/door requested below must be a SMALL COMPLETE INDEPENDENT MINI-OBJECT VIGNETTE contained in one cell.
+
+Exact subjects and cell order:
+TOP ROW, left to right:
+1. Red: one small friendly catching net with a SHORT wooden handle and pale cream mesh in a round sage rim, complete rim and handle, no animals.
+2. Cubo: one small sage metal bucket with a complete arched handle and softly rounded base, empty, no water splashes.
+3. Pala: one small garden shovel with a SHORT honey-colored wooden shaft, rounded grip and pale blue metal blade, complete whole tool.
+4. Carretilla: one COMPLETE small sage garden wheelbarrow with ONE front wheel, two SHORT wooden handles and two rear supports, empty basin, no person or background.
+BOTTOM ROW, left to right:
+5. Escoba: one complete SHORT traditional broom with an ochre wooden handle and soft golden bundled straw bristles, no dust or trail.
+6. Escalera de mano: one small COMPLETE portable wooden stepladder, four broad rungs and gently spread rear support, compact, all legs and top contained, no person.
+7. Saco: one small softly rounded cream burlap sack gathered and tied at the top with a SHORT brown string, no spilled contents and no lettering.
+8. Caja de cartón: one small warm tan cardboard box with its four flaps partly open, empty, complete corners, no label or tape text.
+
+CORRECTION PROMPT:
+Correct ONLY spacing and transparent margins in this watercolor 4-column × 2-row object atlas. Preserve all EIGHT exact objects, all details, colors, subjects and row-major order. Keep the exact wide 2:1 canvas, eight square cells, RGBA 8-bit non-interlaced PNG and true transparent background.
+
+MANDATORY technical correction: shrink EACH ENTIRE object, including all straps, ribbons, bristles, cloth edges and attached parts, by approximately 25% around the exact center of its OWN square cell. CENTER each complete object exactly at top-row X12.5%,37.5%,62.5%,87.5% / Y25%, and bottom-row same X / Y75% of the whole canvas. Each object must fit in the CENTRAL60% width and CENTRAL60% height of its assigned cell, with at least20% cell width and height as COMPLETELY EMPTY ALPHA ZERO margin on ALL FOUR SIDES.
+
+Remove every stray watercolor speck or low-opacity pigment from the margins. Absolutely no pixel of pigment, no dot, no ribbon tip, no edge fringe, nothing may touch any cell boundary. Make broad continuous fully transparent gutters at canvas X25%,50%,75% and Y50%. Every object and every attached part stays whole and complete, never cropped. Do not move anything into a neighboring cell.
+
+Preserve the exact charming watercolor style and eight identities. Do not add any objects, text, numbers, borders, grid, background paper, shadows or checkerboard. This is the same art with safer packing, not a redesign.
+```
+
+### Comprobación de los PNG finales
+Los diez atlas de lugares miden 1448×1086 (4:3); los otros diecisiete miden 1774×887 (2:1). Los 27 son PNG de 8 bits RGBA, no entrelazados, con alfa cero real y todas las figuras completas dentro de su celda. El margen siguiente es la menor distancia de cualquier pigmento con alfa ≥32 al borde de su celda, calculada sobre todas las celdas de cada archivo. Todos los márgenes son positivos.
+
+| Archivo | Transparencia total (alfa 0) | Margen mínimo (alfa ≥32) |
+| --- | --- | --- |
+| `places-views-10.png` | 30.13 % | 27 px |
+| `places-views-11.png` | 54.74 % | 14 px |
+| `places-views-12.png` | 36.3 % | 20 px |
+| `places-views-13.png` | 48.07 % | 15 px |
+| `places-views-14.png` | 59.26 % | 24 px |
+| `places-views-15.png` | 50.94 % | 15 px |
+| `places-views-16.png` | 64.31 % | 32 px |
+| `places-views-17.png` | 61.96 % | 23 px |
+| `places-views-18.png` | 58.33 % | 2 px |
+| `places-views-19.png` | 49.78 % | 31 px |
+| `animals-babies.png` | 80.44 % | 34 px |
+| `villains-2.png` | 76.59 % | 36 px |
+| `town-folk.png` | 80.39 % | 44 px |
+| `tiny-creatures.png` | 80.74 % | 52 px |
+| `pets.png` | 76.93 % | 49 px |
+| `animals-farm.png` | 80.97 % | 62 px |
+| `night-creatures.png` | 75.46 % | 27 px |
+| `objects-bedtime.png` | 81.93 % | 53 px |
+| `objects-party.png` | 81.4 % | 40 px |
+| `objects-quest.png` | 69.81 % | 17 px |
+| `objects-kitchen.png` | 67.55 % | 30 px |
+| `objects-sport.png` | 70.1 % | 11 px |
+| `objects-memories.png` | 65.12 % | 20 px |
+| `objects-firsts.png` | 76.79 % | 41 px |
+| `objects-calm.png` | 70.15 % | 24 px |
+| `objects-night-sounds.png` | 80.6 % | 29 px |
+| `objects-home-tools.png` | 83.68 % | 61 px |
+
+La revisión visual coteja las 256 celdas nuevas con el pedido y el checklist final. `npm test` comprueba las historias y preferencias; `npm run build` exige y valida los 53 atlas totales, incluyendo este lote completo, y copia los nuevos PNG al contenido publicado y al caché sin conexión.

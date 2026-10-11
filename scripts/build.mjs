@@ -5,19 +5,22 @@ import path from 'node:path';
 import { CHARACTER_ATLASES } from '../src/character-catalog.js';
 import { WORLD_ATLASES } from '../src/world-catalog.js';
 import { VILLAIN_ATLASES, PENDING_ART } from '../src/villain-catalog.js';
+import { EXPANSION_ART } from './art-expansion.mjs';
 import { access } from 'node:fs/promises';
 const root = path.resolve(import.meta.dirname, '..');
 const dist = path.join(root, 'dist');
-const atlases = [
+const atlases = [...new Map([
   ...Object.values(CHARACTER_ATLASES).map(atlas => [atlas.file, atlas.columns, atlas.rows]),
   ...Object.values(WORLD_ATLASES).map(atlas => [atlas.file, atlas.columns, atlas.rows]),
   ...Object.values(VILLAIN_ATLASES).map(atlas => [atlas.file, atlas.columns, atlas.rows]),
-];
+  ...EXPANSION_ART.map(atlas => [atlas.file, atlas.columns, atlas.rows]),
+].map(atlas => [atlas[0], atlas])).values()];
 const newAtlasFiles = new Set([
   ...Object.entries(CHARACTER_ATLASES).filter(([id]) => !['main', 'extra'].includes(id)),
   ...Object.entries(WORLD_ATLASES).filter(([id]) => !['main-places', 'extra-places', 'main-objects'].includes(id)),
   ...Object.entries(VILLAIN_ATLASES),
-].map(([, atlas]) => atlas.file));
+].map(([, atlas]) => atlas.file).concat(EXPANSION_ART.map(atlas => atlas.file)));
+const expansionAtlasFiles = new Set(EXPANSION_ART.map(atlas => atlas.file));
 const paeth = (left, up, corner) => {
   const estimate = left + up - corner;
   const distances = [Math.abs(estimate - left), Math.abs(estimate - up), Math.abs(estimate - corner)];
@@ -80,6 +83,7 @@ function validateTransparency(png, filename, width, height, columns, rows) {
         ['top', xs.map(x => alphaAt(x, top))], ['bottom', xs.map(x => alphaAt(x, bottom))],
         ['left', ys.map(y => alphaAt(left, y))], ['right', ys.map(y => alphaAt(right, y))],
       ]) {
+        if (expansionAtlasFiles.has(filename) && values.some(alpha => alpha >= 32)) throw new Error(`${filename}: cell ${row * columns + column + 1} needs clear watercolor margins at its ${edge} crop boundary`);
         const contact = longestRun(values);
         if (contact >= 8) throw new Error(`${filename}: cell ${row * columns + column + 1} touches its ${edge} crop boundary (${contact} visible pixels in a row)`);
       }
