@@ -154,15 +154,17 @@ for (let index = 0; index < 60; index++) for (const book of BOOKS) {
     assert.ok(!before.slice(-3).some(previous => previous.goalId === nextSummary.goalId), `${book.id}/${index}: recent goals must differ with an adequate catalogue.`);
     assert.ok(!before.some(previous => sameBlocks(previous, nextSummary)), `${book.id}/${index}: complete plot tuples must not repeat recently.`);
   }
+  assert.ok(nextSummary.structureId, 'New stories remember their structure.');
+  if (before.length) assert.notEqual(nextSummary.structureId, before.at(-1).structureId, `${book.id}/${index}: consecutive stories use different structures.`);
   const unselectedBefore = history.filter(record => record.bookId !== book.id);
   history = rememberStory(history, next);
   assert.deepEqual(history.filter(record => record.bookId !== book.id), unselectedBefore, 'Choosing one book must not clear another book history.');
   assert.ok(history.length <= 40);
   assert.ok(history.filter(record => record.bookId === book.id).length <= 8);
-  for (const record of history) assert.deepEqual(Object.keys(record), fields);
+  for (const record of history) assert.deepEqual(Object.keys(record).filter(key => key !== 'structureId'), fields);
   sequenceStories++;
 }
 assert.equal(history.length, 40);
 assert.deepEqual(stableStory(generateStory('family', 9, 'selection-pure', { family: namedFamily })), pureBefore, 'History-aware selection must preserve deterministic replay by explicit seed.');
 
-console.log(`Fresh story selection passed: ${sequenceStories} real stories, ${candidateCount} candidates; bounded fallback, damaged storage and independent book histories.`);
+console.log(`Fresh story selection passed: ${sequenceStories} real stories, ${candidateCount} candidates; bounded fallback, damaged storage, independent book histories and varied structures.`);

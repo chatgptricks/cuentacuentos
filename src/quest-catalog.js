@@ -240,20 +240,26 @@ export const ELIXIRS = Object.freeze([
 
 /** Acción: what a villain takes from a celebration, and how the celebration looks once it returns. */
 export const TARGETS = Object.freeze([
-  { id: 'music', objects: ['drum', 'flute'], name: 'el tambor y la flauta de la orquesta', short: 'los instrumentos', event: 'el concierto de la primavera', role: 'Sin el tambor y la flauta, la orquesta no podría tocar.', festive: 'El tambor y la flauta sonaron, y todos empezaron a bailar.', homes: ['village', 'garden', 'meadow', 'harbor', 'windmill', 'treehouse', 'beach'] },
-  { id: 'bell', objects: ['bell'], name: 'la campana de la fiesta', short: 'la campana', event: 'la fiesta del verano', role: 'La campana tenía que sonar para que empezara el baile.', festive: 'La campana sonó, y todos empezaron a bailar.', homes: ['village', 'garden', 'meadow', 'harbor', 'windmill', 'beach'] },
-  { id: 'lanterns', objects: ['lantern'], name: 'los faroles de la fiesta', short: 'los faroles', event: 'la fiesta de la noche más larga', role: 'Los faroles iban a iluminar la plaza durante toda la noche.', festive: 'Los faroles se encendieron, y la plaza brilló como nunca.', homes: ['village', 'harbor', 'garden', 'treehouse'] },
-  { id: 'stars', objects: ['paper-star'], name: 'las estrellas de papel', short: 'las estrellas de papel', event: 'la fiesta de las estrellas', role: 'Las estrellas de papel iban a adornar todos los caminos.', festive: 'Las estrellas de papel volvieron a colgar sobre los caminos.', homes: ['village', 'treehouse', 'garden', 'playground'] },
-  { id: 'crystal', objects: ['crystal'], name: 'el cristal de los colores', short: 'el cristal', event: 'la fiesta de la luz', role: 'El cristal llenaba la plaza de colores cuando le daba el sol.', festive: 'El sol atravesó el cristal, y la plaza se llenó de colores.', homes: ['village', 'garden', 'windmill', 'playground'] },
+  { id: 'music', objects: ['drum', 'flute'], name: 'el tambor y la flauta de la orquesta', short: 'los instrumentos', event: 'el concierto de la primavera', role: 'Sin el tambor y la flauta, la orquesta no podría tocar.', festive: 'El tambor y la flauta sonaron, y todos empezaron a bailar.', homes: ['festival-square', 'village', 'garden', 'meadow', 'harbor', 'windmill', 'treehouse', 'beach'] },
+  { id: 'bell', objects: ['bell'], name: 'la campana de la fiesta', short: 'la campana', event: 'la fiesta del verano', role: 'La campana tenía que sonar para que empezara el baile.', festive: 'La campana sonó, y todos empezaron a bailar.', homes: ['festival-square', 'village', 'garden', 'meadow', 'harbor', 'windmill', 'beach'] },
+  { id: 'lanterns', objects: ['lantern'], name: 'los faroles de la fiesta', short: 'los faroles', event: 'la fiesta de la noche más larga', role: 'Los faroles iban a iluminar la plaza durante toda la noche.', festive: 'Los faroles se encendieron, y la plaza brilló como nunca.', homes: ['festival-square', 'village', 'harbor', 'garden', 'treehouse'] },
+  { id: 'stars', objects: ['paper-star'], name: 'las estrellas de papel', short: 'las estrellas de papel', event: 'la fiesta de las estrellas', role: 'Las estrellas de papel iban a adornar todos los caminos.', festive: 'Las estrellas de papel volvieron a colgar sobre los caminos.', homes: ['festival-square', 'village', 'treehouse', 'garden', 'playground'] },
+  { id: 'crystal', objects: ['crystal'], name: 'el cristal de los colores', short: 'el cristal', event: 'la fiesta de la luz', role: 'El cristal llenaba la plaza de colores cuando le daba el sol.', festive: 'El sol atravesó el cristal, y la plaza se llenó de colores.', homes: ['festival-square', 'village', 'garden', 'windmill', 'playground'] },
   { id: 'pearl', objects: ['pearl'], name: 'la perla del faro', short: 'la perla', event: 'la fiesta del mar', role: 'La perla brillaba en el faro y guiaba a los barcos de noche.', festive: 'La perla volvió a brillar en lo alto del faro.', homes: ['harbor', 'beach'] },
   { id: 'shell', objects: ['shell'], name: 'la caracola de los barcos', short: 'la caracola', event: 'la fiesta del mar', role: 'La caracola sonaba para dar la bienvenida a los barcos.', festive: 'La caracola sonó, y los barcos entraron saludando.', homes: ['harbor', 'beach'] },
-  { id: 'key', objects: ['key'], name: 'la llave del baúl de los disfraces', short: 'la llave', event: 'la fiesta de disfraces', role: 'Sin la llave, nadie podía abrir el baúl de los disfraces.', festive: 'Abrieron el baúl, y todos se pusieron un disfraz.', homes: ['village', 'treehouse', 'garden', 'playground'] },
+  { id: 'key', objects: ['key'], name: 'la llave del baúl de los disfraces', short: 'la llave', event: 'la fiesta de disfraces', role: 'Sin la llave, nadie podía abrir el baúl de los disfraces.', festive: 'Abrieron el baúl, y todos se pusieron un disfraz.', homes: ['festival-square', 'village', 'treehouse', 'garden', 'playground'] },
   { id: 'apples', objects: ['apple', 'basket'], name: 'la cesta de manzanas de la cosecha', short: 'la cesta de manzanas', event: 'la fiesta de la cosecha', role: 'Con las manzanas de esa cesta iban a hacer el gran pastel.', festive: 'Hicieron un pastel de manzana enorme, y todos probaron un trozo.', homes: ['orchard', 'village', 'garden'] },
-  { id: 'honey', objects: ['honey-jar'], name: 'la miel de la merienda', short: 'la miel', event: 'la gran merienda de la primavera', role: 'La miel era para los panecillos de la merienda.', festive: 'Los panecillos con miel quedaron deliciosos.', homes: ['village', 'meadow', 'garden', 'orchard'] },
+  { id: 'honey', objects: ['honey-jar'], name: 'la miel de la merienda', short: 'la miel', event: 'la gran merienda de la primavera', role: 'La miel era para los panecillos de la merienda.', festive: 'Los panecillos con miel quedaron deliciosos.', homes: ['festival-square', 'village', 'meadow', 'garden', 'orchard'] },
   { id: 'kites', objects: ['kite'], name: 'las cometas del festival', short: 'las cometas', event: 'el festival del viento', role: 'Las cometas iban a volar todas juntas en el festival.', festive: 'Las cometas subieron al cielo y lo llenaron de colores.', homes: ['windmill', 'meadow', 'beach', 'playground'] },
   { id: 'pinwheels', objects: ['pinwheel'], name: 'los molinillos de la feria', short: 'los molinillos', event: 'la feria de la brisa', role: 'Los molinillos iban a girar en cada puesto de la feria.', festive: 'Los molinillos giraron, y la feria se llenó de colores.', homes: ['windmill', 'meadow', 'playground', 'village'] },
   { id: 'yarn', objects: ['yarn'], name: 'los ovillos de colores', short: 'los ovillos', event: 'la fiesta de los adornos', role: 'Con los ovillos iban a tejer los adornos de la fiesta.', festive: 'Tejieron adornos de colores, y todo quedó precioso.', homes: ['village', 'treehouse', 'garden'] },
-  { id: 'paints', objects: ['paintbrush', 'crayons'], name: 'los pinceles y los crayones del concurso', short: 'los pinceles y los crayones', event: 'el concurso de dibujo', role: 'Sin pinceles ni crayones, no podría haber concurso.', festive: 'Todos pintaron dibujos preciosos para el concurso.', homes: ['playground', 'village', 'garden', 'treehouse'] },
+  { id: 'paints', objects: ['paintbrush', 'crayons'], name: 'los pinceles y los crayones del concurso', short: 'los pinceles y los crayones', event: 'el concurso de dibujo', role: 'Sin pinceles ni crayones, no podría haber concurso.', festive: 'Todos pintaron dibujos preciosos para el concurso.', homes: ['festival-square', 'playground', 'village', 'garden', 'treehouse'] },
+  { id: 'cake', objects: ['birthday-cake'], name: 'la tarta de la fiesta', short: 'la tarta', event: 'el cumpleaños del pueblo', role: 'La tarta era tan grande que alcanzaba para todos.', festive: 'Cortaron la tarta, y hubo un trozo para cada vecino.', homes: ['village', 'festival-square', 'garden', 'farm'] },
+  { id: 'balloons', objects: ['balloon'], name: 'los globos de la fiesta', short: 'los globos', event: 'la fiesta de los globos', role: 'Los globos iban a subir todos juntos al cielo.', festive: 'Los globos subieron al cielo, y todos aplaudieron.', homes: ['festival-square', 'meadow', 'playground', 'village'] },
+  { id: 'garland', objects: ['garland'], name: 'las guirnaldas de la plaza', short: 'las guirnaldas', event: 'la fiesta de la primavera', role: 'Las guirnaldas iban a llenar la plaza de colores.', festive: 'Las guirnaldas volvieron a colgar de farol a farol.', homes: ['festival-square', 'village', 'garden'] },
+  { id: 'crown', objects: ['flower-crown'], name: 'la corona de flores de la fiesta', short: 'la corona de flores', event: 'la fiesta de las flores', role: 'La corona de flores era para quien bailara con más alegría.', festive: 'La corona de flores pasó de cabeza en cabeza entre risas.', homes: ['garden', 'festival-square', 'village', 'meadow'] },
+  { id: 'trophy', objects: ['trophy'], name: 'el trofeo de la carrera', short: 'el trofeo', event: 'la gran carrera del pueblo', role: 'El trofeo era para todos los que terminaran la carrera.', festive: 'Todos terminaron la carrera, y el trofeo brilló en la meta.', homes: ['race-track', 'village', 'festival-square'] },
+  { id: 'letters', objects: ['letter'], name: 'las cartas del correo', short: 'las cartas', event: 'el día de las cartas', role: 'Las cartas traían noticias de familias que vivían lejos.', festive: 'Repartieron las cartas, y todos sonrieron al leerlas.', homes: ['post-office', 'village'] },
   { id: 'boats', objects: ['boat'], name: 'los barquitos de la regata', short: 'los barquitos', event: 'la regata de los barquitos', role: 'Los barquitos iban a navegar en la gran carrera.', festive: 'Los barquitos navegaron, y todos aplaudieron desde la orilla.', homes: ['harbor', 'beach'] },
 ].map(target => Object.freeze({ ...target, objects: Object.freeze(target.objects), homes: Object.freeze(target.homes) })));
 
@@ -262,9 +268,9 @@ export const TARGETS = Object.freeze([
  * `offer` answers that exact need, so the change of heart follows from the story.
  * `{toEvent}` and `{ofEvent}` name the celebration the villain spoiled.
  */
-export const VILLAIN_PLOTS = Object.freeze({
+export const VILLAIN_PLOTS = {
   troll: {
-    lairs: ['cave', 'mountain', 'river', 'waterfall', 'crystal-cave'], targets: ['music', 'bell'],
+    lairs: ['troll-bridge', 'cave', 'mountain', 'river', 'waterfall', 'crystal-cave'], targets: ['music', 'bell'],
     threat: 'El trol dio un gruñido tan fuerte que las piedras temblaron.',
     hint: 'nadie se vuelve gruñón sin un motivo',
     motive: 'nunca lo invitaban a ninguna fiesta y se sentía muy solo',
@@ -280,7 +286,7 @@ export const VILLAIN_PLOTS = Object.freeze({
     carry: 'iluminó el camino de vuelta con su brillo de fantasma', party: 'El fantasma colgó los adornos más altos, porque podía flotar.',
   },
   crow: {
-    lairs: ['giant-tree', 'forest', 'enchanted-tower', 'windmill', 'mushroom-grove', 'mountain'], targets: ['crystal', 'pearl', 'shell', 'key'],
+    lairs: ['crow-nest', 'giant-tree', 'forest', 'enchanted-tower', 'windmill', 'mushroom-grove', 'mountain'], targets: ['crystal', 'pearl', 'shell', 'key'],
     threat: 'El cuervo abrió sus alas negras y graznó muy enfadado.',
     hint: 'quien se lleva cosas a veces está buscando otra cosa',
     motive: 'creía que nadie admiraría su nido si no tenía cosas brillantes',
@@ -288,7 +294,7 @@ export const VILLAIN_PLOTS = Object.freeze({
     carry: 'voló delante para enseñarles el camino más corto', party: 'El cuervo adornó su nido con hojas de colores que nadie echaba de menos.',
   },
   'pirate-cat': {
-    lairs: ['harbor', 'beach', 'mangrove', 'lake', 'river'], targets: ['pearl', 'shell', 'boats'],
+    lairs: ['pirate-ship', 'harbor', 'beach', 'mangrove', 'lake', 'river'], targets: ['pearl', 'shell', 'boats'],
     threat: 'La gata pirata sacó las uñas y bufó desde su barco.',
     hint: 'quien presume mucho a veces solo quiere sentirse importante',
     motive: 'nunca había encontrado un tesoro y los otros piratas se reían de ella',
@@ -296,7 +302,7 @@ export const VILLAIN_PLOTS = Object.freeze({
     carry: 'los llevó de vuelta en su barco pirata', party: 'La gata pirata contó historias de piratas a todos los pequeños.',
   },
   ogre: {
-    lairs: ['forest', 'mushroom-grove', 'cave', 'bamboo-grove', 'mountain'], targets: ['apples', 'honey'],
+    lairs: ['ogre-cave', 'forest', 'mushroom-grove', 'cave', 'bamboo-grove', 'mountain'], targets: ['apples', 'honey'],
     threat: 'A la barriga del ogro le sonaron unas tripas enormes, y él frunció el ceño.',
     hint: 'con la tripa vacía nadie piensa bien',
     motive: 'tenía tanta hambre que no pensó en los demás',
@@ -304,7 +310,7 @@ export const VILLAIN_PLOTS = Object.freeze({
     carry: 'cargó las cestas más pesadas sin cansarse', party: 'El ogro compartió su plato con todos los invitados.',
   },
   imp: {
-    lairs: ['mushroom-grove', 'forest', 'library', 'workshop', 'giant-tree', 'moon-garden', 'greenhouse'], targets: ['paints', 'pinwheels', 'kites', 'key', 'stars'],
+    lairs: ['imp-mushroom', 'mushroom-grove', 'forest', 'library', 'workshop', 'giant-tree', 'moon-garden', 'greenhouse'], targets: ['paints', 'pinwheels', 'kites', 'key', 'stars', 'letters'],
     threat: 'El duende hizo una pirueta, les sacó la lengua y se escondió.',
     hint: 'las travesuras a veces son una forma de pedir compañía',
     motive: 'se aburría muchísimo porque nadie quería jugar con él',
@@ -312,7 +318,7 @@ export const VILLAIN_PLOTS = Object.freeze({
     carry: 'llevó todo de vuelta haciendo malabares', party: 'El duende inventó un juego nuevo para todos.',
   },
   spider: {
-    lairs: ['forest', 'cave', 'giant-tree', 'enchanted-tower', 'mangrove', 'bamboo-grove'], targets: ['yarn', 'kites'],
+    lairs: ['web-corner', 'forest', 'cave', 'giant-tree', 'enchanted-tower', 'mangrove', 'bamboo-grove'], targets: ['yarn', 'kites'],
     threat: 'La araña tejió una red enorme para que nadie se acercara.',
     hint: 'a veces quien se lleva algo solo necesita pedir ayuda',
     motive: 'quería tejer el tapiz más bonito del mundo y no tenía hilo',
@@ -320,14 +326,82 @@ export const VILLAIN_PLOTS = Object.freeze({
     carry: 'tejió una hamaca para llevarlo todo sin esfuerzo', party: 'La araña tejió con todos un tapiz que adornó la fiesta.',
   },
   giant: {
-    lairs: ['mountain', 'clouds', 'floating-island', 'rainbow-bridge', 'snowy-valley'], targets: ['boats', 'kites', 'pinwheels'],
+    lairs: ['giant-house', 'mountain', 'clouds', 'floating-island', 'rainbow-bridge', 'snowy-valley'], targets: ['boats', 'kites', 'pinwheels'],
     threat: 'El gigante se levantó, y su sombra lo tapó todo.',
     hint: 'no todo el que causa un problema lo hace con mala intención',
     motive: 'había creído que eran juguetes perdidos y quería cuidarlos',
     offer: 'le explicó de quién eran y para qué los necesitaban', change: 'se tapó la cara, avergonzado',
     carry: 'los llevó a todos en la palma de la mano', party: 'El gigante miró la fiesta desde lejos para no pisar a nadie.',
   },
+};
+
+Object.assign(VILLAIN_PLOTS, {
+  'winter-witch': {
+    lairs: ['ice-castle', 'snowy-valley', 'mountain'], targets: ['lanterns', 'yarn', 'cake'],
+    threat: 'La bruja del invierno sopló, y todo se cubrió de escarcha.',
+    hint: 'a veces quien parece frío solo se siente solo',
+    motive: 'su castillo de hielo era tan frío que nadie quería visitarla',
+    offer: 'la invitó a calentarse junto al fuego', change: 'sonrió mientras se derretía un poco de su hielo',
+    carry: 'cubrió el camino de nieve blandita para que fuera más fácil', party: 'La bruja del invierno hizo copos de nieve que bailaban sobre la fiesta.',
+  },
+  shark: {
+    lairs: ['coral-reef', 'underwater-palace'], targets: ['boats', 'shell', 'pearl'],
+    threat: 'El tiburón dio un coletazo que levantó una ola enorme.',
+    hint: 'a veces quien asusta solo quiere que alguien juegue con él',
+    motive: 'todos huían de sus dientes, aunque él solo quería jugar',
+    offer: 'lo invitó a jugar a las carreras de olas', change: 'dio una vuelta de alegría en el agua',
+    carry: 'nadó delante para enseñarles el camino más rápido', party: 'El tiburón organizó carreras de olas para todos.',
+  },
+  crab: {
+    lairs: ['beach', 'lighthouse-cliff', 'coral-reef'], targets: ['shell', 'pearl', 'garland'],
+    threat: 'El cangrejo abrió y cerró sus pinzas, muy enfadado.',
+    hint: 'el mal humor muchas veces esconde un problema',
+    motive: 'las olas habían deshecho su casa de arena',
+    offer: 'lo ayudó a construir una casa de arena nueva', change: 'chocó las pinzas de alegría',
+    carry: 'caminó de lado, abriendo paso entre las rocas', party: 'El cangrejo enseñó a todos a bailar de lado.',
+  },
+  'storm-cloud': {
+    lairs: ['clouds', 'mountain', 'floating-island', 'lookout-hill'], targets: ['kites', 'balloons'],
+    threat: 'La nube de tormenta tronó y dejó caer un chaparrón.',
+    hint: 'quien llora mucho necesita que alguien lo escuche',
+    motive: 'estaba tan triste que no podía dejar de llover ni de soplar',
+    offer: 'se sentó a su lado y la escuchó sin prisa', change: 'dejó salir un arcoíris',
+    carry: 'sopló una brisa suave que los acompañó de vuelta', party: 'La nube de tormenta regó las flores de la fiesta con una lluvia finita.',
+  },
+  'thief-rat': {
+    lairs: ['farm', 'cave', 'swamp'], targets: ['cake', 'apples', 'honey'],
+    threat: 'La rata ladrona escondió el botín detrás de su espalda.',
+    hint: 'quien toma lo que no es suyo a veces tiene una necesidad',
+    motive: 'sus hermanitos no tenían nada para cenar',
+    offer: 'le preparó una cesta de comida para toda su familia', change: 'se quitó el antifaz y dio las gracias',
+    carry: 'llevó todo de vuelta sin probar ni una miga', party: 'La rata trajo a sus hermanitos, y todos comieron juntos.',
+  },
+  scarecrow: {
+    lairs: ['farm', 'orchard', 'meadow'], targets: ['garland', 'kites', 'apples'],
+    threat: 'El espantapájaros agitó los brazos de paja y frunció el ceño.',
+    hint: 'nadie debería pasar los días solo',
+    motive: 'estaba cansado de pasar todo el día quieto y solo en el campo',
+    offer: 'lo invitó a pasear y a ver la fiesta', change: 'se le iluminó la cara de paja',
+    carry: 'cargó todo sobre sus hombros de madera', party: 'El espantapájaros bailó tanto que perdió un poco de paja.',
+  },
+  'envious-wizard': {
+    lairs: ['enchanted-tower', 'volcano', 'crystal-cave'], targets: ['trophy', 'stars', 'crystal'],
+    threat: 'El mago envidioso agitó su varita, y salieron chispas de colores.',
+    hint: 'la envidia a veces nace de querer que nos miren',
+    motive: 'nadie aplaudía nunca sus trucos de magia',
+    offer: 'le pidió que hiciera un espectáculo de magia en la fiesta', change: 'dejó escapar una sonrisa bajo su barba',
+    carry: 'hizo que todo flotara suavemente hasta el pueblo', party: 'El mago hizo un espectáculo de magia, y todos aplaudieron muchísimo.',
+  },
+  'vain-snake': {
+    lairs: ['swamp', 'desert-oasis', 'bamboo-grove'], targets: ['crown', 'garland', 'pearl'],
+    threat: 'La serpiente presumida silbó y levantó la cabeza muy alto.',
+    hint: 'a veces quien presume se siente menos que los demás',
+    motive: 'creía que nadie la quería porque no tenía patas para bailar',
+    offer: 'le enseñó a bailar moviéndose como una ola', change: 'se movió de un lado a otro, feliz',
+    carry: 'se enroscó alrededor de todo para que nada se cayera', party: 'La serpiente bailó como una ola, y todos la imitaron.',
+  },
 });
+Object.freeze(VILLAIN_PLOTS);
 
 for (const elixir of ELIXIRS) {
   if (!getItem(elixir.item)) throw new Error(`Unknown elixir item ${elixir.item}`);

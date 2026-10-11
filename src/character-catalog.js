@@ -7,6 +7,9 @@ export const CHARACTER_ATLASES = Object.freeze(Object.fromEntries([
   ['animals-wings-sea', 'animals-wings-sea.png', 4, 2],
   ['fantasy-forest', 'fantasy-forest.png', 4, 2],
   ['fantasy-wonders', 'fantasy-wonders.png', 4, 2],
+  ['animals-farm', 'animals-farm.png', 4, 2],
+  ['night-creatures', 'night-creatures.png', 4, 2],
+  ['tiny-creatures', 'tiny-creatures.png', 4, 2],
 ].map(([id, file, columns, rows]) => [id, Object.freeze({ file, columns, rows })])));
 
 const originals = [
@@ -75,6 +78,36 @@ const sheets = [
     ['yeti', 'yeti suave', 'm', ['Copito', 'Nevado', 'Peluche', 'Nivo', 'Suavín']],
     ['pegasus', 'pegaso', 'm', ['Alado', 'Pegui', 'Vuelo', 'Celino', 'Aerín']],
     ['tree-spirit', 'espíritu del árbol', 'm', ['Raíces', 'Raigal', 'Trébol', 'Frondo', 'Savia']],
+  ] },
+  { id: 'animals-farm', category: 'animal', characters: [
+    ['cow', 'vaca', 'f', ['Lechita', 'Manchita', 'Pradera', 'Rosalinda', 'Mugi']],
+    ['sheep', 'oveja', 'f', ['Lanita', 'Nubecita', 'Algodón', 'Borreguita', 'Rizosa']],
+    ['pig', 'cerdito', 'm', ['Rosco', 'Trufo', 'Cochi', 'Barrito', 'Chanchito']],
+    ['hen', 'gallina', 'f', ['Clotilde', 'Pepita', 'Kika', 'Plumilla', 'Cacareta']],
+    ['pony', 'poni', 'm', ['Trotón', 'Galope', 'Canelito', 'Crin', 'Brioso']],
+    ['donkey', 'burro', 'm', ['Platero', 'Orejón', 'Tomillo', 'Romero', 'Rebuzno']],
+    ['goat', 'cabra', 'f', ['Chiva', 'Saltarina', 'Barbita', 'Cabrilla', 'Montesa']],
+    ['sheepdog', 'perro pastor', 'm', ['Rufo', 'Toby', 'Zagal', 'Lanudo', 'Silbo']],
+  ] },
+  { id: 'night-creatures', category: 'animal', characters: [
+    ['bat', 'murciélago', 'm', ['Murci', 'Aleteo', 'Nocti', 'Sombrero', 'Vuelín']],
+    ['moth', 'polilla', 'f', ['Lucerna', 'Velita', 'Polvorilla', 'Alita', 'Tenue']],
+    ['mole', 'topo', 'm', ['Topete', 'Terrón', 'Gafitas', 'Túnel', 'Excavín']],
+    ['dormouse', 'lirón', 'm', ['Dormilón', 'Sueñito', 'Siesta', 'Almohadín', 'Lironcito']],
+    ['sloth', 'oso perezoso', 'm', ['Despacito', 'Lentejo', 'Sosiego', 'Colgado', 'Ramillo']],
+    ['opossum', 'zarigüeya', 'f', ['Zari', 'Colita', 'Grisela', 'Trepita', 'Ojazos']],
+    ['armadillo', 'armadillo', 'm', ['Bolita', 'Coraza', 'Rodillo', 'Escudito', 'Tatú']],
+    ['arctic-fox', 'zorro ártico', 'm', ['Albo', 'Escarchito', 'Ventisco', 'Blanquito', 'Nevoso']],
+  ] },
+  { id: 'tiny-creatures', category: 'animal', characters: [
+    ['bee', 'abeja', 'f', ['Melina', 'Zumbi', 'Panalita', 'Abejita', 'Polen']],
+    ['butterfly', 'mariposa', 'f', ['Seda', 'Brisita', 'Pétala', 'Alelí', 'Colorida']],
+    ['ladybug', 'mariquita', 'f', ['Puntitos', 'Mariqui', 'Rubí', 'Lunarcita', 'Coquita']],
+    ['ant', 'hormiga', 'f', ['Migaja', 'Hormi', 'Granito', 'Afanosa', 'Diminuta']],
+    ['snail', 'caracol', 'm', ['Lentito', 'Caracolín', 'Cuernitos', 'Rodete', 'Espiral']],
+    ['cricket', 'grillo', 'm', ['Chirri', 'Violín', 'Saltarín', 'Cantor', 'Grillito']],
+    ['firefly', 'luciérnaga', 'f', ['Chispita', 'Lucecita', 'Farolita', 'Destellito', 'Brillito']],
+    ['dragonfly', 'libélula', 'f', ['Libelia', 'Zafira', 'Cristalina', 'Volandera', 'Celestina']],
   ] },
 ];
 

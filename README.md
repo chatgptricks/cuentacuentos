@@ -8,21 +8,20 @@ Cinco libros en un estante: Aventura, Acción, Relax, Amigos y **Mi familia**. U
 
 ## Catálogo y cuentos
 
-- 52 personajes: 32 animales y 20 de fantasía, con nombres, género gramatical y sonidos
-- Se conservan los 12 personajes originales y se suman 24 animales y 16 personajes de fantasía
-- 36 escenarios de acuarela con tres encuadres cada uno: panorámica, media y cercana (108 vistas)
-- 36 elementos: los 12 originales y 24 nuevos de exploración, creación y pequeños tesoros
-- 124 recursos del catálogo que participan en el texto y en las ilustraciones
+- 76 personajes protagonistas: 56 animales (granja, noche y bichitos incluidos) y 20 de fantasía, con nombres, género gramatical, habilidades y sonidos
+- 24 personajes secundarios (crías, vecinos y mascotas) y 16 villanos suaves: 116 retratos en total
+- 76 escenarios con tres encuadres cada uno (228 vistas): naturaleza, pueblo, casa, caminos, guaridas y paisajes de sueño
+- 116 elementos: exploración, creación, tesoros, hora de dormir, cocina, fiestas, búsquedas, juegos, recuerdos, primeras veces, calma, ruidos de la noche y herramientas
 - 18, 36 o 54 páginas, según la duración elegida
-- Cinco estructuras fijas de seis partes con huecos: protagonista, amigo, consejero, villano, lugar de inicio, lugar de aventura, pruebas, regalo, elixir y objetivo
-- Cada hueco se llena con un valor compatible: las habilidades del amigo resuelven pruebas posibles en ese terreno, el regalo del consejero se usa después de entregarse y el elixir resuelve el problema del inicio
-- Acción tiene ocho villanos suaves con un motivo y una redención que responde a ese motivo; Relax termina con respiración guiada y la hora de dormir
+- 33 estructuras de seis partes: 6 de Aventura, 6 de Acción, 7 de Relax, 6 de Amigos y 8 de Mi familia, con huecos para protagonista, amigo, consejero, villano, lugares, pruebas, regalos, elixires y objetivos
+- Cada hueco se llena con un valor compatible: las habilidades del amigo resuelven pruebas posibles en ese terreno, el regalo se usa después de entregarse, cada villano tiene un motivo y una redención que responde a él, y cada página dibuja solo lo que nombra
+- La app evita repetir la misma estructura en dos cuentos seguidos del mismo libro
 - Detalles en [docs/story-structures.md](docs/story-structures.md)
 - Cada plan conserva su reparto, objetivo y continuidad hasta el final
 
-Desde **Conoce a los 52 personajes**, la biblioteca abre una galería con las pestañas **Animales (32)** y **Fantasía (20)**. Cada ficha muestra su dibujo, nombre y tipo de personaje; al tocar el dibujo suena un efecto suave. Los sonidos de los nuevos personajes se sintetizan localmente y comparten timbres apropiados: chapoteos, pasos, cantos, ronroneos o magia.
+Desde **Conoce a los 116 personajes**, la biblioteca abre una galería con las pestañas **Animales (56)**, **Fantasía (20)**, **Crías (8)**, **Mascotas (8)**, **Vecinos (8)** y **Villanos (16)**. Cada ficha muestra su dibujo, nombre y tipo de personaje; al tocar el dibujo suena un efecto suave. Los sonidos de los nuevos personajes se sintetizan localmente y comparten timbres apropiados: chapoteos, pasos, cantos, ronroneos o magia.
 
-**Explora escenarios y elementos** abre otra galería con **Escenarios (36)** y **Elementos (36)**. Permite conocer todos los lugares y objetos, ver los tres encuadres de cada lugar y escuchar su sonido al tocarlos. Las locaciones se muestran más grandes en el libro, con bordes de pigmento que se desvanecen suavemente en transparencia. Cada lugar alterna entre panorámica, media y cercana conforme aparece en las páginas, también al reanudar un cuento guardado. Los recursos nuevos amplían las historias: faroles y brújulas para explorar, cometas e instrumentos para jugar, materiales de dibujo y pequeños tesoros para descubrir o cuidar.
+**Explora escenarios y elementos** abre otra galería con **Escenarios (76)** y **Elementos (116)**. Permite conocer todos los lugares y objetos, ver los tres encuadres de cada lugar y escuchar su sonido al tocarlos. Las locaciones se muestran más grandes en el libro, con bordes de pigmento que se desvanecen suavemente en transparencia. Cada lugar alterna entre panorámica, media y cercana conforme aparece en las páginas, también al reanudar un cuento guardado. Los recursos nuevos amplían las historias: faroles y brújulas para explorar, cometas e instrumentos para jugar, materiales de dibujo y pequeños tesoros para descubrir o cuidar.
 
 **Mi familia** convierte al niño o la niña en protagonista de actividades cotidianas y aventuras pequeñas con un familiar por cuento. Su creador permite elegir un nombre, seis peinados, seis prendas, cinco tonos de piel y ocho colores favoritos para la ropa. Todas las opciones están disponibles para todos los personajes. Se puede agregar o quitar a papá, mamá, un bebé, un hermano o hermana de edad parecida y un adolescente; cada uno usa el mismo creador, con proporciones acordes a su edad. Antes de generar, se elige un familiar o **Un familiar sorpresa**. La configuración completa se conserva, pero la historia usa solo al protagonista y esa compañía. Si no hay familiares configurados, se añade Dani, hermano o hermana.
 
@@ -44,18 +43,21 @@ npm run dev
 
 La vista local está en http://localhost:4173/cuentacuentos/. `npm run build` valida las cuadrículas y la transparencia de los 53 atlas, incluidos los ocho villanos, los nueve atlas originales de encuadres y los 27 nuevos atlas de arte, comprueba que las ilustraciones nuevas no crucen los bordes de sus celdas, copia las fuentes y recursos a `dist` y crea un service worker con una versión calculada a partir del contenido. Los identificadores, archivos y posiciones de los atlas originales se conservan para mantener la compatibilidad de los cuentos guardados.
 
-El lote adicional de `public/art/` contiene 40 lugares nuevos desde tres ángulos (120 vistas), 56 personajes y 80 objetos. Los lugares usan `places-views-10.png` a `places-views-19.png`: cada columna conserva un lugar, con las filas frontal, desde la izquierda y desde la derecha a una escala comparable. Los personajes y objetos usan atlas 4×2 en orden de izquierda a derecha y de arriba abajo. [scripts/art-expansion.mjs](scripts/art-expansion.mjs) conserva sus nombres, dimensiones y orden para asignarlos posteriormente a las historias; el build exige los 27 archivos y márgenes sin pigmento de alfa ≥32 en sus bordes de celda. [docs/art-prompts.md](docs/art-prompts.md) recoge el inventario completo y los prompts de generación.
+El lote adicional de `public/art/` contiene 40 lugares nuevos desde tres ángulos (120 vistas), 56 personajes y 80 objetos. Los lugares usan `places-views-10.png` a `places-views-19.png`: cada columna conserva un lugar, con las filas frontal, desde la izquierda y desde la derecha a una escala comparable. Los personajes y objetos usan atlas 4×2 en orden de izquierda a derecha y de arriba abajo. Todo este arte ya participa en las historias; [scripts/art-expansion.mjs](scripts/art-expansion.mjs) conserva el inventario de sus celdas y el build exige los 27 archivos y márgenes sin pigmento de alfa ≥32 en sus bordes de celda. [docs/art-prompts.md](docs/art-prompts.md) recoge el inventario completo y los prompts de generación.
 
 **Siempre desplegar las mejoras solicitadas a producción**, tras pasar `npm test`, `npm run build` y la revisión visual. El usuario ya autorizó ese despliegue. El workflow [.github/workflows/pages.yml](.github/workflows/pages.yml) ejecuta las pruebas, compila y publica `dist` en GitHub Pages al subir cambios a `main`; también permite ejecución manual. Comprueba que termine correctamente y verifica la app publicada. Esta preferencia está recogida en [AGENTS.md](AGENTS.md).
 
 ## Archivos
 
-- `src/character-catalog.js`: los 52 personajes, sus nombres y el registro compartido de atlas
-- `src/world-catalog.js`: los 36 escenarios y 36 elementos, posiciones de atlas, sonidos y compatibilidad narrativa
-- `src/story-engine.js`: selección con semilla y las cinco estructuras narrativas
+- `src/character-catalog.js`: los 76 personajes protagonistas, sus nombres y el registro compartido de atlas
+- `src/supporting-catalog.js`: crías, vecinos y mascotas que ocupan papeles secundarios
+- `src/world-catalog.js`: los 76 escenarios y 116 elementos, posiciones de atlas, vistas, sonidos y compatibilidad narrativa
+- `src/story-engine.js`: elige la estructura con semilla y monta el cuento
+- `src/story-kit.js`: herramientas comunes de las estructuras: frases por niveles, reparto, pruebas y planes
+- `src/structures-adventure.js`, `structures-action.js`, `structures-relax.js`, `structures-social.js` y `structures-family.js`: las 33 estructuras narrativas
 - `src/narrative-world.js`: habilidades de cada personaje, terreno y pruebas de cada lugar, regalos y gramática compartida
 - `src/quest-catalog.js`: elixires de Aventura, fiestas y objetos de Acción, villanos con su motivo y su redención, consejeros y hogares
-- `src/villain-catalog.js`: los ocho villanos, su atlas y el arte pendiente
+- `src/villain-catalog.js`: los 16 villanos, sus atlas y el registro de arte pendiente
 - `src/story-blocks.js`: actividades de Relax, Amigos y Mi familia, con sus complicaciones
 - `src/story-language.js`: calificativos y acciones coherentes para cada actividad
 - `src/story-selection.js`: selección de cuentos nuevos con un historial limitado de planes recientes

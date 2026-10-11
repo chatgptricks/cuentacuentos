@@ -20,6 +20,9 @@ function normalizeSummary(value) {
       if (!ID.test(id)) return null;
       summary[field] = id;
     }
+    // Older histories have no structure; newer ones remember it to vary the shape of the next story.
+    const structure = Object.getOwnPropertyDescriptor(value, 'structureId')?.value;
+    if (typeof structure === 'string' && ID.test(structure.trim())) summary.structureId = structure.trim();
   } catch {
     return null;
   }
@@ -54,6 +57,7 @@ function summarizeStory(story) {
     strategyId: blocks?.strategy,
     discoveryId: blocks?.discovery,
     destinationId: story.plan?.world?.destination ?? story.place?.id,
+    ...(story.plan?.structure ? { structureId: story.plan.structure } : {}),
   });
 }
 
@@ -71,12 +75,13 @@ function repetition(summary, recent) {
   return {
     recentGoal: recent.slice(-RECENT_GOALS).some(previous => previous.goalId === summary.goalId),
     recentBlocks: recent.some(previous => sameBlocks(summary, previous)),
+    recentStructure: Boolean(summary.structureId) && recent.at(-1)?.structureId === summary.structureId,
   };
 }
 
 function similarity(summary, recent, repeated) {
   // Keep the main objective more important than secondary or cosmetic choices.
-  let score = Number(repeated.recentGoal) * 1000 + Number(repeated.recentBlocks) * 100;
+  let score = Number(repeated.recentGoal) * 1000 + Number(repeated.recentBlocks) * 100 + Number(repeated.recentStructure) * 50;
   let weightedMatches = 0;
   let totalWeight = 0;
   const fields = [['goalId', 12], ['obstacleId', 6], ['strategyId', 3], ['discoveryId', 3], ['destinationId', 1]];
@@ -110,7 +115,7 @@ export function generateFreshStory(bookId, duration = 3, options = {}, history =
       throw new TypeError('The story generator must return a complete plan for the requested book.');
     }
     const repeated = repetition(summary, recent);
-    if (!repeated.recentGoal && !repeated.recentBlocks) return story;
+    if (!repeated.recentGoal && !repeated.recentBlocks && !repeated.recentStructure) return story;
     const score = similarity(summary, recent, repeated);
     if (score < bestScore) {
       best = story;

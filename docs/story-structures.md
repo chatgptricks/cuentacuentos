@@ -1,38 +1,85 @@
 # Cómo se construyen los cuentos
 
-El generador funciona sin conexión, sin modelos de lenguaje y sin servicios externos. Cada libro tiene una **estructura fija de seis partes** con huecos (roles, lugares y elementos). Antes de escribir una sola frase, el motor llena cada hueco con un valor del catálogo **compatible** con los demás. Lo que cambia entre cuentos son los personajes, los lugares, las pruebas, los regalos y los objetivos; la lógica de causa y efecto se mantiene siempre.
+El generador funciona sin conexión, sin modelos de lenguaje y sin servicios externos. Cada libro ofrece varias **estructuras de seis partes**. Al generar un cuento, el motor elige una estructura y llena sus huecos (roles, lugares y elementos) con valores del catálogo **compatibles** entre sí. Cambian los personajes, los lugares, las pruebas, los regalos y los objetivos, pero la cadena de causa y efecto se mantiene siempre. La app evita repetir la misma estructura en dos cuentos seguidos del mismo libro.
 
-## Huecos de cada historia
+## Huecos y reglas
 
-| Hueco | Qué es | Reglas de compatibilidad |
+| Hueco | Valores | Reglas |
 | --- | --- | --- |
-| Protagonista y amigo | Dos personajes del catálogo | Cada personaje declara sus habilidades (`ABILITIES`): volar, nadar, trepar, fuerza, pequeño, alto, saltar, olfato, oído, luz o magia. Delfín, ballena, sirena y pulpo solo viven historias junto al agua o bajo ella. |
-| Consejero | Abuela sabia, sabio, Merlín, maga, bruja amable, hada, espíritu del árbol o tortuga (Aventura); también panda, koala y elefanta (Relax); el búho Olmo (Acción) | Nunca coincide con el protagonista ni con el amigo. |
-| Villano | Trol gruñón, fantasma miedoso, cuervo coleccionista, gata pirata, ogro glotón, duende travieso, araña tejedora y gigante despistado | Cada uno tiene guaridas posibles, lo que suele llevarse, un motivo comprensible y una solución que responde a ese motivo. |
-| Lugar de inicio y final | El hogar | El problema o la fiesta pertenecen a ese hogar, y el cuento vuelve a él. |
-| Lugar de aventura | El destino | Solo los destinos donde puede estar el elixir o la guarida del villano. |
-| Pruebas | Agua ancha, corriente, grieta, altura, viento, hielo, niebla, laberinto, puerta cerrada, pasadizo oscuro, noche, zarzas, lluvia o desierto | Cada lugar declara qué pruebas permite su terreno (`PLACE_INFO`). No hay hielo en la playa ni grietas en el reino de las nubes. |
-| Regalo | Cuerda, barquito, botas, brújula, mapa, ovillo, llave, farol, telescopio o paraguas | El consejero entrega el regalo que resuelve la primera prueba, y se usa después de entregarlo. |
-| Elixir | Semilla de luz, cristal del sol, gota cantora, pluma de lluvia, campanita de luna, perla de las mareas, caracola de las canciones, manzana dorada, bellota del roble eterno, flor del arcoíris, nube de los sueños, miel de las abejas doradas y molinillo de los vientos | Cada elixir resuelve un problema concreto del hogar, pide una virtud para dejarse llevar y explica la enseñanza final. |
+| Protagonista y amigo | 76 personajes (56 animales y 20 de fantasía) | Cada uno declara sus habilidades (`ABILITIES`): volar, nadar, trepar, fuerza, pequeño, alto, saltar, olfato, oído, luz o magia. Delfín, ballena, sirena y pulpo solo viven historias junto al agua. Las parejas incluyen al menos un nombre masculino para que «los dos» concuerde. |
+| Consejero | Abuela sabia, sabio, Merlín, maga, bruja amable, hada, espíritu del árbol, tortuga, panda, koala, elefanta; Olmo en «El robo» | Nunca coincide con la pareja protagonista. |
+| Villano | 16 villanos suaves | Cada uno tiene guaridas, lo que suele llevarse, un motivo comprensible y una oferta que responde a ese motivo. |
+| Secundarios | 8 crías, 8 vecinos y 8 mascotas | Las crías tienen madre o padre en el catálogo y un hábitat; los vecinos, un lugar de trabajo; las mascotas, cuidados y escondites propios. |
+| Lugares | 76 escenarios | Cada lugar declara el terreno y las pruebas que permite (`PLACE_INFO`). Las habitaciones de la casa y los paisajes de sueño no tienen pruebas. |
+| Pruebas y regalos | 14 pruebas, 10 regalos | Un regalo solo se usa después de entregarse; una habilidad solo la usa quien la tiene. |
+| Elementos | 116 objetos | Una página dibuja únicamente los objetos que nombra su frase (`ITEM_WORDS`). |
 
-## Las cinco estructuras
+## Las 33 estructuras
 
-| Libro | Partes |
+### Aventura (6)
+
+| Estructura | Partes |
 | --- | --- |
-| Aventura | 1. Hogar y problema · 2. Consejero, rumbo y regalo · 3. Viaje y primera prueba (resuelta con el regalo) · 4. Segunda prueba (resuelta con la habilidad del amigo) y hallazgo · 5. La virtud que gana el elixir y el regreso · 6. El elixir resuelve el problema y la enseñanza |
-| Acción | 1. Fiesta en el hogar y robo del villano · 2. Olmo cuenta dónde vive el villano y da un regalo · 3. Olmo muere en paz y la despedida · 4. Viaje y prueba (resuelta con el regalo de Olmo) · 5. Encuentro, motivo del villano y redención · 6. Devolución, la fiesta y el recuerdo de Olmo |
-| Relax | 1. Un deseo en un lugar tranquilo · 2. Un intento con prisa y el sentimiento que deja · 3. Respiración guiada · 4. Llega el consejero con una enseñanza · 5. Un intento con calma y su resultado · 6. Regreso a casa, la moraleja y dormir |
-| Amigos | 1. La idea en casa y la invitación · 2. Preparación en el lugar · 3. Una complicación y una propuesta · 4. La propuesta funciona y el amigo aporta su idea · 5. El nombre, el disfrute y el recuerdo · 6. Regreso a casa y lo aprendido |
-| Mi familia | Igual que Amigos, con el familiar elegido. Con un bebé, las frases se adaptan a lo que un bebé puede hacer. |
+| El elixir | Problema en casa · consejero, rumbo y regalo · viaje y prueba con el regalo · prueba con la habilidad del amigo y hallazgo · la virtud que gana el elixir y el regreso · el elixir resuelve el problema |
+| El rescate | Una madre o padre pide ayuda · rastro de la cría · prueba con el regalo · se oye a la cría y una habilidad la alcanza · consuelo y regreso · reencuentro |
+| El mapa de tres pistas | Mapa en el baúl del desván · pergamino con una adivinanza · prueba y piedra de luna · tercera adivinanza · la piedra abre el cofre · el tesoro se comparte |
+| El encargo | Un vecino pide llevar algo frágil · el camino y el cruce · una prueba · el objeto corre peligro y se salva · entrega a otro vecino · regreso y gratitud |
+| Lejos de casa | Una criatura lejos de su hábitat · cómo transportarla · prueba en el camino · su familia la recibe · un regalo de su mundo · cartas y amistad |
+| La gran pregunta | Una pregunta en casa · el consejero indica dónde mirar · prueba · observación · respuesta sencilla y verdadera · una pregunta nueva |
+
+### Acción (6)
+
+| Estructura | Partes |
+| --- | --- |
+| El robo y la redención | Fiesta y robo · Olmo y su regalo · Olmo muere en paz y la despedida · viaje y prueba · motivo y redención · la fiesta y el recuerdo de Olmo |
+| La defensa del hogar | Aviso de un vecino · trampa inofensiva · llegada del villano · la trampa falla a medias y alguien habla con calma · motivo y redención · fiesta |
+| El hechizo | Un hechizo sobre el hogar · receta del consejero · viaje y prueba · el ingrediente · la poción rompe el hechizo y el villano cuenta su motivo · redención |
+| La carrera tramposa | Reto de un rival presumido · entrenamiento · la trampa · la trampa se vuelve contra quien la hizo · el héroe se para a ayudar · medallas para todos |
+| El rescate en la guarida | Un villano solitario se lleva a una cría · viaje y prueba · entrar sin hacer ruido · la huida y el llanto del villano · una amistad prometida · reencuentro |
+| El falso villano | Algo raro pasa en casa · todos culpan al vecino «raro» · pistas con la lupa · vigilancia nocturna · la causa real · disculpas y amistad |
+
+### Relax (7)
+
+| Estructura | Partes |
+| --- | --- |
+| La prisa | Deseo · intento con prisa · respiración · consejo · intento con calma · moraleja y sueño |
+| Buenas noches a todo | Pijamada sin sueño · buenas noches a las cosas y a los animales de la noche · de vuelta a la cama · respiración · sueño |
+| El ruido de la noche | Rutina de dormir · un ruido y lo que parece · respiración · ir a mirar juntos · la causa inofensiva · sueño |
+| La fábula de contraste | Liebre y tortuga, la cigarra y la hormiga, o el león y el ratón, con parejas del catálogo que encajan · moraleja · sueño |
+| El viaje del sueño | En la cama · una nube, un barquito, un avión de papel o la luna llevan a tres paisajes de sueño, con una respiración en cada uno · de vuelta a la cama |
+| Tres cosas bonitas | Pijamada · tres recuerdos del día, cada uno en su lugar · gratitud · sueño |
+| La preocupación que se encoge | Una preocupación para mañana · visita del consejero · caja, piedra lisa o tarro de la calma · un plan pequeño · sueño |
+
+### Amigos (6)
+
+| Estructura | Partes |
+| --- | --- |
+| El plan compartido | Idea · preparación · complicación · solución · disfrute · recuerdo |
+| El amigo nuevo | Llega alguien tímido · el primer intento falla · algo en común · juegan · invitación a casa · amistad |
+| La pelea | Discusión · cada uno en su casa · calma y reflexión · se buscan y se piden perdón · solución justa · algo creado juntos |
+| La sorpresa | Un motivo para celebrar a un amigo · compras en secreto · un imprevisto salvado · la sorpresa · fiesta · gratitud |
+| Todos juegan | Un juego que necesita una habilidad que el amigo no tiene · tristeza · un juego nuevo donde cada habilidad encuentra algo · todos juegan |
+| La competición amistosa | Concurso · ventaja · tropieza el amigo · ayudar en vez de ganar · premio a la amistad |
+
+### Mi familia (8)
+
+Actividad juntos · La primera vez · Ayudantes de casa · El día al revés · Cuando era pequeño · La espera · El enfado y el abrazo · El huésped peludo (la mascota de un vecino). Si el familiar elegido es un bebé, cada frase en la que participa tiene su versión de bebé.
 
 ## Duración
 
-Cada parte tiene nueve frases escritas en orden de lectura y marcadas en tres niveles. El cuento de 3 minutos usa el nivel 1 (tres frases por parte), el de 6 minutos añade el nivel 2 y el de 9 minutos añade el nivel 3. Las versiones cortas solo quitan frases; nunca cambian el orden de las que quedan. Por eso el cuento de 3 minutos ya cuenta la historia completa, y los largos añaden detalles sin romper la continuidad. Así salen 18, 36 o 54 páginas, cada una con una frase de 6 a 24 palabras.
-
-## Ilustraciones
-
-Cada página dibuja su escenario, los personajes que actúan y solo los elementos que su frase nombra. El villano aparece en las páginas donde actúa, con su dibujo de `public/art/villains.png`.
+Cada parte tiene nueve frases en orden de lectura y en tres niveles. Los cuentos de 3 minutos usan el nivel 1; los de 6 añaden el 2, y los de 9, el 3. Las versiones cortas solo quitan frases, nunca cambian el orden de las que quedan. Cada página tiene una frase de 6 a 24 palabras, y cada minuto de lectura suma entre 50 y 90 palabras.
 
 ## Pruebas automáticas
 
-`npm test` genera miles de cuentos y comprueba, entre otras cosas: que el regalo se entrega antes de usarse; que la habilidad que resuelve una prueba pertenece al personaje que la usa; que las pruebas son posibles en ese terreno; que el elixir resuelve el problema del inicio; que el villano cuenta su motivo y que la solución responde a él; que Olmo no reaparece después de su muerte; que los animales marinos no salen del agua; que cada página solo dibuja lo que nombra; que la gramática y las contracciones son correctas, y que las versiones cortas conservan el orden de las largas.
+`npm test` genera más de 40.000 cuentos y comprueba, entre otras cosas, lo siguiente:
+
+- Las 33 estructuras y todos sus objetivos son alcanzables.
+- Cada estructura cuenta sus causas antes que sus efectos.
+- El regalo se entrega antes de usarse, y las habilidades pertenecen a quien las usa.
+- Los villanos aparecen en las páginas donde actúan y cuentan su motivo.
+- Olmo solo muere en «El robo» y no reaparece después.
+- Los animales marinos no salen del agua.
+- Cada página dibuja solo lo que nombra.
+- No hay errores de concordancia ni de contracciones, y no aparecen nombres repetidos.
+- Las versiones cortas conservan el orden de las largas.
+- Todo el arte del catálogo aparece en algún cuento.

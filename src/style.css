@@ -175,3 +175,6 @@ body.reading #app{height:100dvh;min-height:100dvh;overflow:hidden}
 .scene-views span{display:block;font-size:9px;line-height:1.4;color:#958575;margin-top:2px}
 @media(max-width:520px){.world-gallery strong{font-size:14px}.world-gallery li>span{font-size:8px}}
 @media(max-width:520px){.scene-gallery{grid-template-columns:1fr;gap:22px}.scene-views{gap:8px;max-width:340px}.scene-views span{font-size:10px}}
+/* Six character groups wrap instead of overflowing on a phone. */
+.character-dialog .catalog-filters{flex-wrap:wrap}
+@media(max-width:520px){.character-dialog .catalog-filters button{padding:8px 11px;font-size:11px}}

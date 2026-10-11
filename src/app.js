@@ -1,4 +1,4 @@
-import { BOOKS, CHARACTERS, CHARACTER_ATLASES, VILLAINS, VILLAIN_ATLASES, PENDING_ART } from './story-engine.js';
+import { BOOKS, CHARACTERS, CHARACTER_ATLASES, VILLAINS, VILLAIN_ATLASES, SUPPORTING, SUPPORTING_ATLASES, PENDING_ART } from './story-engine.js';
 import { generateFreshStory, normalizeStoryHistory, rememberStory } from './story-selection.js';
 import { SCENES, ITEMS, WORLD_ATLASES, SCENE_VIEW_LABELS, getScene, getSceneView, getSceneViewIndex, getItem } from './world-catalog.js';
 import { HAIRSTYLES, OUTFITS, SKIN_TONES, FAVORITE_COLORS, FAMILY_ROLES, createDefaultFamily, createFamilyMember, normalizeFamily, renderHuman } from './family-characters.js';
@@ -49,7 +49,9 @@ const iconPaths = {
   'music-off': '<path d="M9 17V5l11-2v12"/><ellipse cx="6" cy="17" rx="3" ry="2"/><ellipse cx="17" cy="15" rx="3" ry="2"/><path d="m3 3 18 18"/>',
 };
 function icon(name, cls = '') { return `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconPaths[name] || iconPaths.sparkle}</svg>`; }
-const PORTRAIT_ATLASES = { ...CHARACTER_ATLASES, ...VILLAIN_ATLASES };
+const PORTRAIT_ATLASES = { ...CHARACTER_ATLASES, ...VILLAIN_ATLASES, ...SUPPORTING_ATLASES };
+const PORTRAITS = [...CHARACTERS, ...SUPPORTING, ...VILLAINS];
+const isSupporting = character => SUPPORTING.some(entry => entry.id === character?.id);
 // Registered characters whose painting has not been added yet stay out of the illustrations.
 const hasArt = character => !PENDING_ART.includes(PORTRAIT_ATLASES[character.atlas.sheet || 'main'].file);
 function atlasStyle(cell, registry) {
@@ -60,7 +62,7 @@ function atlasStyle(cell, registry) {
 function sprite(id, { interactive = false, extra = '', label } = {}) {
   const human = [...(state.story?.characters || []), ...state.family.members].find(c => c?.id === id && c.kind === 'human');
   if (human) return humanSprite(human, { interactive, extra, label });
-  const char = CHARACTERS.find(c => c.id === id) || VILLAINS.find(c => c.id === id);
+  const char = PORTRAITS.find(c => c.id === id);
   if (!char || !hasArt(char)) return '';
   const style = atlasStyle(char.atlas, PORTRAIT_ATLASES);
   return interactive
@@ -109,10 +111,12 @@ function getLastStory() {
     if (s.characters != null && !Array.isArray(s.characters)) return null;
     if (s.bookId === 'family') {
       if (!Array.isArray(s.characters) || !s.characters.length || s.hero.id !== 'family-child') return null;
-      const cast = normalizeFamily({ members: s.characters }).members;
-      if (!s.pages.every(page => page.characters.every(id => cast.some(person => person.id === id)))) return null;
+      // Neighbors and pets can visit a family story; only relatives go through the family profiles.
+      const extras = s.characters.filter(isSupporting);
+      const cast = normalizeFamily({ members: s.characters.filter(person => !isSupporting(person)) }).members;
+      if (!s.pages.every(page => page.characters.every(id => cast.some(person => person.id === id) || extras.some(person => person.id === id)))) return null;
       s.family = normalizeFamily(s.family || { members: cast });
-      s.characters = cast;
+      s.characters = [...cast, ...extras];
       s.hero = cast[0];
       s.companion = cast.find(person => person.id === s.companion?.id) || null;
     }
@@ -139,7 +143,7 @@ function renderHome() {
         <div class="shelf-caption">Cinco mundos por descubrir ${icon('sparkle')}</div>
       </section>
       <div class="little-note"><div class="note-illustration">${sprite('mouse')}<span class="little-flower" aria-hidden="true">✳</span></div><div><h2>La misma magia.<br>Siempre un cuento nuevo.</h2><p>De 3, 6 o 9 minutos.<br>Para leer despacito y muy cerquita.</p></div></div>
-      <button class="catalog-entry" data-action="catalog">${icon('sparkle')} Conoce a los ${CHARACTERS.length} personajes ${icon('arrow')}</button>
+      <button class="catalog-entry" data-action="catalog">${icon('sparkle')} Conoce a los ${PORTRAITS.length} personajes ${icon('arrow')}</button>
       <button class="catalog-entry world-entry" data-action="world-catalog">${icon('compass')} Explora escenarios y elementos ${icon('arrow')}</button>
       ${last ? `<button class="resume-story" data-action="resume">${icon('book')}<span>Seguir leyendo<small>${escape(last.title)}</small></span>${icon('arrow')}</button>` : ''}
       <footer class="library-footer">${icon('heart')} Hecho para compartir con los que más quieres</footer>
@@ -147,14 +151,15 @@ function renderHome() {
     </main>`;
   updateOfflineStatus();
 }
+const CATALOG_GROUPS = [['animal', 'Animales'], ['fantasy', 'Fantasía'], ['baby', 'Crías'], ['pet', 'Mascotas'], ['town', 'Vecinos'], ['villain', 'Villanos']];
 function showCharacterCatalog(category = 'animal') {
-  if (!['animal', 'fantasy'].includes(category)) category = 'animal';
-  const characters = CHARACTERS.filter(character => character.category === category);
+  if (!CATALOG_GROUPS.some(([id]) => id === category)) category = 'animal';
+  const characters = PORTRAITS.filter(character => character.category === category);
   dialog.className = 'character-dialog';
   dialog.innerHTML = `<button class="icon-button dialog-close" data-action="close-dialog" aria-label="Cerrar">${icon('close')}</button>
     <div class="catalog-heading"><span class="eyebrow">NUEVOS AMIGOS POR DESCUBRIR</span><h2 id="dialog-title">Muchos personajes.<br><em>Infinitos encuentros.</em></h2><p>En cada cuento puedes conocer a alguien nuevo.<br>Toca un personaje para escuchar su sonido.</p></div>
-    <div class="catalog-filters" role="group" aria-label="Categoría de personajes">${[['animal', 'Animales'], ['fantasy', 'Fantasía']].map(([id, name]) => `<button type="button" data-action="catalog-filter" data-category="${id}" aria-pressed="${category === id}">${name}<span>${CHARACTERS.filter(character => character.category === id).length}</span></button>`).join('')}</div>
-    <ul class="character-gallery" aria-label="${category === 'animal' ? 'Personajes animales' : 'Personajes de fantasía'}">${characters.map(character => `<li>${sprite(character.id, { interactive: true, label: character.name })}<strong>${escape(character.name)}</strong><span>${escape(character.label)}</span></li>`).join('')}</ul>`;
+    <div class="catalog-filters" role="group" aria-label="Categoría de personajes">${CATALOG_GROUPS.map(([id, name]) => `<button type="button" data-action="catalog-filter" data-category="${id}" aria-pressed="${category === id}">${name}<span>${PORTRAITS.filter(character => character.category === id).length}</span></button>`).join('')}</div>
+    <ul class="character-gallery" aria-label="Personajes: ${escape(CATALOG_GROUPS.find(([id]) => id === category)[1])}">${characters.map(character => `<li>${sprite(character.id, { interactive: true, label: character.name })}<strong>${escape(character.name)}</strong><span>${escape(character.label)}</span></li>`).join('')}</ul>`;
   if (!dialog.open) dialog.showModal();
   else dialog.querySelector(`[data-category="${category}"]`)?.focus({ preventScroll: true });
 }
@@ -180,7 +185,7 @@ function chooseBook(bookId) {
     <div class="setup-body"><span class="eyebrow">UN RATITO PARA LEER JUNTOS</span><h2 id="dialog-title">¿Cuánto dura<br><em>la magia de hoy?</em></h2><p>${escape(p.copy)}</p>
     <fieldset class="duration-options"><legend class="sr-only">Duración aproximada del cuento</legend>${[3, 6, 9].map((duration, i) => `<label class="duration-option"><input type="radio" name="duration" value="${duration}" ${state.duration === duration ? 'checked' : ''}><span class="duration-number">${duration}<small>minutos</small></span><span class="duration-label">${['Un cuentito', 'Un ratito más', 'Una gran historia'][i]}</span></label>`).join('')}</fieldset>
     <span class="duration-footnote">Tiempo aproximado de lectura en voz alta</span>
-    ${bookId === 'action' ? `<p class="action-note">Una historia sobre el valor y la pérdida: un personaje querido muere, tratado con delicadeza y sin violencia gráfica.</p>` : ''}
+    ${bookId === 'action' ? `<p class="action-note">Historias de valor con villanos que cambian. Algunas tratan la pérdida: un personaje anciano muere, con delicadeza y sin violencia gráfica.</p>` : ''}
     <button class="primary-button" data-action="generate">${icon('sparkle')} Generar cuento ${icon('arrow')}</button></div>`;
   dialog.showModal();
 }
@@ -296,7 +301,7 @@ function pageHTML(page, i) {
   const cast = s.characters || [s.hero, s.companion, s.guardian].filter(Boolean);
   const characters = [...new Set(page.characters)].filter(id => cast.some(c => c.id === id) || CHARACTERS.some(c => c.id === id))
     .filter(id => { const person = cast.find(c => c.id === id); return !person || person.kind === 'human' || hasArt(person); }).slice(0, 3);
-  const labelFor = id => cast.find(c => c?.id === id)?.name || CHARACTERS.find(c => c.id === id)?.name;
+  const labelFor = id => cast.find(c => c?.id === id)?.name || PORTRAITS.find(c => c.id === id)?.name;
   const elements = (Array.isArray(page.objects) ? page.objects : []).filter(id => getItem(id)).slice(0, 2);
   const viewIndex = getSceneViewIndex(s.pages, page.sourceIndex ?? i);
   return `<article class="storybook-page paper-page" data-page-index="${i + 1}"><div class="page-inner"><div class="page-art ${characters.length > 2 ? 'three-characters' : ''} ${elements.length ? 'has-objects' : ''} ${characters.length ? '' : 'no-characters'}">${page.scene ? place(page.scene, true, viewIndex) : ''}<div class="page-characters">${characters.map(id => sprite(id, { interactive: true, label: labelFor(id) })).join('')}</div><div class="page-objects">${elements.map(objectSprite).join('')}</div></div><div class="page-copy">${page.paragraphs.map(text => `<p>${escape(text)}</p>`).join('')}</div><span class="page-number">${i + 1}</span></div></article>`;

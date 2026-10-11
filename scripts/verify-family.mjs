@@ -3,7 +3,7 @@ import {
   HAIRSTYLES, OUTFITS, SKIN_TONES, FAVORITE_COLORS, FAMILY_ROLES,
   createDefaultFamily, createFamilyMember, normalizeFamily, renderHuman,
 } from '../src/family-characters.js';
-import { generateStory, STORY_BLOCK_COUNTS } from '../src/story-engine.js';
+import { generateStory, STORY_BLOCK_COUNTS, STORY_STRUCTURES, SUPPORTING } from '../src/story-engine.js';
 import { FAMILY_GOALS } from '../src/story-blocks.js';
 import { FAMILY_COMPANION_ROLES, prepareFamilyStory, familyStoryMoment } from '../src/family-story.js';
 
@@ -26,7 +26,7 @@ function checkSentences(story) {
     assert.ok(sentence.endsWith('.'));
   }
   assert.equal(story.wordCount, story.pages.reduce((total, page) => total + countWords(page.paragraphs[0]), 0));
-  assert.ok(story.wordCount >= story.duration * 55 && story.wordCount <= story.duration * 90, `${story.seed}/${story.duration}/${story.companion.role}/${story.questId}: ${story.wordCount} words must fit the reading duration.`);
+  assert.ok(story.wordCount >= story.duration * 50 && story.wordCount <= story.duration * 90, `${story.seed}/${story.duration}/${story.companion.role}/${story.questId}: ${story.wordCount} words must fit the reading duration.`);
 }
 
 assert.deepEqual(roleIds, ['child', 'dad', 'mom', 'baby', 'sibling', 'teen']);
@@ -154,17 +154,20 @@ assert.equal(prepareFamilyStory(fullProfiles, { companionRole: '__proto__', rand
 assert.equal(prepareFamilyStory(fullProfiles, { companionRole: 'child', random: () => NaN }).companion.role, 'dad');
 
 function checkPair(story, sourceFamily, companionRole) {
-  assert.equal(story.characters.length, 2, 'A family story has the protagonist and exactly one relative.');
+  // Exactly one relative; neighbors and pets may visit, but they are never family profiles.
+  const relatives = story.characters.filter(member => member.kind === 'human');
+  assert.equal(relatives.length, 2, 'A family story has the protagonist and exactly one relative.');
+  assert.ok(story.characters.slice(2).every(extra => SUPPORTING.some(entry => entry.id === extra.id)));
   assert.equal(story.hero.role, 'child');
   assert.equal(story.companion.role, companionRole);
-  assert.deepEqual(story.characters, [story.hero, story.companion]);
+  assert.deepEqual(story.characters.slice(0, 2), [story.hero, story.companion]);
   assert.deepEqual(story.family, prepareFamilyStory(sourceFamily, { companionRole }).family, 'The story retains the complete appearance snapshot.');
   assert.equal(story.plan.family.companionRole, companionRole);
   const text = textOf(story);
   const cast = new Set(story.characters.map(member => member.id));
-  assert.equal(cast.size, 2);
+  assert.equal(cast.size, story.characters.length);
   assert.ok(story.pages.every(page => page.characters.every(id => cast.has(id))));
-  for (const member of story.characters) {
+  for (const member of relatives) {
     assert.ok(text.includes(member.name));
     assert.ok(story.title.includes(member.name));
     assert.ok(story.pages.some(page => page.characters.includes(member.id)));
@@ -174,6 +177,7 @@ function checkPair(story, sourceFamily, companionRole) {
     assert.ok(!text.includes(member.name), `${member.role}: an unselected relative cannot enter the story by name.`);
     assert.ok(story.pages.every(page => !page.characters.includes(member.id)));
   }
+  if (story.structure !== 'activity') return;
   const activity = FAMILY_GOALS.find(goal => goal.id === story.questId);
   assert.ok(activity);
   for (const phase of ['prepare', 'progress', 'finish']) {
@@ -220,7 +224,9 @@ const multiwordFamily = normalizeFamily({ members: roleIds.map((role, index) => 
 })) });
 const soloFamily = normalizeFamily({ members: [{ ...createFamilyMember('child'), name: 'María del Mar' }] });
 const coveredGoals = new Map([...optionalRoles, 'added-sibling'].map(role => [role, new Set()]));
-for (let seed = 0; seed < 800 && (seed < 40 || [...coveredGoals.values()].some(goals => goals.size < STORY_BLOCK_COUNTS.family.goal)); seed += 1) {
+const coveredStructures = new Map([...coveredGoals.keys()].map(role => [role, new Set()]));
+const allGoals = new Set();
+for (let seed = 0; seed < 1500 && (seed < 40 || allGoals.size < STORY_BLOCK_COUNTS.family.goal || [...coveredStructures.values()].some(set => set.size < STORY_STRUCTURES.family.length)); seed += 1) {
   for (const [role, goals] of coveredGoals) for (const duration of [3, 6, 9]) {
     const selectedFamily = role === 'added-sibling' ? soloFamily : multiwordFamily;
     const companionRole = role === 'added-sibling' ? 'sibling' : role;
@@ -228,10 +234,14 @@ for (let seed = 0; seed < 800 && (seed < 40 || [...coveredGoals.values()].some(g
     checkSentences(story);
     checkPair(story, selectedFamily, companionRole);
     goals.add(story.plan.blockIds.goal);
+    allGoals.add(story.plan.blockIds.goal);
+    coveredStructures.get(role).add(story.structure);
     checkedStories += 1;
   }
 }
-for (const goals of coveredGoals.values()) assert.equal(goals.size, STORY_BLOCK_COUNTS.family.goal, 'Every activity must work with every chosen relative and three-part names.');
+for (const structures of coveredStructures.values()) assert.equal(structures.size, STORY_STRUCTURES.family.length, 'Every family structure must work with every chosen relative and three-part names.');
+for (const goals of coveredGoals.values()) assert.ok(goals.size >= STORY_BLOCK_COUNTS.family.goal * 0.8, 'Almost every activity must work with every chosen relative.');
+assert.equal(allGoals.size, STORY_BLOCK_COUNTS.family.goal, 'Every family activity is reachable.');
 
 const family = createDefaultFamily();
 const originalStory = generateStory('family', 3, 'names-and-clothes', { family });

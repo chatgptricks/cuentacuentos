@@ -105,7 +105,7 @@ for (const [filename, columns, rows] of atlases) {
   validateTransparency(png, filename, width, height, columns, rows);
   validated += 1;
 }
-for (const filename of ['character-catalog.js', 'world-catalog.js', 'villain-catalog.js', 'narrative-world.js', 'quest-catalog.js', 'story-engine.js', 'story-blocks.js', 'story-language.js', 'story-selection.js', 'family-characters.js', 'family-story.js', 'app.js', 'audio.js', 'style.css']) await readFile(path.join(root, 'src', filename));
+for (const filename of ['character-catalog.js', 'world-catalog.js', 'villain-catalog.js', 'supporting-catalog.js', 'narrative-world.js', 'quest-catalog.js', 'story-kit.js', 'structures-adventure.js', 'structures-action.js', 'structures-relax.js', 'structures-social.js', 'structures-family.js', 'story-engine.js', 'story-blocks.js', 'story-language.js', 'story-selection.js', 'family-characters.js', 'family-story.js', 'app.js', 'audio.js', 'style.css']) await readFile(path.join(root, 'src', filename));
 await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 await cp(path.join(root, 'public'), dist, { recursive: true });
