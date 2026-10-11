@@ -1,54 +1,48 @@
-# Música instrumental de Cuentacuentos
+# Música de Cuentacuentos
 
-Cuatro grabaciones musicales compuestas y publicadas por sus autores reemplazan la música generada mediante osciladores. Los fragmentos se eligieron para acompañar la lectura: piano y cuerdas para Aventura y Acción, piano ambiental para Relax, y ukelele con guitarra para Amigos. Mi familia comparte la pista tranquila de Relax.
+Relax y Mi familia usan **Luz de casa**; Amigos usa **De tu lado**. Ambas son composiciones creadas para la app con muestras de piano acústico real. Sustituyen a Reverie y Carefree; sus melodías y arreglos anteriores no se reutilizan. Aventura y Acción conservan sus pistas instrumentales.
 
-## Fuentes y atribución
+## Composiciones originales
 
-Fuentes oficiales y licencias verificadas el 11 de octubre de 2026. Todas las pistas están publicadas bajo [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/), que permite copiar y adaptar con atribución, enlace a la licencia e indicación de los cambios.
-
-| Uso | Archivo | Obra y autor | Fuente oficial |
+| Libro | Obra | Archivo | Partitura, fuentes y proceso |
 | --- | --- | --- | --- |
-| Aventura | `public/audio/music-adventure.mp3` | Castles in the Sky — Scott Buckley | [Ficha y licencia](https://www.scottbuckley.com.au/library/castles-in-the-sky/) · [MP3 original](https://www.scottbuckley.com.au/library/wp-content/uploads/2021/11/sb_castlesinthesky.mp3) |
-| Acción | `public/audio/music-action.mp3` | Childhood — Scott Buckley | [Ficha y licencia](https://www.scottbuckley.com.au/library/childhood/) · [MP3 original](https://www.scottbuckley.com.au/library/wp-content/uploads/2019/01/sb_childhood.mp3) |
-| Relax / Mi familia | `public/audio/music-relax.mp3` | Reverie — Scott Buckley | [Ficha y licencia](https://www.scottbuckley.com.au/library/reverie/) · [MP3 original](https://www.scottbuckley.com.au/library/wp-content/uploads/2020/03/sb_reverie.mp3) |
-| Amigos | `public/audio/music-friends.mp3` | Carefree — Kevin MacLeod | [Ficha y licencia](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037) · [MP3 original](https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3) |
+| Relax y Mi familia | Luz de casa | `music-relax-original.mp3` | [music-original-relax.md](music-original-relax.md) |
+| Amigos | De tu lado | `music-friends-original.mp3` | [music-original-friends.md](music-original-friends.md) |
 
-Créditos que deben conservarse y estar disponibles desde la app:
+- Composición y arreglo: Cuentacuentos; interpretación digital mediante notas grabadas
+- Instrumento: **Salamander Grand Piano v3**, de **Alexander Holm**, piano acústico Yamaha C5
+- Fuente del instrumento: [repositorio sfzinstruments](https://github.com/sfzinstruments/SalamanderGrandPiano), revisión `3382bf9496bba2486f5ab0de55a264d1dfc38404`
+- Licencia de las muestras: [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
+- Las notas se distribuyen en nuevas secuencias, con dinámica, afinación, mezcla y repetición preparadas para esta app. No se distribuye el instrumento completo
 
-- “Castles in the Sky” by Scott Buckley — released under CC-BY 4.0. [www.scottbuckley.com.au](https://www.scottbuckley.com.au/library/castles-in-the-sky/)
-- “Childhood” by Scott Buckley — released under CC-BY 4.0. [www.scottbuckley.com.au](https://www.scottbuckley.com.au/library/childhood/)
-- “Reverie” by Scott Buckley — released under CC-BY 4.0. [www.scottbuckley.com.au](https://www.scottbuckley.com.au/library/reverie/)
-- “Carefree” Kevin MacLeod ([incompetech.com](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037)). Licensed under Creative Commons: By Attribution 4.0 License
-- [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Fragmentos recortados, normalizados y adaptados para repetición
+Luz de casa deja espacios amplios entre notas; De tu lado usa frases cortas que se responden. Las pistas usan nombres de archivo nuevos para que la biblioteca no confunda el audio anterior con el nuevo. Relax y Mi familia comparten el mismo buffer; los cuentos y las preferencias guardadas no se modifican.
 
-Scott Buckley confirma expresamente la adaptación y el uso en [Using This Music](https://www.scottbuckley.com.au/library/using-this-music/) y contempla apps y música de fondo web en su [página de licencias](https://www.scottbuckley.com.au/library/licensing/). Estas grabaciones acompañan cuentos e ilustraciones; no se presentan como un servicio de distribución musical. No deben enviarse a servicios de identificación automática como Content ID ni redistribuirse mediante plataformas de música. La atribución de Kevin MacLeod se verificó en la ficha oficial y en el [catálogo oficial](https://incompetech.com/music/royalty-free/pieces.json), ISRC `USUAN1400037`. FreePD ya está cerrado, por lo que no se utilizó como fuente.
+## Otras pistas instrumentales
 
-## Preparación de los fragmentos
+Las siguientes grabaciones están bajo [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Los créditos visibles enlazan la obra, autor, licencia e indican que los fragmentos se recortaron, normalizaron y adaptaron para repetición.
 
-Los MP3 originales se descargaron directamente desde los dominios de los autores. No hay voces ni pistas creadas mediante síntesis adicional. Las fichas oficiales describen piano, cuerdas y vibráfono en Scott Buckley; Carefree incluye ukelele, guitarra, marimba, glockenspiel y percusión ligera.
+| Libro | Archivo | Obra y autor | Fuente oficial |
+| --- | --- | --- | --- |
+| Aventura | `music-adventure.mp3` | Castles in the Sky — Scott Buckley | [Ficha](https://www.scottbuckley.com.au/library/castles-in-the-sky/) · [Original](https://www.scottbuckley.com.au/library/wp-content/uploads/2021/11/sb_castlesinthesky.mp3) |
+| Acción | `music-action.mp3` | Childhood — Scott Buckley | [Ficha](https://www.scottbuckley.com.au/library/childhood/) · [Original](https://www.scottbuckley.com.au/library/wp-content/uploads/2019/01/sb_childhood.mp3) |
 
-Los originales se decodificaron a PCM estéreo de 32 kHz. Se compararon perfiles armónicos y niveles de los extremos de fragmentos de 85–90 segundos, evitando entradas casi silenciosas. Los últimos 2,5 segundos de cada fragmento se mezclaron con los primeros 2,5 mediante una transición de potencia constante. El archivo empieza inmediatamente después del tramo inicial mezclado; así, el final enlaza con ese mismo punto al repetirlo. Un fundido de 8 ms en cada extremo elimina saltos de muestra sin introducir una pausa perceptible. El reproductor debe hacer su propia entrada y salida gradual al encender o apagar la música.
+Créditos:
 
-FFmpeg realizó normalización EBU R128 en dos pasadas, objetivo −23 LUFS, máximo −3 dBTP y LRA 9, seguida de codificación MP3 a 160 kbps estéreo y 32 kHz. El máximo es un límite, no un pico que haya que alcanzar. La medición final después de codificar queda aproximadamente en −23,4 LUFS. No se añadieron compresión agresiva, cambios de tono ni una nueva instrumentación.
+- “Castles in the Sky” by Scott Buckley — released under CC-BY 4.0. www.scottbuckley.com.au
+- “Childhood” by Scott Buckley — released under CC-BY 4.0. www.scottbuckley.com.au
+- Fragmentos recortados, normalizados y adaptados para repetición
 
-| Archivo | Intervalo original | Transición circular | Duración / `loopEnd` | LUFS finales | Pico real final |
-| --- | --- | --- | --- | --- | --- |
-| `music-adventure.mp3` | 34,0–119,0 s | 2,5 s | 82,5 s | −23,44 | −9,59 dBTP |
-| `music-action.mp3` | 8,5–93,5 s | 2,5 s | 82,5 s | −23,44 | −9,48 dBTP |
-| `music-relax.mp3` | 23,5–111,0 s | 2,5 s | 85,0 s | −23,45 | −9,97 dBTP |
-| `music-friends.mp3` | 20,5–105,5 s | 2,5 s | 82,5 s | −23,44 | −8,64 dBTP |
+Las dos pistas conservadas son estéreo de 32 kHz a 160 kb/s y duran 82,5 segundos. Sus últimos 2,5 segundos se mezclaron con el inicio para formar una transición circular. FFmpeg realizó normalización en dos pasadas a −23 LUFS, máximo −3 dBTP y LRA 9; el resultado codificado está cerca de −23,4 LUFS.
 
-`loopStart` es `0` en las cuatro pistas. FFprobe y la decodificación PCM confirman estas duraciones sin silencios añadidos. Los cuatro archivos ocupan 6.657.300 bytes en conjunto, aproximadamente 6,35 MiB; cada pista requiere unos 20–21 MiB al decodificarla a estéreo de 32 kHz y flotantes de 32 bits. Conviene mantener decodificada solo la pista activa.
+| Archivo | Intervalo original | Duración | LUFS finales | Pico real |
+| --- | --- | --- | --- | --- |
+| `music-adventure.mp3` | 34,0–119,0 s | 82,5 s | −23,44 | −9,59 dBTP |
+| `music-action.mp3` | 8,5–93,5 s | 82,5 s | −23,44 | −9,48 dBTP |
 
-## Verificación y alcance
+Scott Buckley documenta el uso en apps y adaptaciones en [Using This Music](https://www.scottbuckley.com.au/library/using-this-music/) y [Licensing](https://www.scottbuckley.com.au/library/licensing/). No se presentan estas pistas como un servicio de distribución musical.
 
-Se verificaron la correcta decodificación, estéreo, frecuencia, tasa de bits, duración, nivel integrado y picos de los archivos finales. La selección se apoyó en las descripciones de los autores y el análisis armónico y de nivel. No se dispuso de una escucha humana durante la preparación; la evaluación subjetiva del timbre y la transición debe hacerse reproduciendo la app o estos archivos.
+## Reproducción y verificación
 
-SHA-256 de los archivos finales:
+`AudioBufferSourceNode.loop` repite los buffers completos; cada inicio y parada tiene un fundido. El reproductor mantiene la salida de música separada de los efectos y retiene como máximo dos pistas decodificadas. El módulo no descarga ni reproduce audio al importarse: requiere el gesto de la persona para desbloquear Web Audio.
 
-```text
-14126b438cb00823d5367138a74c7ffc000f90f52a164e0ae62b3947f8e4b2b4  music-adventure.mp3
-cdc539d6552d44e1de03e150f82862f73f2dc46b5031cad323e347bf5cd7cfbd  music-action.mp3
-d5b18d51a6c42c21bab7d5911359a1fdca0ca33140ecd599c155e76a13b32b81  music-relax.mp3
-beb8951a6ce23bd1e3e77ebf79ff3ec8d25d06a5f3eb804e5b400d6dcb6bb9ca  music-friends.mp3
-```
+FFmpeg/ffprobe comprueban decodificación, duración y niveles. Las pruebas comprueban la reutilización de la pista tranquila en Mi familia y que silenciar, salir o cancelar una descarga no provoque música tardía. Las mediciones técnicas no certifican el gusto musical; las pistas se ofrecen para escuchar en la app y como archivos locales.

@@ -219,6 +219,7 @@ body.reading #app{height:100dvh;min-height:100dvh;overflow:hidden}
   max-width:none;height:auto;aspect-ratio:var(--art-ratio,1);transform:none;
 }
 .composition-setting .page-characters{gap:2%;padding:0 3% 4%}
+.page-art.composition-setting.has-humans{--scene-paint-height:min(calc(var(--cast-panel-width) / var(--scene-art-ratio,1)),calc(var(--cast-art-height) * 1.12));--cast-desired-height:min(255px,calc(var(--scene-paint-height) * .54))}
 .composition-setting.has-objects{--cast-width-share:.68}
 .composition-setting.has-objects .page-characters{gap:2%;padding-left:3%;padding-right:22%}
 .page-objects{gap:4%;padding:0 5% 5%}

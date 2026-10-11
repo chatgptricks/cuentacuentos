@@ -7,7 +7,7 @@ import { unlockAudio, playSound, preloadSounds, setSoundEnabled, getSoundEnabled
 import { sceneEffectHTML, mountSceneEffects } from './scene-effects.js';
 import { MUSIC_CREDITS } from './music-library.js';
 import { composePage } from './page-composition.js';
-import { characterScale } from './illustration-scale.js';
+import { characterScale, humanArtFrame } from './illustration-scale.js';
 
 const app = document.querySelector('#app');
 const dialog = document.querySelector('#dialog');
@@ -63,9 +63,9 @@ const hasArt = character => !PENDING_ART.includes(PORTRAIT_ATLASES[character.atl
 function atlasStyle(cell, registry) {
   return atlasPresentation(cell, registry);
 }
-function sprite(id, { interactive = false, extra = '', label } = {}) {
+function sprite(id, { interactive = false, extra = '', label, storyFigure = false } = {}) {
   const human = [...(state.story?.characters || []), ...state.family.members].find(c => c?.id === id && c.kind === 'human');
-  if (human) return humanSprite(human, { interactive, extra, label });
+  if (human) return humanSprite(human, { interactive, extra, label, storyFigure });
   const char = PORTRAITS.find(c => c.id === id);
   if (!char || !hasArt(char)) return '';
   const style = `${atlasStyle(char.atlas, PORTRAIT_ATLASES)};--character-scale:${characterScale(char)}`;
@@ -73,11 +73,13 @@ function sprite(id, { interactive = false, extra = '', label } = {}) {
     ? `<button type="button" class="character-sprite ${extra}" style="${style}" data-sound="${escape(char.sound)}" data-sound-label="El sonido de ${escape(label || char.name)}" aria-label="Escuchar a ${escape(label || char.name)}"></button>`
     : `<span class="character-sprite ${extra}" style="${style}" role="img" aria-label="${escape(label || char.label)}"></span>`;
 }
-function humanSprite(character, { interactive = false, extra = '', label } = {}) {
-  const art = renderHuman(character);
+function humanSprite(character, { interactive = false, extra = '', label, storyFigure = false } = {}) {
+  const frame = storyFigure ? humanArtFrame(character) : null;
+  const art = frame ? renderHuman(character).replace('viewBox="0 0 160 210"', `viewBox="${frame.viewBox}"`) : renderHuman(character);
+  const ratio = frame?.ratio ?? 160 / 210;
   return interactive
-    ? `<button type="button" class="character-sprite human-sprite ${extra}" style="--art-ratio:${160 / 210};--character-scale:${characterScale(character)}" data-sound="human" aria-label="Escuchar a ${escape(label || character.name)}">${art}</button>`
-    : `<span class="character-sprite human-sprite ${extra}" style="--art-ratio:${160 / 210};--character-scale:${characterScale(character)}" role="img" aria-label="${escape(label || character.name)}">${art}</span>`;
+    ? `<button type="button" class="character-sprite human-sprite ${extra}" style="--art-ratio:${ratio};--character-scale:${characterScale(character)}" data-sound="human" aria-label="Escuchar a ${escape(label || character.name)}">${art}</button>`
+    : `<span class="character-sprite human-sprite ${extra}" style="--art-ratio:${ratio};--character-scale:${characterScale(character)}" role="img" aria-label="${escape(label || character.name)}">${art}</span>`;
 }
 function place(scene, interactive = false, viewIndex = 0, effects = '') {
   const location = getScene(scene) || getScene('forest');
@@ -322,7 +324,8 @@ function coverHTML() {
 }
 function pageHTML(page, i) {
   const s = state.story;
-  const composition = composePage(page);
+  const sourceIndex = page.sourceIndex ?? i;
+  const composition = composePage(page, { pages: s.pages, index: sourceIndex, previousScene: s.pages[sourceIndex - 1]?.scene });
   const cast = s.characters || [s.hero, s.companion, s.guardian].filter(Boolean);
   const characters = [...new Set(composition.characters)].filter(id => cast.some(c => c.id === id) || CHARACTERS.some(c => c.id === id))
     .filter(id => { const person = cast.find(c => c.id === id); return !person || person.kind === 'human' || hasArt(person); }).slice(0, 3);
@@ -330,13 +333,16 @@ function pageHTML(page, i) {
   const elements = composition.objects.filter(id => getItem(id)).slice(0, 4);
   const castUnits = characters.map(id => {
     const character = cast.find(person => person.id === id) || PORTRAITS.find(person => person.id === id);
-    const ratio = character?.kind === 'human' ? 160 / 210 : Number(atlasStyle(character.atlas, PORTRAIT_ATLASES).match(/--art-ratio:([\d.]+)/)?.[1]) || 1;
+    const human = character?.kind === 'human';
+    const ratio = human ? humanArtFrame(character).ratio : Number(atlasStyle(character.atlas, PORTRAIT_ATLASES).match(/--art-ratio:([\d.]+)/)?.[1]) || 1;
     const scale = characterScale(character || id);
-    return { width: ratio * scale, scale };
+    return { width: ratio * scale, scale, human };
   });
-  const castStyle = `--cast-unit-width:${castUnits.reduce((sum, person) => sum + person.width, 0) || 1};--cast-max-scale:${Math.max(...castUnits.map(person => person.scale), 0) || 1}`;
   const viewIndex = getSceneViewIndex(s.pages, page.sourceIndex ?? i);
-  return `<article class="storybook-page paper-page" data-page-index="${i + 1}" data-composition="${composition.kind}"><div class="page-inner"><div class="page-art composition-${composition.kind} ${characters.length > 2 ? 'three-characters' : ''} ${elements.length ? 'has-objects' : ''} ${elements.length > 2 ? 'many-objects' : ''} ${characters.length ? '' : 'no-characters'}" style="${castStyle}">${composition.showScene && page.scene ? place(page.scene, true, viewIndex, sceneEffectHTML(page.scene, page.sourceIndex ?? i, page.paragraphs)) : ''}<div class="page-characters">${characters.map(id => sprite(id, { interactive: true, label: labelFor(id) })).join('')}</div><div class="page-objects">${elements.map(objectSprite).join('')}</div></div><div class="page-copy">${page.paragraphs.map(text => `<p>${escape(text)}</p>`).join('')}</div><span class="page-number">${i + 1}</span></div></article>`;
+  const scene = composition.showScene ? getScene(page.scene) : null;
+  const sceneRatio = scene ? Number(atlasStyle(getSceneView(scene.id, viewIndex), WORLD_ATLASES).match(/--art-ratio:([\d.]+)/)?.[1]) || 1 : 1;
+  const castStyle = `--cast-unit-width:${castUnits.reduce((sum, person) => sum + person.width, 0) || 1};--cast-max-scale:${Math.max(...castUnits.map(person => person.scale), 0) || 1};--scene-art-ratio:${sceneRatio}`;
+  return `<article class="storybook-page paper-page" data-page-index="${i + 1}" data-composition="${composition.kind}"><div class="page-inner"><div class="page-art composition-${composition.kind} ${castUnits.some(person => person.human) ? 'has-humans' : ''} ${characters.length > 2 ? 'three-characters' : ''} ${elements.length ? 'has-objects' : ''} ${elements.length > 2 ? 'many-objects' : ''} ${characters.length ? '' : 'no-characters'}" style="${castStyle}">${composition.showScene && page.scene ? place(page.scene, true, viewIndex, sceneEffectHTML(page.scene, page.sourceIndex ?? i, page.paragraphs)) : ''}<div class="page-characters">${characters.map(id => sprite(id, { interactive: true, label: labelFor(id), storyFigure: true })).join('')}</div><div class="page-objects">${elements.map(objectSprite).join('')}</div></div><div class="page-copy">${page.paragraphs.map(text => `<p>${escape(text)}</p>`).join('')}</div><span class="page-number">${i + 1}</span></div></article>`;
 }
 function endHTML() {
   const p = palettes[state.story.bookId];
@@ -510,7 +516,7 @@ async function install() {
 }
 function showAudioCredits() {
   dialog.className = 'install-dialog audio-credits-dialog';
-  dialog.innerHTML = `<button class="icon-button dialog-close" data-action="close-dialog" aria-label="Cerrar">${icon('close')}</button><div class="install-mark">${icon('music')}</div><span class="eyebrow">LA MÚSICA DE NUESTROS CUENTOS</span><h2 id="dialog-title">Créditos de audio</h2><p>Fragmentos recortados, normalizados y adaptados para repetición</p><ul class="audio-credits-list">${MUSIC_CREDITS.map(track => `<li><strong>${escape(track.title)}</strong><span>${escape(track.author)}</span><div><a href="${escape(track.url)}" target="_blank" rel="noopener noreferrer">Obra original</a><a href="${escape(track.licenseUrl)}" target="_blank" rel="noopener noreferrer">${escape(track.license)}</a></div></li>`).join('')}</ul><p><a href="./audio/LICENSES.md" target="_blank" rel="noopener noreferrer">Fuentes y licencias de los efectos grabados</a></p><button class="primary-button" data-action="close-dialog">Entendido ${icon('check')}</button>`;
+  dialog.innerHTML = `<button class="icon-button dialog-close" data-action="close-dialog" aria-label="Cerrar">${icon('close')}</button><div class="install-mark">${icon('music')}</div><span class="eyebrow">LA MÚSICA DE NUESTROS CUENTOS</span><h2 id="dialog-title">Créditos de audio</h2><p>Composiciones originales de piano y fragmentos recortados, normalizados y adaptados para repetición</p><ul class="audio-credits-list">${MUSIC_CREDITS.map(track => `<li><strong>${escape(track.title)}</strong><span>${escape(track.author)}</span><div><a href="${escape(track.url)}" target="_blank" rel="noopener noreferrer">Fuente</a><a href="${escape(track.licenseUrl)}" target="_blank" rel="noopener noreferrer">${escape(track.license)}</a></div></li>`).join('')}</ul><p><a href="./audio/LICENSES.md" target="_blank" rel="noopener noreferrer">Fuentes y licencias de los efectos grabados</a></p><button class="primary-button" data-action="close-dialog">Entendido ${icon('check')}</button>`;
   if (!dialog.open) dialog.showModal();
   else dialog.querySelector('.dialog-close')?.focus({ preventScroll: true });
 }

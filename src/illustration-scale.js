@@ -33,3 +33,13 @@ export function characterScale(character) {
   }
   return CHARACTER_SCALES[id] ?? 1;
 }
+
+/** Tight story-only frames include every hairstyle, feet and the original grounding shadow. */
+export function humanArtFrame(character) {
+  const id = typeof character === 'string' ? character : character?.id;
+  const role = character?.role || id?.replace(/^family-/, '') || 'child';
+  // The full SVG uses a different natural height per age; crop that whitespace before layout sizing.
+  const top = { dad: 10, mom: 10, teen: 14, child: 23, sibling: 23, baby: 37 }[role] ?? 23;
+  const width = 103, height = 206 - top;
+  return { viewBox: `34 ${top} ${width} ${height}`, ratio: width / height };
+}

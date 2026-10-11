@@ -86,3 +86,9 @@ Las 31 grabaciones anteriores conservan sus bytes originales y su dedicación [C
 | `owl.mp3` | Cárabo común | Le tiroir du fond | [Tawny Owl #3](https://bigsoundbank.com/tawny-owl-3-s3459.html) · [WAV](https://bigsoundbank.com/UPLOAD/bwf-en/3459.wav) | 0.000 s + 1.315 s | 22,195 B |
 | `bird.mp3` | Petirrojo | Joseph SARDIN | [Robin #1](https://bigsoundbank.com/robin-1-s1667.html) · [WAV](https://bigsoundbank.com/UPLOAD/bwf-en/1667.wav) | 0.000 s + 2.276 s | 37,660 B |
 | `purr.mp3` | Ronroneo de gato | Joseph SARDIN | [Cat Purr](https://bigsoundbank.com/cat-purr-s0436.html) · [WAV](https://bigsoundbank.com/UPLOAD/bwf-en/0436.wav) | 3.000 s + 3.200 s | 52,288 B |
+
+## Piano de «Luz de casa» y «De tu lado»
+
+`music-relax-original.mp3` y `music-friends-original.mp3` contienen nuevas composiciones y arreglos de Cuentacuentos interpretados digitalmente con muestras de **Salamander Grand Piano v3**, grabado por **Alexander Holm**, y remapeado por kinwie. Fuente: [sfzinstruments/SalamanderGrandPiano](https://github.com/sfzinstruments/SalamanderGrandPiano/tree/3382bf9496bba2486f5ab0de55a264d1dfc38404), instrumento original [Salamander Grand Piano v3](https://archive.org/details/SalamanderGrandPianoV3). Las muestras se utilizan bajo [Creative Commons Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/).
+
+Cambios: nueva secuencia musical, combinación de capas suaves, transposición y ajuste de afinación de algunas notas, dinámica y mezcla propias, preparación para repetición, procesamiento de nivel y codificación MP3. El instrumento grabado no se distribuye como paquete completo. El proceso y las fuentes exactas se documentan en [music-original-relax.md](https://github.com/chatgptricks/cuentacuentos/blob/main/docs/music-original-relax.md) y [music-original-friends.md](https://github.com/chatgptricks/cuentacuentos/blob/main/docs/music-original-friends.md).

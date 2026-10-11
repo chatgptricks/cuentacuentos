@@ -23,7 +23,7 @@ La precarga solo prepara los sonidos del cuento, limita las cargas simultáneas 
 
 ## Música instrumental
 
-Cuatro pistas musicales grabadas sustituyen las composiciones de osciladores. Aventura usa *Castles in the Sky*, Acción *Childhood*, Relax y Mi familia *Reverie* (Scott Buckley); Amigos usa *Carefree* (Kevin MacLeod). Sus fragmentos locales de aproximadamente 83–85 segundos tienen una transición circular y se repiten mediante `AudioBufferSourceNode.loop`. Los créditos visibles incluyen autor, obra, licencia y cambios; fuentes y procesamiento en [music-sources.md](music-sources.md).
+Cuatro pistas musicales grabadas sustituyen las composiciones de osciladores. Aventura usa *Castles in the Sky*, Acción *Childhood*, Relax y Mi familia *Luz de casa* (composición original con piano acústico grabado de Alexander Holm); Amigos usa *De tu lado* (otra composición original con ese piano). Las pistas locales de aproximadamente 83–96 segundos tienen una transición circular y se repiten mediante `AudioBufferSourceNode.loop`. Los créditos visibles incluyen autor, obra, licencia y cambios; fuentes y procesamiento en [music-sources.md](music-sources.md).
 
 ```js
 import { unlockAudio, startAmbient, stopAmbient, setMusicEnabled } from './audio.js';
@@ -37,7 +37,7 @@ La música tiene una salida de volumen independiente y fundidos de entrada/salid
 
 ## Presentación y efectos visuales
 
-`page-composition.js` elige entre paisaje, retrato, objeto compartido y detalle según la frase. No cambia las escenas, texto o personajes del cuento guardado. `illustration-scale.js` establece tamaños relativos de cada especie y de los familiares; los atlas originales permanecen intactos. Las ilustraciones se pueden tocar sin iconos superpuestos.
+`page-composition.js` deriva un plan del cuento completo y alterna paisajes, retratos, objetos compartidos y detalles. Cerca de la mitad de las páginas muestra locación, con prioridad para la apertura y los cambios de lugar; una compra centrada en objetos puede conservar su primer plano. No cambia las escenas, texto o personajes del cuento guardado. `illustration-scale.js` establece tamaños relativos de cada especie y de los familiares; los atlas originales permanecen intactos. En el cuento, los humanos usan un marco ajustado que incluye todos los peinados, pies y sombra. Su tamaño se calcula a partir de la altura visible de la pintura: niños cerca de la mitad de esa altura, adultos mayores y bebés menores, con una unidad común que también respeta el ancho disponible. El editor y las portadas conservan su encuadre. Las ilustraciones se pueden tocar sin iconos superpuestos.
 
 `scene-effects.js` genera niebla, luciérnagas, lluvia, nieve, reflejos, burbujas y luces sobre la pintura del escenario. La selección respeta el lugar y la frase; no llueve dentro de una casa. El canvas no captura pulsaciones, tiene resolución limitada y solo se dibuja en las hojas visibles, con un máximo de 30 fotogramas por segundo. Se pausa al ocultar la app y se desactiva con movimiento reducido. Salir del lector o reconstruirlo elimina la animación anterior.
 
