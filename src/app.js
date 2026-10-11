@@ -570,14 +570,16 @@ window.addEventListener('online', updateOfflineStatus);
 window.addEventListener('offline', updateOfflineStatus);
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; });
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
+  const prepareOfflineLibrary = async () => {
     try {
       await navigator.serviceWorker.register('./sw.js', { scope: './' });
       await navigator.serviceWorker.ready;
       offlineReady = true;
       updateOfflineStatus();
     } catch (error) { console.warn('No se pudo preparar la biblioteca sin conexión', error); }
-  });
+  };
+  if (document.readyState === 'complete') void prepareOfflineLibrary();
+  else window.addEventListener('load', prepareOfflineLibrary, { once: true });
 }
 await loadArtGeometry();
 renderHome();
