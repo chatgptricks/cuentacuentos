@@ -19,6 +19,7 @@ const state = { screen: 'home', story: null, displayPages: null, page: 0, durati
 if (![3, 6, 9].includes(state.duration)) state.duration = 3;
 let installPrompt = null;
 let toastTimer;
+let offlineReady = false;
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 function readSetting(key, fallback) { try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; } }
 function saveSetting(key, value) { try { localStorage.setItem(key, value); } catch {} }
@@ -471,7 +472,8 @@ async function install() {
 function updateOfflineStatus() {
   const el = document.querySelector('#offline-status');
   if (!el) return;
-  el.innerHTML = navigator.onLine ? '' : `${icon('leaf')} La magia sigue, incluso sin internet`;
+  el.innerHTML = !navigator.onLine ? `${icon('leaf')} La magia sigue, incluso sin internet`
+    : offlineReady ? `${icon('check')} Tu biblioteca está lista para leer sin conexión` : '';
 }
 document.addEventListener('click', async e => {
   const sound = e.target.closest('[data-sound]');
@@ -572,8 +574,8 @@ if ('serviceWorker' in navigator) {
     try {
       await navigator.serviceWorker.register('./sw.js', { scope: './' });
       await navigator.serviceWorker.ready;
-      const el = document.querySelector('#offline-status');
-      if (el && navigator.onLine) el.innerHTML = `${icon('check')} Tu biblioteca está lista para leer sin conexión`;
+      offlineReady = true;
+      updateOfflineStatus();
     } catch (error) { console.warn('No se pudo preparar la biblioteca sin conexión', error); }
   });
 }
