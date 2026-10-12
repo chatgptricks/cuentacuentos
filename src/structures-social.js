@@ -588,7 +588,7 @@ function contest({ random, hero: h, companion: c }) {
 /** Toys a friend can lend: how they are played with, how they break and how to mend them together. */
 const LENT_TOYS = [
   { id: 'kite', item: 'kite', name: 'su cometa nueva', play: 'La hizo volar muy alto, cada vez más alto.', breaks: 'Un golpe de viento enredó la cometa en una rama, y la tela se rasgó.', fix: 'Pegaron un parche de papel de colores en la tela rasgada de la cometa.', after: 'La cometa volvió a volar, con su parche como una medalla.' },
-  { id: 'scooter', item: 'scooter', name: 'su patinete rojo', play: 'Dio vueltas y más vueltas por el camino del parque.', breaks: 'Fue tan deprisa que el patinete chocó con un banco, y una rueda se soltó.', fix: 'Buscaron la tuerca entre la hierba y apretaron la rueda del patinete con cuidado.', after: 'El patinete volvió a rodar, recto y sin ruidos.' },
+  { id: 'scooter', item: 'scooter', name: 'su patinete rojo', play: 'Dio vueltas y más vueltas por el camino, cada vez más deprisa.', breaks: 'Fue tan deprisa que el patinete chocó con un banco, y una rueda se soltó.', fix: 'Buscaron la tuerca entre la hierba y apretaron la rueda del patinete con cuidado.', after: 'El patinete volvió a rodar, recto y sin ruidos.' },
   { id: 'spinning-top', item: 'spinning-top', name: 'su peonza de madera', play: 'La hizo bailar una y otra vez sobre el suelo.', breaks: 'Lanzó la peonza tan fuerte que la cuerda se rompió por la mitad.', fix: 'Ataron un cordón nuevo a la peonza con un nudo bien fuerte.', after: 'La peonza volvió a bailar, más contenta que nunca.' },
   { id: 'music-box', item: 'music-box', name: 'su caja de música', play: 'Giró la llave muchas veces para escuchar la canción.', breaks: 'La giró tanto que la caja de música dejó de sonar.', fix: 'Esperaron un rato y giraron la llave de la caja de música muy despacio.', after: 'La canción volvió a sonar, suave como siempre.' },
   { id: 'ball', item: 'ball', name: 'su pelota favorita', play: 'La botó y la lanzó hasta cansarse.', breaks: 'La pelota cayó sobre un rosal y se desinfló con un silbido.', fix: 'Taparon el agujerito de la pelota con un parche y la inflaron otra vez.', after: 'La pelota volvió a botar, alta y redonda.' },
@@ -599,14 +599,15 @@ const LENT_TOYS = [
 function borrowedToy({ random, hero: h, companion: c }) {
   const say = sayer(random);
   const toy = choose(random, LENT_TOYS);
+  const field = getScene(choose(random, ['playground', 'meadow', 'garden'].filter(id => fitsCast([h, c], id))));
   const both = [h.id, c.id];
   const pair = `${h.name} y ${c.name}`;
-  const yard = at('playground'), porch = at('porch'), room = at('bedroom');
+  const yard = at(field.id), porch = at('porch'), room = at('bedroom');
   const it = [toy.item];
   const beats = [
     [
-      yard(1, say([`Una tarde, ${named(h)} y su ${friendWord(c)} ${c.name} jugaban en el parque.`, `Una tarde de sol, ${named(h)} se encontró con su ${friendWord(c)} ${c.name} en el parque.`]), both),
-      yard(2, getScene('playground').detail),
+      yard(1, say([`Una tarde, ${named(h)} y su ${friendWord(c)} ${c.name} jugaban ${inPlace(field)}.`, `Una tarde de sol, ${named(h)} se encontró con su ${friendWord(c)} ${c.name} ${inPlace(field)}.`]), both),
+      yard(2, field.detail),
       yard(3, 'Se oían risas por todas partes.'),
       yard(1, `${c.name} había traído ${toy.name}, y ${h.name} no podía dejar de mirarlo.`.replace('mirarlo', 'mirar el juguete'), both, it),
       yard(2, `${h.name} le preguntó si se lo prestaba un rato.`, both),
@@ -667,13 +668,13 @@ function borrowedToy({ random, hero: h, companion: c }) {
       room(2, 'Porque sabían que los dos los cuidarían.', both),
       room(3, 'Y si algo se rompía, lo arreglaban juntos.', both),
       room(2, `${h.name} se tapó con la manta, ya tranquil${gendered(h, 'o', 'a')}.`, [h.id]),
-      room(3, 'La luna brillaba sobre el parque vacío.'),
+      room(3, 'La luna brillaba sobre los columpios vacíos del barrio.'),
       room(1, `Y se durmió pensando en la próxima tarde de juegos con ${c.name}.`, [h.id]),
     ],
   ];
   return {
     title: `${h.name} y el juguete prestado`, place: getScene('playground'), questId: `borrow-${toy.id}`, variantId: toy.id, beats, items: it,
-    blockIds: { opening: 'playground', goal: `borrow-${toy.id}`, obstacle: toy.id, strategy: 'truth', discovery: 'porch', ending: 'bedroom' },
+    blockIds: { opening: field.id, goal: `borrow-${toy.id}`, obstacle: toy.id, strategy: 'truth', discovery: 'porch', ending: 'bedroom' },
     roles: { home: 'porch', destination: 'playground', toy: toy.id },
   };
 }
@@ -781,6 +782,394 @@ function secretClub({ random, hero: h, companion: c }) {
   };
 }
 
+/** Team games for the park, the moment the game is decided and the mixed rematch. */
+const MATCHES = [
+  { id: 'ball', items: ['ball'], game: 'un partido de pelota', decide: 'En el último momento, el equipo de {c} metió un gol por la esquina.', rematch: 'Jugaron otro partido, esta vez mezclando los equipos.' },
+  { id: 'tug', items: ['rope'], game: 'un juego de tirar de la cuerda', decide: 'Al final, el equipo de {c} dio un último tirón y ganó por muy poquito.', rematch: 'Volvieron a tirar de la cuerda, esta vez todos mezclados.' },
+  { id: 'relay', items: ['finish-flag'], game: 'una carrera de relevos hasta la bandera', decide: 'En la última vuelta, el equipo de {c} tocó la bandera un segundo antes.', rematch: 'Hicieron otra carrera, esta vez con los equipos mezclados.' },
+  { id: 'jump', items: ['jump-rope'], game: 'un concurso de saltar a la comba por equipos', decide: 'El equipo de {c} dio un salto más, justo antes de tropezar.', rematch: 'Saltaron todos juntos otra vez, en un solo equipo enorme.' },
+];
+
+/** D9 · El partido: friends on opposite teams, a close defeat, anger, an apology and a game where everyone plays together. */
+function theMatch({ random, hero: h, companion: c }) {
+  const say = sayer(random);
+  const match = choose(random, MATCHES);
+  const field = getScene(choose(random, ['playground', 'meadow', 'festival-square'].filter(id => fitsCast([h, c], id))));
+  const both = [h.id, c.id];
+  const pair = `${h.name} y ${c.name}`;
+  const yard = at(field.id), room = at('bedroom');
+  const beats = [
+    [
+      yard(1, say([`Aquella tarde, ${inPlace(field)}, los amigos organizaron ${match.game}.`, `Un sábado, los amigos del barrio quisieron jugar ${match.game} ${inPlace(field)}.`]), [], match.items),
+      yard(2, field.detail),
+      yard(3, 'Hicieron dos equipos, con el mismo número de jugadores.'),
+      yard(1, `${named(h)} quedó en un equipo, y su ${friendWord(c)} ${c.name}, en el otro.`, both),
+      yard(2, `Se miraron y se rieron: por una tarde, serían rivales.`, both),
+      yard(3, `${h.name} se ató bien los cordones, con muchas ganas de ganar.`, [h.id]),
+      yard(1, 'El juego empezó, y los dos equipos lo daban todo.', both, match.items),
+      yard(2, 'Primero ganaba uno, luego el otro.'),
+      yard(3, 'Los gritos de ánimo se oían por todas partes.'),
+    ],
+    [
+      yard(1, `${h.name} jugaba muy bien, y su equipo iba por delante.`, [h.id]),
+      yard(2, `Ya se imaginaba celebrando la victoria.`, [h.id]),
+      yard(3, `${c.name} no se rendía y animaba a los suyos.`, [c.id]),
+      yard(1, match.decide.replace('{c}', c.name), [c.id], match.items),
+      yard(2, `El equipo de ${c.name} saltó de alegría.`, [c.id]),
+      yard(3, 'El juego había terminado, sin remedio.'),
+      yard(1, `${h.name} se enfadó muchísimo y dijo que no era justo.`, [h.id]),
+      yard(2, `Se cruzó de brazos y no quiso dar la mano a nadie.`, [h.id]),
+      yard(3, `${c.name} dejó de reír al ver su cara.`, [c.id]),
+    ],
+    [
+      yard(1, `${h.name} se fue a sentar en un banco, con la cara roja de rabia.`, [h.id]),
+      yard(2, 'Le picaban los ojos, y no quería que nadie lo viera.'.replace(' lo ', ` ${gendered(h, 'lo', 'la')} `), [h.id]),
+      yard(3, 'Los demás siguieron jugando a otra cosa.'),
+      yard(1, `Al rato, ${c.name} se acercó y se sentó a su lado, sin decir nada.`, both),
+      yard(2, 'Se quedaron un momento en silencio.', both),
+      yard(3, 'Una hoja cayó despacio entre los dos.'),
+      yard(1, `${c.name} le dijo que había jugado de maravilla, y que casi ganaban ellos.`, both),
+      yard(2, `${h.name} respiró hondo, y el enfado empezó a hacerse pequeño.`, [h.id]),
+      yard(3, 'Era difícil seguir enfadado con alguien tan amable.'.replace('enfadado', gendered(h, 'enfadado', 'enfadada')), [h.id]),
+    ],
+    [
+      yard(1, `${h.name} reconoció que el otro equipo había jugado muy bien.`, [h.id]),
+      yard(2, 'Y que perder también forma parte del juego.', [h.id]),
+      yard(3, 'Lo dijo bajito, pero lo dijo.', [h.id]),
+      yard(1, `Entonces ${h.name} se levantó y felicitó a todo el equipo de ${c.name}.`, [h.id, c.id]),
+      yard(2, 'Todos le dieron la mano y le dijeron que había sido un gran rival.'),
+      yard(3, `${h.name} sonrió por fin, más tranquil${gendered(h, 'o', 'a')}.`, [h.id]),
+      yard(1, match.rematch, both, match.items),
+      yard(2, `Esta vez, ${pair} jugaron en el mismo equipo.`, both),
+      yard(3, 'Se pasaban la pelota y se animaban sin parar.'.replace('la pelota', match.id === 'ball' ? 'la pelota' : 'los turnos'), both),
+    ],
+    [
+      yard(1, 'Nadie llevó la cuenta, y fue el partido más divertido de todos.', both),
+      yard(2, 'Se reían cuando fallaban y aplaudían cuando acertaban.', both),
+      yard(3, 'Hasta el sol parecía quedarse a mirar.'),
+      yard(1, say([`${h.name} aprendió que se puede perder y seguir siendo feliz.`, `${h.name} aprendió que ganar es bonito, pero jugar juntos lo es todavía más.`]), [h.id]),
+      yard(2, 'Y que felicitar al otro equipo es de valientes.', [h.id]),
+      yard(3, `${c.name} le dio una palmada en la espalda.`, [c.id]),
+      yard(1, `Al atardecer, ${pair} se despidieron chocando las manos.`, both),
+      yard(2, 'Ya estaban pensando en el próximo partido.', both),
+      yard(3, 'Esta vez, con equipos mezclados desde el principio.', both),
+    ],
+    [
+      room(1, `Esa noche, ${h.name} se acordó de cómo se había enfadado.`, [h.id]),
+      room(2, 'Y de lo bien que se había sentido al felicitar a los demás.', [h.id]),
+      room(3, 'Pensó que la próxima vez lo haría antes.', [h.id]),
+      room(1, `Desde entonces, cuando perdía, ${h.name} respiraba hondo y daba la mano.`, [h.id]),
+      room(2, 'Y cuando ganaba, también daba la mano.', [h.id]),
+      room(3, `${c.name} decía que era el mejor rival del mundo.`, [c.id]),
+      room(2, `${h.name} se tapó con la manta, cansad${gendered(h, 'o', 'a')} de tanto correr.`, [h.id]),
+      room(3, 'Afuera, el campo de juego dormía vacío y tranquilo.'),
+      room(1, `Y ${h.name} se durmió soñando con un partido en el que todos ganaban.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y el partido`, place: field, questId: `match-${match.id}`, variantId: match.id, beats, items: match.items,
+    blockIds: { opening: field.id, goal: `match-${match.id}`, obstacle: 'losing', strategy: 'congratulate', discovery: 'mixed-teams', ending: 'bedroom' },
+    roles: { home: 'bedroom', destination: field.id },
+  };
+}
+
+/** What a friend can send through the window to a sick friend. */
+const WINDOW_GIFTS = [
+  { id: 'plane', items: ['paper-plane'], text: 'lanzó un avión de papel con un mensaje escrito en las alas', read: 'El mensaje decía: «Ponte bueno pronto, te echo de menos».' },
+  { id: 'drawing', items: ['crayons'], text: 'pegó en el cristal un dibujo hecho con crayones', read: 'En el dibujo salían los dos, jugando en el parque.' },
+  { id: 'letter', items: ['letter'], text: 'dejó una carta en el alféizar de la ventana', read: 'La carta tenía un chiste en cada línea.' },
+  { id: 'show', items: [], text: 'hizo un teatro de sombras con las manos frente a la ventana', read: 'Hizo un perro, un pájaro y un conejo que bailaba.' },
+];
+
+/** Small illnesses that keep a friend in bed for a few days. */
+const ILLNESSES = [
+  { id: 'cold', state: c => `resfriad${c.gender === 'f' ? 'a' : 'o'}`, sign: 'Estornudaba cada dos por tres, con un achís enorme.', better: 'fue estornudando menos y riéndose más', laugh: 'Se oía la risa de dentro, con algún estornudo.', last: 'Y, por fin, sin ningún estornudo.' },
+  { id: 'cough', state: () => 'con tos', sign: 'Tosía bajito, cof, cof, y tenía que beber mucha agua.', better: 'fue tosiendo menos y riéndose más', laugh: 'Se oía la risa de dentro, con alguna tos.', last: 'Y, por fin, sin ninguna tos.' },
+  { id: 'fever', state: () => 'con un poco de fiebre', sign: 'Tenía las mejillas calientes y mucho sueño.', better: 'fue recuperando el color y las ganas de jugar', laugh: 'Se oía la risa de dentro, cada día más fuerte.', last: 'Y, por fin, con las mejillas frescas.' },
+];
+
+/** D10 · El amigo resfriado: a friend in bed, a door that cannot be opened, gifts through the window and playing again. */
+function sickFriend({ random, hero: h, companion: c }) {
+  const say = sayer(random);
+  const illness = choose(random, ILLNESSES);
+  const gifts = [];
+  for (let i = 0; i < 2; i += 1) gifts.push(choose(random, WINDOW_GIFTS.filter(entry => !gifts.includes(entry))));
+  const both = [h.id, c.id];
+  const pair = `${h.name} y ${c.name}`;
+  const outside = at('garden'), room = at('bedroom'), yard = at('playground');
+  const beats = [
+    [
+      yard(1, say([`Aquella mañana, ${named(h)} esperó a su ${friendWord(c)} ${c.name} en el parque, pero no llegó.`, `Aquella mañana, ${named(h)} buscó a su ${friendWord(c)} ${c.name} por todo el parque, sin encontrarl${gendered(c, 'o', 'a')}.`]), [h.id]),
+      yard(2, getScene('playground').detail),
+      yard(3, 'Sin su compañía, los columpios no tenían gracia.', [h.id]),
+      yard(1, `Fue a su casa, y le dijeron que ${c.name} estaba ${illness.state(c)} y tenía que quedarse en la cama.`, [h.id]),
+      yard(2, 'No podía entrar, para no contagiarse.', [h.id]),
+      yard(3, `${h.name} volvió a casa un poco triste.`, [h.id]),
+      room(1, `Mientras tanto, ${c.name} estaba en la cama, muy aburrid${gendered(c, 'o', 'a')}.`, [c.id]),
+      room(2, getScene('bedroom').detail),
+      room(3, illness.sign, [c.id]),
+    ],
+    [
+      outside(1, `Entonces ${h.name} tuvo una idea para animarl${gendered(c, 'o', 'a')} sin entrar en casa.`, [h.id]),
+      outside(2, 'Se acercó despacito al jardín, justo debajo de su ventana.', [h.id]),
+      outside(3, 'Llamó al cristal con un toc, toc muy suave.', [h.id]),
+      outside(1, `${h.name} ${gifts[0].text}.`, [h.id], gifts[0].items),
+      outside(2, gifts[0].read, [], gifts[0].items),
+      outside(3, `${h.name} esperó, mirando la ventana sin parpadear.`, [h.id]),
+      room(1, `${c.name} se asomó y sonrió por primera vez en todo el día.`, [c.id]),
+      room(2, 'Le saludó con la mano, envuelto en su manta.'.replace('envuelto', gendered(c, 'envuelto', 'envuelta')), [c.id]),
+      room(3, 'Ya no se sentía tan solito.'.replace('solito', gendered(c, 'solito', 'solita')), [c.id]),
+    ],
+    [
+      outside(1, `Al día siguiente, ${h.name} volvió a la ventana con otra sorpresa.`, [h.id]),
+      outside(2, 'Esta vez traía la sorpresa escondida detrás de la espalda.', [h.id]),
+      outside(3, 'Dio tres golpecitos en el cristal, como una contraseña.', [h.id]),
+      outside(1, `${h.name} ${gifts[1].text}.`, [h.id], gifts[1].items),
+      outside(2, gifts[1].read, [], gifts[1].items),
+      outside(3, illness.laugh),
+      room(1, `${c.name} le contestó con un dibujo pegado en el cristal: un corazón enorme.`, [c.id]),
+      room(2, 'Debajo había escrito: «Gracias por no olvidarte de mí».', [c.id]),
+      room(3, `${h.name} se puso la mano en el pecho, muy emocionad${gendered(h, 'o', 'a')}.`, [h.id]),
+    ],
+    [
+      room(1, `Cada tarde, ${h.name} volvía a la ventana, y ${c.name} esperaba sonriendo.`, both),
+      room(2, 'Se contaban el día con gestos y risas.', both),
+      room(3, 'Inventaron un idioma secreto con las manos.', both),
+      room(1, `Poco a poco, ${c.name} ${illness.better}.`, [c.id]),
+      room(2, 'Cada día tenía mejor cara y más ganas de jugar.', [c.id]),
+      room(3, 'Y tenía muchas ganas de salir a jugar.', [c.id]),
+      room(1, `Una mañana, ${c.name} abrió la ventana y gritó que ya estaba bien.`, [c.id]),
+      room(2, `${h.name} dio un salto de alegría en el jardín.`, [h.id]),
+      room(3, 'Los dos se rieron a la vez.', both),
+    ],
+    [
+      yard(1, `Esa tarde, ${pair} volvieron a jugar en el parque, como siempre.`, both),
+      yard(2, 'Los columpios volvían a tener toda la gracia del mundo.', both),
+      yard(3, 'Se columpiaron hasta tocar el cielo con los pies.', both),
+      yard(1, `${c.name} le dio las gracias por todas las sorpresas de la ventana.`, both),
+      yard(2, 'Le dijo que le habían curado más que la sopa.', [c.id]),
+      yard(3, `${h.name} se rio, muy orgullos${gendered(h, 'o', 'a')} de su idea.`, [h.id]),
+      yard(1, say([`${h.name} aprendió que la amistad encuentra caminos aunque haya una puerta cerrada.`, `${h.name} aprendió que acompañar también se puede hacer desde lejos.`]), [h.id]),
+      yard(2, 'Y que un detalle pequeño puede alegrar un día entero.', [h.id]),
+      yard(3, 'Guardaron el idioma secreto para siempre.', both),
+    ],
+    [
+      room(1, `Esa noche, ${h.name} pensó en la ventana de ${c.name}.`, [h.id]),
+      room(2, 'Ahora estaría cerrada, y su amigo durmiendo tranquilo.'.replace('su amigo durmiendo tranquilo', `${c.name} durmiendo ${gendered(c, 'tranquilo', 'tranquila')}`), [h.id]),
+      room(3, illness.last, [h.id]),
+      room(1, `${h.name} le hizo un saludo en el idioma secreto, aunque nadie lo viera.`, [h.id]),
+      room(2, 'Sonrió con los ojos cerrados, muy a gusto.', [h.id]),
+      room(3, 'La manta estaba calentita y suave.', [h.id]),
+      room(2, 'Afuera, la luna brillaba sobre todas las ventanas.'),
+      room(3, 'Las abiertas y las cerradas.'.replace('Las abiertas y las cerradas.', 'Sobre las abiertas y sobre las cerradas.')),
+      room(1, `Y ${h.name} se durmió feliz, deseando que llegara la mañana para jugar.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y ${gendered(c, 'el amigo en cama', 'la amiga en cama')}`, place: getScene('bedroom'), questId: `window-${gifts[0].id}`, variantId: gifts.map(entry => entry.id).join('-'), beats,
+    items: gifts.flatMap(entry => entry.items),
+    blockIds: { opening: 'playground', goal: `window-${gifts[0].id}`, obstacle: illness.id, strategy: gifts[1].id, discovery: 'secret-language', ending: 'bedroom' },
+    roles: { home: 'garden', destination: 'bedroom' },
+  };
+}
+
+/** Favourite places for a last day together, and keepsakes for a goodbye. */
+const LAST_DAY = [
+  { id: 'playground', text: 'Se columpiaron en el parque, más alto que nunca.' },
+  { id: 'meadow', text: 'Corrieron por el prado persiguiendo mariposas.' },
+  { id: 'treehouse', text: 'Subieron a la casita del árbol y miraron el pueblo desde arriba.' },
+  { id: 'lake', text: 'Tiraron piedrecitas al lago, a ver cuál saltaba más.' },
+  { id: 'orchard', text: 'Comieron manzanas en el huerto, sentados en la hierba.' },
+];
+const KEEPSAKES = [
+  { id: 'star', items: ['paper-star'], text: 'una estrella de papel con los nombres de los dos' },
+  { id: 'marble', items: ['marbles'], text: 'su canica favorita, la azul' },
+  { id: 'shell', items: ['shell'], text: 'una concha brillante que había encontrado el verano pasado' },
+  { id: 'plane', items: ['paper-plane'], text: 'un avión de papel con un dibujo de los dos' },
+];
+
+/** D11 · La mudanza: a friend moves away, a last day together, a goodbye at the station and letters that keep the friendship. */
+function movingAway({ random, hero: h, companion: c }) {
+  const say = sayer(random);
+  const days = [];
+  for (let i = 0; i < 2; i += 1) days.push(choose(random, LAST_DAY.filter(entry => !days.includes(entry) && fitsCast([h, c], entry.id))));
+  const keep = choose(random, KEEPSAKES);
+  const both = [h.id, c.id];
+  const pair = `${h.name} y ${c.name}`;
+  const porch = at('porch'), station = at('train-station'), room = at('bedroom');
+  const [one, two] = days.map(entry => at(entry.id));
+  const beats = [
+    [
+      porch(1, say([`Un día, ${named(h)} recibió una noticia triste de su ${friendWord(c)} ${c.name}: su familia se mudaba a otra ciudad.`, `Una tarde, ${c.name} llegó muy ${gendered(c, 'serio', 'seria')} y le contó a ${named(h)} que se iba a vivir lejos.`]), both),
+      porch(2, getScene('porch').detail),
+      porch(3, `${h.name} no supo qué decir.`.replace('no supo qué decir.', 'no supo qué decir durante un buen rato.'), [h.id]),
+      porch(1, `Se iría en tren, dentro de tres días.`, [c.id]),
+      porch(2, `A ${h.name} se le hizo un nudo en la garganta.`, [h.id]),
+      porch(3, `${c.name} también tenía los ojos húmedos.`, [c.id]),
+      porch(1, `Entonces ${h.name} propuso pasar juntos el último día haciendo sus cosas favoritas.`, both),
+      porch(2, `${c.name} dijo que era la mejor idea del mundo.`, [c.id]),
+      porch(3, 'Lo apuntaron todo en una lista, para no olvidar nada.', both),
+    ],
+    [
+      one(1, days[0].text, both),
+      one(2, getScene(days[0].id).detail),
+      one(3, 'Se rieron tanto que les dolía la barriga.', both),
+      two(1, days[1].text, both),
+      two(2, getScene(days[1].id).detail),
+      two(3, 'Por un rato, se olvidaron de la mudanza.', both),
+      two(1, `Al atardecer, se sentaron a mirar el cielo, sin decir nada.`, both),
+      two(2, `${c.name} dijo que iba a echar de menos todo aquello.`, [c.id]),
+      two(3, `${h.name} le apretó la mano con cariño.`, both),
+    ],
+    [
+      porch(1, `Esa noche, ${h.name} preparó un regalo de despedida: ${keep.text}.`, [h.id], keep.items),
+      porch(2, 'Lo envolvió con cuidado, con un lazo azul.', [h.id]),
+      porch(3, 'Y escribió una nota con su dirección.', [h.id]),
+      porch(1, `${h.name} también preparó papel y sobres para escribirse cartas.`, [h.id], ['letter']),
+      porch(2, 'Así no dejarían de contarse cosas.', [h.id]),
+      porch(3, 'Le costó mucho dormirse esa noche.', [h.id]),
+      station(1, `Al día siguiente, ${pair} se encontraron en la estación del tren.`, both),
+      station(2, getScene('train-station').detail),
+      station(3, 'El reloj grande marcaba la hora de salida.'),
+    ],
+    [
+      station(1, `${h.name} le dio el regalo, y ${c.name} lo abrazó contra el pecho.`, both, keep.items),
+      station(2, `${c.name} prometió llevarlo siempre en su mochila.`, [c.id]),
+      station(3, 'Los dos se rieron, aunque tenían ganas de llorar.', both),
+      station(1, `Se dieron un abrazo largo, de los que no se olvidan.`, both),
+      station(2, 'Prometieron escribirse una carta cada semana.', both),
+      station(3, 'El tren silbó, avisando de que se iba.'),
+      station(1, `${c.name} subió al tren y saludó desde la ventanilla hasta que no se vio.`, [c.id]),
+      station(2, `${h.name} se quedó mirando las vías un buen rato.`, [h.id]),
+      station(3, 'El andén se quedó en silencio.'),
+    ],
+    [
+      room(1, `Unos días después, llegó una carta de ${c.name}.`, [h.id], ['letter']),
+      room(2, 'Le contaba cómo era su casa nueva y su nueva escuela.', [h.id]),
+      room(3, `Y que ${keep.text.split(' ').slice(0, 3).join(' ')} estaba en su mesilla.`.replace(/^Y que .*$/, 'Y que el regalo estaba en su mesilla, al lado de la cama.'), [h.id]),
+      room(1, `${h.name} le contestó enseguida, con un dibujo de los dos.`, [h.id], ['letter']),
+      room(2, 'Las cartas iban y venían, cada semana.', [h.id]),
+      room(3, 'A veces con dibujos, a veces con chistes.', [h.id]),
+      room(1, say([`${h.name} aprendió que la amistad de verdad no se queda en la estación.`, `${h.name} aprendió que los amigos siguen cerca aunque vivan lejos.`]), [h.id]),
+      room(2, 'Viaja en las cartas, en los recuerdos y en las promesas.', [h.id]),
+      room(3, 'Y se hace más fuerte con cada carta.', [h.id]),
+    ],
+    [
+      room(1, `En la última carta, ${c.name} contaba que vendría de visita en verano.`, [h.id], ['letter']),
+      room(2, `${h.name} marcó el día en el calendario con una estrella.`, [h.id]),
+      room(3, 'Ya solo quedaban unas pocas semanas.', [h.id]),
+      room(1, `Esa noche, ${h.name} guardó la carta debajo de la almohada.`, [h.id], ['letter']),
+      room(2, 'Pensó en todo lo que harían cuando volvieran a verse.', [h.id]),
+      room(3, 'Columpios, prado, risas y más risas.', [h.id]),
+      room(2, 'Afuera, un tren pasaba a lo lejos, muy bajito.'),
+      room(3, `Quizá iba hacia la ciudad de ${c.name}.`, [h.id]),
+      room(1, `Y ${h.name} se durmió con una sonrisa, contando los días que faltaban.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y la mudanza de ${c.name}`, place: getScene('train-station'), questId: `move-${keep.id}`, variantId: days.map(entry => entry.id).join('-'), beats, items: [...keep.items, 'letter'],
+    blockIds: { opening: 'porch', goal: `move-${keep.id}`, obstacle: 'distance', strategy: days[0].id, discovery: days[1].id, ending: 'bedroom' },
+    roles: { home: 'porch', destination: 'train-station', places: days.map(entry => entry.id) },
+  };
+}
+
+/** What two friends grow, the trouble it meets and the gentle fix. */
+const CROPS = [
+  { id: 'strawberries', what: 'fresas', ripe: 'Las fresas se pusieron rojas, brillantes y dulcísimas.' },
+  { id: 'sunflowers', what: 'girasoles', ripe: 'Los girasoles crecieron más altos que ellos, mirando al sol.' },
+  { id: 'tomatoes', what: 'tomates', ripe: 'Los tomates se pusieron redondos y rojos como farolillos.' },
+  { id: 'peas', what: 'guisantes', ripe: 'Las vainas se llenaron de guisantes verdes y dulces.' },
+];
+const PESTS = [
+  { id: 'birds', trouble: 'Unos pájaros empezaron a comerse las semillas recién plantadas.', fix: 'Pusieron una red ligera por encima, y los pájaros buscaron comida en otro sitio.', items: ['net'] },
+  { id: 'snails', trouble: 'Una mañana, unos caracoles se estaban comiendo las hojas más tiernas.', fix: 'Llevaron los caracoles con cuidado a un rincón lleno de hojas viejas, lejos del huerto.', items: [] },
+  { id: 'dry', trouble: 'Hacía tanto calor que la tierra se secaba antes de la tarde.', fix: 'Se turnaron con la regadera, uno por la mañana y otro al atardecer.', items: ['watering-can'] },
+];
+
+/** D12 · El huerto compartido: planting together, daily care, a trouble solved gently, a harvest shared. */
+function sharedGarden({ random, hero: h, companion: c }) {
+  const say = sayer(random);
+  const crop = choose(random, CROPS);
+  const pest = choose(random, PESTS);
+  const place = getScene(choose(random, ['garden', 'orchard', 'farm'].filter(id => fitsCast([h, c], id))));
+  const both = [h.id, c.id];
+  const pair = `${h.name} y ${c.name}`;
+  const there = at(place.id), room = at('bedroom');
+  const beats = [
+    [
+      there(1, say([`En primavera, ${named(h)} y su ${friendWord(c)} ${c.name} decidieron plantar un huerto juntos.`, `Una mañana de primavera, ${named(h)} le propuso a su ${friendWord(c)} ${c.name} cultivar un huerto entre los dos.`]), both),
+      there(2, place.detail),
+      there(3, 'Eligieron un rincón soleado, con tierra blanda.', both),
+      there(1, `Prepararon la tierra y plantaron semillas de ${crop.what}, en filas rectas.`, both, ['seed']),
+      there(2, `${c.name} hacía los agujeritos, y ${h.name} ponía las semillas.`, both, ['seed']),
+      there(3, 'Luego las taparon con cuidado, como si las arroparan.', both),
+      there(1, 'Lo regaron todo con la regadera y pusieron un cartel con sus nombres.', both, ['watering-can']),
+      there(2, 'El cartel decía: «Huerto de los amigos».', both),
+      there(3, 'Se quedaron mirándolo un rato, muy orgullosos.', both),
+    ],
+    [
+      there(1, 'Cada día, después de la escuela, iban a cuidar el huerto.', both),
+      there(2, 'Quitaban hierbajos y miraban si la tierra estaba húmeda.', both),
+      there(3, `${h.name} le hablaba a las semillas, para animarlas.`, [h.id]),
+      there(1, 'Al cabo de una semana, salieron unos brotes verdes y pequeñitos.', both),
+      there(2, `${c.name} dio un grito de alegría al verlos.`, [c.id]),
+      there(3, 'Parecían saludar desde la tierra, muy contentos.', both),
+      there(1, pest.trouble, both, pest.items),
+      there(2, `${h.name} se puso muy nervios${gendered(h, 'o', 'a')}, porque su huerto estaba en peligro.`, [h.id]),
+      there(3, `${c.name} también se preocupó muchísimo por los brotes.`, [c.id]),
+    ],
+    [
+      there(1, `${pair} pensaron juntos cómo arreglarlo sin hacer daño a nadie.`, both),
+      there(2, 'Cada uno propuso una idea, y eligieron la más amable.', both),
+      there(3, 'Luego se pusieron manos a la obra.', both),
+      there(1, pest.fix, both, pest.items),
+      there(2, 'Funcionó, y los brotes siguieron creciendo tranquilos.', both),
+      there(3, `${c.name} chocó la mano de ${h.name}.`, both),
+      there(1, 'Las semanas pasaron, y las plantas crecieron cada vez más.', both),
+      there(2, 'Salieron hojas grandes, flores pequeñas y, por fin, los primeros frutos.'),
+      there(3, 'Había que esperar todavía un poquito.', both),
+    ],
+    [
+      there(1, crop.ripe, both),
+      there(2, `${pair} no podían creer lo que habían conseguido.`, both),
+      there(3, 'Todo había empezado con unas semillas diminutas.', both),
+      there(1, 'Recogieron la cosecha en una cesta, con mucho cuidado.', both, ['basket']),
+      there(2, 'La cesta pesaba tanto que la llevaron entre los dos.', both, ['basket']),
+      there(3, `${h.name} se manchó la nariz de tierra, y se rieron.`, [h.id]),
+      there(1, 'Decidieron compartir la cosecha con los vecinos.', both),
+      there(2, 'Fueron casa por casa, repartiendo un poco a cada uno.', both),
+      there(3, 'Los vecinos les dieron las gracias, sorprendidos.'),
+    ],
+    [
+      there(1, say([`${h.name} aprendió que las cosas buenas crecen despacio y con cuidados de cada día.`, `${h.name} aprendió que un huerto compartido da el doble de alegría.`]), [h.id]),
+      there(2, 'Y que, cuando algo sale mal, se arregla mejor entre dos.', both),
+      there(3, `${c.name} dijo que el año siguiente plantarían todavía más.`, [c.id]),
+      there(1, 'Guardaron algunas semillas para la próxima primavera.', both, ['seed']),
+      there(2, 'Las metieron en un sobre con sus nombres.', both),
+      there(3, 'Así el huerto de los amigos volvería a crecer.', both),
+      there(1, `Esa tarde, ${pair} merendaron juntos lo que habían cultivado.`, both),
+      there(2, 'Sabía mejor que nada en el mundo.', both),
+      there(3, 'Porque lo habían cuidado entre los dos.', both),
+    ],
+    [
+      room(1, `Esa noche, ${h.name} pensó en su huerto, tranquilo bajo la luna.`, [h.id]),
+      room(2, 'Las plantas también estarían descansando a oscuras.', [h.id]),
+      room(3, 'Igual que las semillas guardadas en el sobre.', [h.id]),
+      room(1, `${h.name} se tapó con la manta, con las manos todavía oliendo a tierra.`, [h.id]),
+      room(2, 'Era un olor que le gustaba muchísimo.', [h.id]),
+      room(3, 'Olía a trabajo bien hecho y compartido.', [h.id]),
+      room(2, 'Afuera, una brisa suave movía las hojas.'),
+      room(3, 'Todo estaba en calma en la casa.'),
+      room(1, `Y ${h.name} se durmió soñando con la próxima primavera junto a ${c.name}.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y el huerto compartido`, place, questId: `garden-${crop.id}`, variantId: pest.id, beats, items: ['seed', 'watering-can', 'basket', ...pest.items].filter((id, index, list) => list.indexOf(id) === index),
+    blockIds: { opening: place.id, goal: `garden-${crop.id}`, obstacle: pest.id, strategy: 'gentle-fix', discovery: crop.id, ending: 'bedroom' },
+    roles: { home: 'bedroom', destination: place.id, pest: pest.id },
+  };
+}
+
 export const FRIEND_STRUCTURES = Object.freeze([
   { id: 'activity', name: 'El plan compartido', generate: activity },
   { id: 'new-friend', name: 'El amigo nuevo', accept: (h, c) => !needsWater([h, c]), generate: newFriend },
@@ -790,8 +1179,13 @@ export const FRIEND_STRUCTURES = Object.freeze([
   { id: 'contest', name: 'La competición amistosa', accept: (h, c) => !needsWater([h, c]), generate: contest },
   { id: 'borrowed-toy', name: 'El juguete prestado', accept: (h, c) => !needsWater([h, c]), generate: borrowedToy },
   { id: 'secret-club', name: 'El club secreto', accept: (h, c) => !needsWater([h, c]) && newcomersFor(h, c).length > 0, generate: secretClub },
+  { id: 'the-match', name: 'El partido', accept: (h, c) => !needsWater([h, c]), generate: theMatch },
+  { id: 'sick-friend', name: 'El amigo en cama', accept: (h, c) => !needsWater([h, c]), generate: sickFriend },
+  { id: 'moving-away', name: 'La mudanza', accept: (h, c) => !needsWater([h, c]), generate: movingAway },
+  { id: 'shared-garden', name: 'El huerto compartido', accept: (h, c) => !needsWater([h, c]), generate: sharedGarden },
 ]);
 export const FRIEND_GOAL_IDS = [...FRIEND_GOALS.map(goal => goal.id), ...INTERESTS.map(entry => `new-${entry.item}`), ...QUARRELS.map(entry => `quarrel-${entry.item}`),
   ...SURPRISES.map(entry => `surprise-${entry.id}`), ...Object.keys(ABILITY_GAMES).map(id => `game-${id}`), ...CONTESTS.map(entry => `contest-${entry.id}`),
-  ...LENT_TOYS.map(entry => `borrow-${entry.id}`), ...CLUBS.map(entry => `club-${entry.id}`)];
+  ...LENT_TOYS.map(entry => `borrow-${entry.id}`), ...CLUBS.map(entry => `club-${entry.id}`),
+  ...MATCHES.map(entry => `match-${entry.id}`), ...WINDOW_GIFTS.map(entry => `window-${entry.id}`), ...KEEPSAKES.map(entry => `move-${entry.id}`), ...CROPS.map(entry => `garden-${entry.id}`)];
 export { activity as familyActivity };

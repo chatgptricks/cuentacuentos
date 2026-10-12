@@ -1036,6 +1036,288 @@ function rainyDay({ random, hero: h, companion: f }) {
   };
 }
 
+/** Things seen going home at dusk on a slow walk. */
+const DUSK_SIGHTS = [
+  { id: 'snail', text: 'un caracol que se metía despacito en su casita' },
+  { id: 'flowers', text: 'las flores, que cerraban sus pétalos una a una' },
+  { id: 'nest', text: 'una mamá pájaro que volvía al nido con un gusanito' },
+  { id: 'bees', text: 'las abejas, que volvían a la colmena zumbando bajito' },
+  { id: 'hens', text: 'las gallinas, que subían en fila al gallinero' },
+  { id: 'sun', text: 'el sol, que se escondía detrás de la colina, todo naranja' },
+  { id: 'firefly', text: 'una luciérnaga que encendía su lucecita por primera vez' },
+];
+
+/** C10 · El paseo del atardecer: a slow walk at dusk, everything going home to rest, and home and bed. */
+function eveningWalk({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const home = getScene(choose(random, RELAX_HOMES.filter(id => fitsCast(cast, id))));
+  const sights = [];
+  for (let i = 0; i < 3; i += 1) sights.push(choose(random, DUSK_SIGHTS.filter(entry => !sights.includes(entry))));
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const out = at(home.id), bed = at(bedFor(cast, home));
+  const beats = [
+    [
+      out(1, say([`Al caer la tarde, ${named(h)} y su ${friendWord(f)} ${f.name} salieron a dar un paseo muy lento.`, `Cuando el día empezaba a apagarse, ${named(h)} invitó a su ${friendWord(f)} ${f.name} a pasear.`]), both),
+      out(2, home.detail),
+      out(3, 'El aire estaba tibio y olía a hierba.'),
+      out(1, 'Caminaban despacio, sin ninguna prisa, mirándolo todo.', both),
+      out(2, `${f.name} propuso fijarse en quién se iba a dormir.`, [f.id]),
+      out(3, 'Era un juego perfecto para aquella hora.', both),
+      out(1, `Primero vieron ${sights[0].text}.`, both),
+      out(2, `${h.name} le susurró buenas noches, muy bajito.`, [h.id]),
+      out(3, 'Respiraron hondo los dos, al mismo ritmo.', both),
+    ],
+    [
+      out(1, `Después vieron ${sights[1].text}.`, both),
+      out(2, `${f.name} dijo que todos sabían cuándo era hora de descansar.`, [f.id]),
+      out(3, 'El cielo se volvía rosa y luego morado.'),
+      out(1, `Y un poco más allá, vieron ${sights[2].text}.`, both),
+      out(2, `${h.name} sonrió: hasta los más pequeños volvían a casa.`, [h.id]),
+      out(3, 'Las sombras se hacían cada vez más largas.'),
+      out(1, `${pair} se sentaron un ratito en una piedra a mirar.`, both),
+      out(2, 'No hacía falta decir nada de nada.', both),
+      out(3, 'Solo escuchar cómo todo se calmaba.', both),
+    ],
+    [
+      out(1, 'Tomaron aire por la nariz, despacio, como el viento de la tarde.', both),
+      out(2, 'Y lo soltaron por la boca, suave como una hoja que cae.', both),
+      out(3, 'Lo hicieron tres veces, sin prisa.', both),
+      out(1, `${h.name} sintió las piernas cansadas, de esas que han caminado mucho.`, [h.id]),
+      out(2, `${f.name} bostezó, tapándose la boca con disimulo.`, [f.id]),
+      out(3, 'Hasta los grillos empezaban su nana.'),
+      out(1, 'Apareció la primera estrella, pequeña y brillante.'),
+      out(2, `${pair} pidieron un deseo en silencio.`, both),
+      out(3, 'Ninguno de los dos contó cuál era.', both),
+    ],
+    [
+      out(1, `Ya era hora de volver, como todos, y ${pair} se dieron la mano.`, both),
+      out(2, 'El camino de vuelta parecía más corto y más tranquilo.', both),
+      out(3, 'Las ventanas de las casas se iban encendiendo.'),
+      out(1, `En la puerta, ${f.name} se despidió con un abrazo y se fue a su casa.`, both),
+      out(2, `${h.name} lo miró alejarse hasta que dobló la esquina.`.replace(' lo ', ` ${gendered(f, 'lo', 'la')} `), [h.id]),
+      out(3, 'La noche ya había llegado del todo.'),
+      bed(1, `${h.name} se lavó, se puso el pijama y se metió en la cama.`, [h.id]),
+      bed(2, 'Las sábanas estaban frescas y suaves.', [h.id]),
+      bed(3, 'Por la ventana se veía la primera estrella.'),
+    ],
+    [
+      bed(1, say([`${h.name} pensó en todos los que se habían ido a dormir aquella tarde.`, `${h.name} repasó, uno a uno, a todos los que había visto volver a casa.`]), [h.id]),
+      bed(2, 'Ahora estarían en sus nidos, en sus casitas y en sus camas.', [h.id]),
+      bed(3, `Igual que ${gendered(h, 'él', 'ella')}, en su cama calentita.`, [h.id]),
+      bed(1, `${h.name} aprendió que, al final del día, todos volvemos a casa a descansar.`, [h.id]),
+      bed(2, 'Y que descansar también es una forma de cuidarse.', [h.id]),
+      bed(3, 'Afuera, todo estaba en calma y en silencio.'),
+      bed(1, 'Respiró hondo una última vez, como en el paseo.', [h.id]),
+      bed(2, 'Los ojos se le cerraban solos.', [h.id]),
+      bed(3, 'El cuerpo se volvía blandito y pesado.', [h.id]),
+    ],
+    [
+      bed(1, `${h.name} les dio las buenas noches a todos, en voz muy bajita.`, [h.id]),
+      bed(2, 'Al caracol, a las flores y a la primera estrella.', [h.id]),
+      bed(3, `Y también a ${f.name}, que ya estaría en su cama.`, [h.id]),
+      bed(1, 'La casa entera estaba en silencio.'),
+      bed(2, 'Solo se oía, a lo lejos, la nana de los grillos.'),
+      bed(3, 'La luna asomaba por la ventana.'),
+      bed(2, `${h.name} soñó que paseaba otra vez, despacito, bajo las estrellas.`, [h.id]),
+      bed(3, 'Y que todo el mundo descansaba en paz.'),
+      bed(1, say([`Y así, como todos al final del día, ${h.name} se durmió.`, `Y así, en su cama calentita, ${h.name} se durmió.`]), [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y el paseo del atardecer`, place: home, moral: 'Al final del día, todos volvemos a casa a descansar.',
+    questId: `walk-${sights[0].id}`, variantId: sights.map(entry => entry.id).join('-'), beats, items: [],
+    blockIds: { opening: home.id, goal: `walk-${sights[0].id}`, obstacle: sights[1].id, strategy: 'slow-walk', discovery: sights[2].id, ending: bedFor(cast, home) },
+    roles: { home: home.id, destination: home.id, sights: sights.map(entry => entry.id) },
+  };
+}
+
+/** What the sea offers before sleep. */
+const SEA_GIFTS = [
+  { id: 'shell', items: ['shell'], text: 'encontró una concha y se la acercó a la oreja: dentro sonaba el mar', after: 'Era un susurro largo, como alguien que respira dormido.' },
+  { id: 'boats', items: ['boat'], text: 'vio volver los barquitos de vela, uno a uno, hacia el puerto', after: 'Se mecían despacio, como cunas sobre el agua.' },
+  { id: 'moon', items: [], text: 'vio salir la luna, que dibujó un camino de plata sobre el agua', after: 'El camino se movía con cada ola, brillando.' },
+];
+
+/** C11 · La nana del mar: an evening by the sea, waves to breathe with, a gift of the sea and sleep by the water. */
+function seaLullaby({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const home = getScene(choose(random, ['beach', 'harbor'].filter(id => fitsCast(cast, id))));
+  const gift = choose(random, SEA_GIFTS);
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const sea = at(home.id), bed = at(bedFor(cast, home));
+  const beats = [
+    [
+      sea(1, say([`Al atardecer, ${named(h)} y su ${friendWord(f)} ${f.name} se sentaron junto al mar.`, `Aquella tarde, ${named(h)} y su ${friendWord(f)} ${f.name} miraban el mar en silencio.`]), both),
+      sea(2, home.detail),
+      sea(3, 'El agua estaba tibia, y la brisa olía a sal.'),
+      sea(1, 'Las olas llegaban despacio, se quedaban un momento y volvían a irse.'),
+      sea(2, `${f.name} propuso contarlas juntos, muy bajito.`, [f.id]),
+      sea(3, 'Una, dos, tres, y así hasta diez.', both),
+      sea(1, 'Respiraron como las olas: tomaron aire cuando llegaban y lo soltaron cuando se iban.', both),
+      sea(2, 'El cuerpo se movía suave, como el agua.', both),
+      sea(3, 'Lo repitieron muchas veces, sin prisa.', both),
+    ],
+    [
+      sea(1, `Entonces ${h.name} ${gift.text}.`, [h.id], gift.items),
+      sea(2, gift.after, [], gift.items),
+      sea(3, `${f.name} se acercó para mirar también.`, [f.id]),
+      sea(1, `${h.name} pensó que el mar también cantaba nanas.`, [h.id]),
+      sea(2, 'Una nana sin palabras, que nunca se acababa.'),
+      sea(3, 'Las gaviotas ya se habían ido a dormir.'),
+      sea(1, `${pair} se quedaron quietos, escuchándola.`, both),
+      sea(2, 'El sol se escondió del todo detrás del horizonte.'),
+      sea(3, 'El cielo se llenó de colores suaves.'),
+    ],
+    [
+      sea(1, 'Poco a poco, el mar se volvió oscuro y tranquilo.'),
+      sea(2, 'Solo se oían las olas, cada vez más lentas.'),
+      sea(3, 'A lo lejos, brilló la luz del faro.'),
+      sea(1, `${f.name} dijo que las olas parecían decir shhh, shhh, shhh.`, [f.id]),
+      sea(2, `${h.name} se rio bajito, porque era verdad.`, [h.id]),
+      sea(3, 'Shhh, shhh, shhh, repetía el mar.'),
+      sea(1, `${h.name} sintió que el sueño le llegaba como una ola suave.`, [h.id]),
+      sea(2, 'Los párpados le pesaban cada vez más.', [h.id]),
+      sea(3, `${f.name} también bostezaba, sin poder evitarlo.`, [f.id]),
+    ],
+    [
+      bed(1, needsWater(cast) ? `${pair} se acomodaron para dormir en el agua tranquila, cerca de la orilla.` : `${pair} se metieron en la cama, junto a la ventana abierta al mar.`, both),
+      bed(2, 'Todo olía a sal y a noche tranquila.'),
+      bed(3, 'Las estrellas se reflejaban en el agua.'),
+      bed(1, 'Volvieron a respirar como las olas, una vez más.', both),
+      bed(2, 'Llegar, quedarse y volver, como las olas.', both),
+      bed(3, 'Llegar, quedarse, volver, cada vez más despacio.', both),
+      bed(1, `${f.name} le dio las buenas noches a ${h.name} con un susurro.`, both),
+      bed(2, `${h.name} le respondió con un bostezo enorme.`, [h.id]),
+      bed(3, 'Los dos se rieron sin hacer ruido.', both),
+    ],
+    [
+      bed(1, `${h.name} aprendió que el mar canta la nana más larga del mundo.`, [h.id]),
+      bed(2, 'Y que, para escucharla, solo hay que estar en calma.', [h.id]),
+      bed(3, `${h.name} se acordó ${gift.id === 'moon' ? 'del camino de plata' : gift.id === 'boats' ? 'de los barquitos' : 'de la concha'}, y sonrió.`, [h.id]),
+      bed(1, 'Afuera, las olas seguían llegando, una tras otra.'),
+      bed(2, 'Shhh, shhh, decían las olas, muy bajito.'),
+      bed(3, 'La luna lo vigilaba todo desde arriba.'),
+      bed(2, `${f.name} ya dormía, respirando como el mar.`, [f.id]),
+      bed(3, 'Todo estaba en paz junto al mar.'),
+      bed(1, 'Respiraron por última vez al ritmo de las olas.', both),
+    ],
+    [
+      bed(1, `${h.name} cerró los ojos y dejó que el mar le contara su nana.`, [h.id]),
+      bed(2, 'Las olas iban y venían, iban y venían.'),
+      bed(3, 'Cada vez más lejos, cada vez más suaves.'),
+      bed(1, 'El cuerpo se le volvió ligero, como si flotara.', [h.id]),
+      bed(2, 'Las manos y los pies se quedaron quietos.', [h.id]),
+      bed(3, 'El mar seguía cantando su nana.'),
+      bed(2, `${h.name} soñó que flotaba sobre el agua tranquila, bajo la luna.`, [h.id]),
+      bed(3, 'Y que las olas lo mecían como una cuna.'.replace(' lo ', ` ${gendered(h, 'lo', 'la')} `), [h.id]),
+      bed(1, say([`Y así, con la nana del mar, ${pair} se durmieron.`, `Y así, mecidos por las olas, ${pair} se durmieron.`]), both),
+    ],
+  ];
+  return {
+    title: `${h.name} y la nana del mar`, place: home, moral: 'El mar canta la nana más larga del mundo.',
+    questId: `sea-${gift.id}`, variantId: home.id, beats, items: gift.items,
+    blockIds: { opening: home.id, goal: `sea-${gift.id}`, obstacle: 'waves', strategy: 'wave-breath', discovery: gift.id, ending: bedFor(cast, home) },
+    roles: { home: home.id, destination: home.id, gift: gift.id },
+  };
+}
+
+/** Games in a bubble bath. */
+const BATH_GAMES = [
+  { id: 'boat', items: ['boat'], text: 'Hicieron navegar un barquito entre las montañas de espuma.' },
+  { id: 'beard', items: [], text: 'Se pusieron barbas de espuma y se rieron como abuelos.' },
+  { id: 'shapes', items: [], text: 'Hicieron formas con la espuma: una nube, un pez y una montaña.' },
+  { id: 'rain', items: [], text: 'Llenaron un vasito y se hicieron lluvia tibia en la espalda.' },
+  { id: 'bubbles', items: [], text: 'Soplaron burbujas que flotaron hasta el techo, brillando.' },
+];
+
+/** C12 · El baño de burbujas: a sleepover, a warm bath with games, pyjamas, teeth, a story and sleep. */
+function bathTime({ random, hero: h, companion: f }) {
+  const say = sayer(random);
+  const games = [];
+  for (let i = 0; i < 2; i += 1) games.push(choose(random, BATH_GAMES.filter(entry => !games.includes(entry))));
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const bath = at('bathroom'), bed = at('bedroom');
+  const beats = [
+    [
+      bath(1, say([`Esa noche, ${named(f)} se quedó a dormir en casa de ${h.name}, y antes tocaba baño.`, `Aquella noche, ${named(f)} dormía en casa de ${h.name}, y lo primero era un baño calentito.`]), both),
+      bath(2, getScene('bathroom').detail),
+      bath(3, 'El agua salía tibia, y el baño se llenaba de vapor.'),
+      bath(1, 'La bañera se llenó de espuma blanca, alta como una montaña.'),
+      bath(2, 'Todo el baño olía a jabón de flores.'),
+      bath(3, `${f.name} metió un dedo para comprobar que no quemaba.`, [f.id]),
+      bath(1, `${pair} se metieron en el agua calentita.`, both),
+      bath(2, 'El cuerpo se aflojó enseguida, como un helado al sol.', both),
+      bath(3, `${h.name} suspiró, muy a gusto en el agua.`, [h.id]),
+    ],
+    [
+      bath(1, games[0].text, both, games[0].items),
+      bath(2, 'Se reían bajito, para no despertar a nadie.', both),
+      bath(3, 'La espuma les hacía cosquillas en la nariz.', both),
+      bath(1, games[1].text, both, games[1].items),
+      bath(2, `${f.name} dijo que era el mejor baño de su vida.`, [f.id]),
+      bath(3, 'El agua seguía tibia y suave.'),
+      bath(1, 'Luego se quedaron quietos, escuchando cómo explotaban las burbujas.', both),
+      bath(2, 'Pop, pop, pop, cada vez más despacio.'),
+      bath(3, 'Era un sonido pequeñito y tranquilo.'),
+    ],
+    [
+      bath(1, 'Cuando el agua empezó a enfriarse, salieron y se envolvieron en toallas.', both),
+      bath(2, 'Las toallas estaban suaves y calentitas.', both),
+      bath(3, `${h.name} parecía un burrito de toalla.`, [h.id]),
+      bath(1, 'Se pusieron el pijama y se lavaron los dientes con el cepillo.', both, ['toothbrush']),
+      bath(2, `${f.name} hizo una mueca graciosa con la espuma de la pasta.`, [f.id]),
+      bath(3, 'Se miraron en el espejo, muy limpios y despeinados.', both),
+      bed(1, 'Después, se metieron en la cama, todavía oliendo a jabón.', both),
+      bed(2, getScene('bedroom').detail),
+      bed(3, 'La almohada estaba fresquita y blandita.', both),
+    ],
+    [
+      bed(1, `${h.name} sacó su libro de cuentos favorito y leyó en voz bajita.`, [h.id], ['storybook']),
+      bed(2, 'Era un cuento corto, de los que se leen despacio.', [], ['storybook']),
+      bed(3, `${f.name} escuchaba con los ojos medio cerrados.`, [f.id]),
+      bed(1, 'Al terminar, apagaron la luz grande y dejaron solo la lamparita.', both, ['night-lamp']),
+      bed(2, 'La habitación quedó en una penumbra suave.'),
+      bed(3, 'Afuera, la noche estaba tranquila y oscura.'),
+      bed(1, 'Respiraron hondo, como si olieran el jabón de flores.', both),
+      bed(2, 'Y soltaron el aire despacito, como una burbuja que flota.', both),
+      bed(3, 'Lo hicieron tres veces, cada vez más lento.', both),
+    ],
+    [
+      bed(1, `${h.name} aprendió que un baño calentito es la mejor manera de despedirse del día.`, [h.id]),
+      bed(2, 'El agua se lleva el cansancio, y la espuma, las prisas.', [h.id]),
+      bed(3, `${f.name} murmuró que sí, ya medio dormid${gendered(f, 'o', 'a')}.`, [f.id]),
+      bed(1, 'Los ojos se les cerraban solos.', both),
+      bed(2, 'Los pies estaban calentitos bajo la manta.', both),
+      bed(3, 'Todo olía a limpio y a sueño.'),
+      bed(1, `${f.name} le dio las buenas noches a ${h.name} en voz muy bajita.`, both),
+      bed(2, `${h.name} le contestó con un pop, como una burbuja.`, [h.id]),
+      bed(3, 'Y los dos se rieron sin hacer ruido.', both),
+    ],
+    [
+      bed(1, 'La lamparita brillaba suave en un rincón.', [], ['night-lamp']),
+      bed(2, 'La casa entera estaba en silencio.'),
+      bed(3, 'Solo se oía el tictac de un reloj lejano.'),
+      bed(1, `${h.name} pensó en las burbujas que flotaban hasta el techo.`, [h.id]),
+      bed(2, 'Eran ligeras, brillantes y muy tranquilas.', [h.id]),
+      bed(3, 'Así se sentía ahora todo su cuerpo.', [h.id]),
+      bed(2, `${h.name} soñó con un mar de espuma blanca y suave.`, [h.id]),
+      bed(3, 'Y con barquitos que navegaban despacio.'),
+      bed(1, say([`Y así, limpios y calentitos, ${pair} se durmieron.`, `Y así, oliendo a jabón de flores, ${pair} se durmieron.`]), both),
+    ],
+  ];
+  return {
+    title: `${h.name} y el baño de burbujas`, place: getScene('bathroom'), moral: 'Un baño calentito es la mejor manera de despedirse del día.',
+    questId: `bath-${games[0].id}`, variantId: games.map(entry => entry.id).join('-'), beats, items: ['toothbrush', 'storybook', 'night-lamp', ...games.flatMap(entry => entry.items)],
+    blockIds: { opening: 'bathroom', goal: `bath-${games[0].id}`, obstacle: games[1].id, strategy: 'warm-bath', discovery: 'storybook', ending: 'bedroom' },
+    roles: { home: 'bathroom', destination: 'bedroom', games: games.map(entry => entry.id) },
+  };
+}
+
 const land = (h, f) => !needsWater([h, f]);
 export const RELAX_STRUCTURES = Object.freeze([
   { id: 'hurry', name: 'La prisa', generate: hurry },
@@ -1047,7 +1329,11 @@ export const RELAX_STRUCTURES = Object.freeze([
   { id: 'worry', name: 'La preocupación que se encoge', accept: land, generate: worry },
   { id: 'sleepers', name: 'Cómo duermen los demás', accept: land, generate: sleepers },
   { id: 'rainy-day', name: 'La tarde de lluvia', accept: land, generate: rainyDay },
+  { id: 'evening-walk', name: 'El paseo del atardecer', accept: land, generate: eveningWalk },
+  { id: 'sea-lullaby', name: 'La nana del mar', accept: (h, f) => ['beach', 'harbor'].some(id => fitsCast([h, f], id)), generate: seaLullaby },
+  { id: 'bath-time', name: 'El baño de burbujas', accept: land, generate: bathTime },
 ]);
 export const RELAX_GOAL_IDS = [...RELAX_GOALS.map(goal => goal.id), 'goodnight', ...NOISES.map(entry => `noise-${entry.id}`), ...Object.keys(FABLES).map(id => `fable-${id}`),
   ...VEHICLES.map(entry => `dream-${entry.item || entry.scene}`), 'three-things', ...WORRIES.map(entry => `worry-${entry.id}`),
-  ...SLEEPERS.map(entry => `sleepers-${entry.id}`), ...RAIN_PLAYS.map(entry => `rain-${entry.id}`)];
+  ...SLEEPERS.map(entry => `sleepers-${entry.id}`), ...RAIN_PLAYS.map(entry => `rain-${entry.id}`),
+  ...DUSK_SIGHTS.map(entry => `walk-${entry.id}`), ...SEA_GIFTS.map(entry => `sea-${entry.id}`), ...BATH_GAMES.map(entry => `bath-${entry.id}`)];

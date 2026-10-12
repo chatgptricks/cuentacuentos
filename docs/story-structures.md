@@ -16,9 +16,9 @@ Cada cuento nuevo mantiene una pareja protagonista y un objetivo central. Los se
 | Pruebas y regalos | 14 pruebas, 10 regalos | Un regalo solo se usa después de entregarse; una habilidad solo la usa quien la tiene. |
 | Elementos | 116 objetos | Una página dibuja únicamente los objetos que nombra su frase (`ITEM_WORDS`). |
 
-## Las 43 estructuras
+## Las 60 estructuras
 
-### Aventura (8)
+### Aventura (12)
 
 | Estructura | Partes |
 | --- | --- |
@@ -30,8 +30,12 @@ Cada cuento nuevo mantiene una pareja protagonista y un objetivo central. Los se
 | La gran pregunta | Una pregunta en casa · el consejero indica dónde mirar · prueba · observación · respuesta sencilla y verdadera · una pregunta nueva |
 | La estrella caída | Una estrella cae cerca de casa · la promesa de llevarla al lugar más alto · prueba en el camino · no puede subir sola · una cometa, una nana, un farol, un deseo o el vuelo de un amigo la devuelven · cada noche la buscan en el cielo |
 | El faro apagado | El guardián pide ayuda · la llave, el farol, el cristal o la campana · prueba en el acantilado · la luz vuelve · los barcos regresan · visitas cada domingo |
+| La carta perdida | El viento se lleva una carta de la cartera · la promesa · el viaje y la prueba · la carta aparece · la entrega a quien la esperaba · cartas propias |
+| La flor de hielo | Un verano sin agua · el consejo · el viaje al frío y la prueba · la flor que nunca se derrite · el agua vuelve · el verano fresco |
+| La nube perdida | Sequía · una nubecita enganchada cerca de casa · viaje al Reino de las Nubes · la familia de nubes · la lluvia como regalo · el saludo desde el cielo |
+| El huevo misterioso | Un huevo sin dueño · dos visitas equivocadas · la pista · la familia correcta · el huevo se abre · visitas a la cría |
 
-### Acción (8)
+### Acción (12)
 
 | Estructura | Partes |
 | --- | --- |
@@ -43,8 +47,12 @@ Cada cuento nuevo mantiene una pareja protagonista y un objetivo central. Los se
 | El falso villano | Algo raro pasa en casa · todos culpan al vecino «raro» · pistas con la lupa · vigilancia nocturna · la causa real · disculpas y amistad |
 | La tormenta | Sin villano: la señal del cielo · avisar a los vecinos y prepararse · refugio · rescatar a una cría o mascota · el arcoíris y recoger juntos · calma |
 | Las tres adivinanzas | Un recado al otro lado · un villano cierra el paso · tres adivinanzas resueltas por cada uno y por los dos · el villano confiesa su soledad · un camino abierto para todos |
+| La balsa a la deriva | Sin villano: una cría río abajo · carrera por la orilla y una cuerda · prueba junto a la cascada · el rescate · el reencuentro · jugar seguros junto al río |
+| La rata ladrona | Desaparecen cosas brillantes · el rastro con la lupa · la madriguera y la prueba · la rata explica su casa fría y oscura · lo devuelve todo · un farol para su casa |
+| El gigante dormido | El río inunda el camino · un gigante dormido hace de presa · el ruido falla · una pluma, una flauta o un rayo de sol lo despiertan · por qué no podía dormir · un regalo para sus noches |
+| La nube enfadada | Una nube de tormenta llueve sobre cada fiesta · subida a las nubes y prueba · su soledad · llover donde la esperan · invitada a la fiesta con un arcoíris |
 
-### Relax (9)
+### Relax (12)
 
 | Estructura | Partes |
 | --- | --- |
@@ -57,8 +65,11 @@ Cada cuento nuevo mantiene una pareja protagonista y un objetivo central. Los se
 | La preocupación que se encoge | Una preocupación para mañana · compañía del amigo · una caja, piedra lisa o tarro de la calma · un plan pequeño · sueño |
 | Cómo duermen los demás | Una noche sin sueño · tres animales que duermen a su manera, imaginados y copiados en la cama · cada uno descansa a su manera · sueño |
 | La tarde de lluvia | Un plan al aire libre que se estropea · escuchar la lluvia · dos juegos tranquilos dentro · charcos y la primera estrella · dormir con la lluvia |
+| El paseo del atardecer | Un paseo lento · tres seres que vuelven a casa a dormir · respiración · la primera estrella · la vuelta a casa · sueño |
+| La nana del mar | Atardecer junto al mar (también para los animales marinos) · respirar como las olas · una concha, los barquitos o el camino de la luna · el shhh del mar · sueño |
+| El baño de burbujas | Pijamada · un baño con dos juegos de espuma · pijama y dientes · un cuento · respiración · sueño |
 
-### Amigos (8)
+### Amigos (12)
 
 | Estructura | Partes |
 | --- | --- |
@@ -70,10 +81,14 @@ Cada cuento nuevo mantiene una pareja protagonista y un objetivo central. Los se
 | La competición amistosa | Concurso · ventaja · tropieza el amigo · ayudar en vez de ganar · premio a la amistad |
 | El juguete prestado | Un préstamo · el juguete se rompe · la tentación de esconderlo · la verdad · perdón · lo arreglan juntos |
 | El club secreto | Fundan un club solo para dos · alguien quiere entrar y se va triste · la regla no es justa · lo buscan · su talento ayuda al club · siempre hay sitio para uno más |
+| El partido | Amigos en equipos rivales · una derrota ajustada · el enfado · el amigo se acerca · felicitar al otro equipo · un partido con equipos mezclados |
+| El amigo en cama | Un amigo resfriado, con tos o con fiebre · no se puede entrar · regalos por la ventana · un idioma secreto · se cura · vuelven a jugar |
+| La mudanza | Un amigo se muda · el último día en dos lugares favoritos · un regalo · despedida en la estación · cartas · una visita en verano |
+| El huerto compartido | Plantar juntos · cuidados diarios · pájaros, caracoles o sequía resueltos con cariño · la cosecha · compartir con los vecinos · semillas para la próxima primavera |
 
-### Mi familia (10)
+### Mi familia (12)
 
-Actividad juntos · La primera vez · Ayudantes de casa · El día al revés · Cuando era pequeño · La espera · El enfado y el abrazo · El huésped peludo (la mascota de un vecino) · Acampada en el jardín (un ruido en la noche que resulta ser un vecino pequeño) · El regalo hecho a mano (un pequeño desastre salvado y una entrega feliz). Si el familiar elegido es un bebé, cada frase en la que participa tiene su versión de bebé.
+Actividad juntos · La primera vez · Ayudantes de casa · El día al revés · Cuando era pequeño · La espera · El enfado y el abrazo · El huésped peludo (la mascota de un vecino) · Acampada en el jardín (un ruido en la noche que resulta ser un vecino pequeño) · El regalo hecho a mano (un pequeño desastre salvado y una entrega feliz) · La visita a los abuelos (en tren, con dos planes en su casa) · El cuento inventado (un cuento por turnos cuyas escenas se ilustran). Si el familiar elegido es un bebé, cada frase en la que participa tiene su versión de bebé.
 
 ## La voz de cada cuento
 
@@ -87,7 +102,7 @@ Cada parte tiene nueve frases en orden de lectura y en tres niveles. Los cuentos
 
 `npm test` genera más de 40.000 cuentos y comprueba, entre otras cosas, lo siguiente:
 
-- Las 43 estructuras y todos sus objetivos son alcanzables.
+- Las 60 estructuras y todos sus objetivos son alcanzables.
 - Cada estructura cuenta sus causas antes que sus efectos.
 - El regalo se entrega antes de usarse, y las habilidades pertenecen a quien las usa.
 - Los villanos aparecen en las páginas donde actúan y cuentan su motivo.

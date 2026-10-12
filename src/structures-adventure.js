@@ -1,7 +1,7 @@
 import { getScene } from './world-catalog.js';
 import {
   ABILITIES, PLACE_INFO, TOOLS, TRIALS, cap, fitsCast, friendWord, inPlace, kind, low, named,
-  needsWater, ofPhrase, placeName, spotOf, toPlace, travelTo,
+  needsWater, ofPhrase, placeName, spotOf, toPhrase, toPlace, travelTo,
 } from './narrative-world.js';
 import { ADVENTURE_MENTORS, ELIXIRS } from './quest-catalog.js';
 import { abilityTrial, at, choose, copyCharacter, copySupporting, gendered, planFor, sayer, solveTrial, trialReason, unfold } from './story-kit.js';
@@ -852,6 +852,391 @@ function darkLighthouse({ random, hero: h, companion: f }) {
   };
 }
 
+/** Who waits for a lost letter, and where the wind leaves it. */
+const LETTER_READERS = [
+  { id: 'grandma', who: 'la abuela Rosa', why: 'llevaba semanas esperando noticias de su nieta' },
+  { id: 'miller', who: 'el señor del molino', why: 'esperaba la invitación para la boda de su hermano' },
+  { id: 'baker', who: 'la panadera', why: 'esperaba la receta secreta de su abuela' },
+  { id: 'twins', who: 'la maestra', why: 'esperaba una postal de sus antiguos alumnos' },
+];
+const LETTER_WINDS = ['meadow', 'forest', 'lookout-hill', 'orchard', 'flower-field', 'windmill'];
+
+/** A9 · La carta perdida: the wind steals a letter, the pair follows it, and someone waiting gets their news. */
+function lostLetter({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const home = getScene(choose(random, homesFor(cast)));
+  const place = getScene(choose(random, LETTER_WINDS.filter(id => id !== home.id && fitsCast(cast, id))));
+  const reader = choose(random, LETTER_READERS);
+  const mail = copySupporting(random, 'mail-carrier');
+  // A morning errand: darkness never interrupts it.
+  const trial = abilityTrial(random, PLACE_INFO[place.id].trials.filter(id => id !== 'night'), [f, h]);
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const atHome = at(home.id), there = at(place.id);
+  const { helper } = trial;
+  const letter = ['letter'];
+  const beats = [
+    [
+      atHome(1, say([`Una mañana de viento, ${named(h)} y su ${friendWord(f)} ${f.name} saludaron a ${mail.name}, la cartera.`, `Una mañana, ${named(h)} y su ${friendWord(f)} ${f.name} ayudaban a ${mail.name}, la cartera, a repartir.`]), [...both, mail.id]),
+      atHome(2, home.detail),
+      atHome(3, `${mail.name} llevaba una bolsa llena de cartas y paquetes.`, [mail.id]),
+      atHome(1, 'De repente, una ráfaga abrió la bolsa, y una carta salió volando.', [mail.id], letter),
+      atHome(2, 'La carta dio vueltas en el aire, cada vez más alto.', [], letter),
+      atHome(3, `${f.name} saltó para atraparla, pero no llegó.`, [f.id]),
+      atHome(1, `${mail.name} se puso muy triste: era la carta para ${reader.who}, que ${reader.why}.`, [mail.id]),
+      atHome(2, 'No podía dejar el resto de cartas sin repartir.', [mail.id]),
+      atHome(3, 'El viento se había llevado la carta hacia las afueras.'),
+    ],
+    [
+      atHome(1, `${pair} prometieron encontrar la carta y llevarla a su destino.`, both),
+      atHome(2, `${mail.name} les dio las gracias y les dijo dónde vivía ${reader.who}.`, [mail.id]),
+      atHome(3, `${h.name} miró hacia dónde soplaba el viento.`, [h.id]),
+      there(1, travelTo(place, cast, pair), both),
+      there(2, place.detail),
+      there(3, 'Miraban el cielo, los árboles y el suelo, buscando un sobre blanco.', both),
+      there(1, `Por fin, ${f.name} vio la carta ${spotOf(place)}.`, [f.id], letter),
+      there(2, 'Estaba un poco arrugada, pero entera.', [], letter),
+      there(3, `${h.name} dio un saltito de alegría.`, [h.id]),
+    ],
+    [
+      there(1, `Pero ${low(TRIALS[trial.id].intro)}`),
+      there(2, 'La carta estaba al otro lado, esperándolos.', [], letter),
+      there(3, `${f.name} miró a ${h.name}, pensando qué hacer.`, both),
+      there(2, trialReason(trial), helper ? [helper.id] : both),
+      there(1, solveTrial(trial, pair), helper ? [helper.id] : both),
+      there(3, TRIALS[trial.id].after),
+      there(1, `${h.name} tomó la carta con cuidado y la alisó con las manos.`, [h.id], letter),
+      there(2, `${f.name} la guardó dentro de su chaqueta, para que no volara otra vez.`, [f.id]),
+      there(3, 'Ya solo faltaba llevarla a su destino.', both),
+    ],
+    [
+      atHome(1, `Volvieron ${toPlace(home)} y buscaron la casa ${ofPhrase(reader.who)}.`, both),
+      atHome(2, 'Llamaron a la puerta con la carta en la mano.', both, letter),
+      atHome(3, 'Se oyeron pasos al otro lado.'),
+      atHome(1, `Al ver la carta, ${toPhrase(reader.who)} se le iluminó la cara.`, both, letter),
+      atHome(2, 'La abrió allí mismo y la leyó en voz baja.', [], letter),
+      atHome(3, 'Luego sonrió, con los ojos brillantes.'),
+      atHome(1, `Les dio las gracias a ${pair} con un abrazo enorme.`, both),
+      atHome(2, 'Dijo que aquella carta valía más que un tesoro.'),
+      atHome(3, `${f.name} se puso rojo de alegría.`.replace('rojo', gendered(f, 'rojo', 'roja')), [f.id]),
+    ],
+    [
+      atHome(1, `Después, fueron a contárselo a ${mail.name}.`, [...both, mail.id]),
+      atHome(2, `${mail.name} les regaló un sello a cada uno, de los más bonitos.`, [mail.id]),
+      atHome(3, `Dijo que eran los mejores carteros ${inPlace(home)}.`, [mail.id]),
+      atHome(1, say([`${h.name} aprendió que una carta pequeña puede guardar una alegría muy grande.`, `${h.name} aprendió que ayudar a que llegue una noticia también es una aventura.`]), [h.id]),
+      atHome(2, 'Y que no hay que rendirse cuando algo sale volando.', [h.id]),
+      atHome(3, `${f.name} propuso escribirse cartas también entre ellos.`, [f.id]),
+      atHome(1, `Desde entonces, ${pair} ayudaban a ${mail.name} los días de viento.`, [...both, mail.id]),
+      atHome(2, 'Sujetaban la bolsa con fuerza entre los dos.', both),
+      atHome(3, 'Y ninguna carta volvió a escaparse.'),
+    ],
+    [
+      atHome(1, `Esa noche, ${h.name} escribió su primera carta para ${f.name}.`, [h.id], letter),
+      atHome(2, 'La decoró con estrellas y corazones pequeños.', [h.id]),
+      atHome(3, 'Y la cerró con el sello nuevo.', [h.id]),
+      atHome(1, 'Afuera, el viento ya se había calmado.'),
+      atHome(2, 'Las hojas descansaban quietas en las ramas.'),
+      atHome(3, 'La luna brillaba sobre los tejados.'),
+      atHome(2, `${h.name} dejó la carta junto a la puerta para llevarla por la mañana.`, [h.id]),
+      atHome(3, 'Bostezó, con una sonrisa enorme en la cara.', [h.id]),
+      atHome(1, `Y se durmió pensando en la cara que pondría ${f.name} al leerla.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y la carta perdida`, place, extras: [mail], questId: `letter-${reader.id}`, variantId: trial.id, beats, items: letter,
+    blockIds: { opening: home.id, goal: `letter-${reader.id}`, obstacle: trial.id, strategy: place.id, discovery: reader.id, ending: home.id },
+    roles: { home: home.id, destination: place.id, mail: mail.id, helper: helper?.id ?? null, ability: trial.ability ?? null },
+  };
+}
+
+/** Where the ice flower grows, and the summer trouble it solves. */
+const THIRSTS = [
+  { id: 'fountain', trouble: 'hacía tanto calor que la fuente se había secado', fix: 'Dejaron la flor de hielo en la fuente, y el agua empezó a brotar fresca y clara.' },
+  { id: 'garden', trouble: 'hacía tanto calor que las flores del jardín se doblaban de sed', fix: 'Dejaron la flor de hielo entre las flores, y un rocío fresco las despertó una a una.' },
+  { id: 'pond', trouble: 'hacía tanto calor que el estanque de los patos casi no tenía agua', fix: 'Dejaron la flor de hielo en el estanque, y el agua volvió a llenarlo despacio.' },
+];
+
+/** A10 · La flor de hielo: a summer without water, a wise word, a cold place and a flower that brings it back. */
+function iceFlower({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const home = getScene(choose(random, homesFor(cast).filter(id => !['beach', 'harbor'].includes(id))));
+  const place = getScene(choose(random, ['snowy-valley', 'mountain'].filter(id => fitsCast(cast, id))));
+  const thirst = choose(random, THIRSTS);
+  const mentor = copyCharacter(random, choose(random, ADVENTURE_MENTORS.filter(id => id !== h.id && id !== f.id)));
+  const trial = abilityTrial(random, PLACE_INFO[place.id].trials.filter(id => id !== 'night'), [f, h]);
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const atHome = at(home.id), there = at(place.id);
+  const { helper } = trial;
+  const flower = ['ice-flower'];
+  const beats = [
+    [
+      atHome(1, `Aquel verano, ${inPlace(home)}, ${thirst.trouble}.`, []),
+      atHome(2, 'El sol apretaba desde muy temprano.'),
+      atHome(3, 'Hasta los pájaros cantaban más bajito, por el calor.'),
+      atHome(1, `${named(h)} y su ${friendWord(f)} ${f.name} no sabían cómo ayudar.`, both),
+      atHome(2, `${f.name} se abanicaba con una hoja enorme.`, [f.id]),
+      atHome(3, 'Todos buscaban la sombra, sin ganas de jugar.'),
+      atHome(1, `Entonces fueron a pedir consejo a ${mentor.name}, ${kind(mentor)}.`, [...both, mentor.id]),
+      atHome(2, `${mentor.name} los escuchó con mucha atención.`, [mentor.id]),
+      atHome(3, `${mentor.name} se quedó pensando un buen rato.`, [mentor.id]),
+    ],
+    [
+      atHome(1, `${mentor.name} les habló de una flor de hielo que crecía ${inPlace(place)}.`, [mentor.id], flower),
+      atHome(2, 'Dijo que nunca se derretía del todo y que siempre daba agua fresca.', [mentor.id]),
+      atHome(3, 'Pero solo se podía coger una, y con mucho cuidado.', [mentor.id]),
+      atHome(1, `${pair} decidieron ir a buscarla enseguida.`, both),
+      atHome(2, `${mentor.name} les deseó buen viaje desde la puerta.`, [mentor.id]),
+      atHome(3, 'Llevaban agua y ganas de sobra.', both),
+      there(1, travelTo(place, cast, pair), both),
+      there(2, place.detail),
+      there(3, 'Allí arriba hacía fresco, y el aire olía a nieve.', both),
+    ],
+    [
+      there(1, `Pero ${low(TRIALS[trial.id].intro)}`),
+      there(2, 'El frío les hacía temblar un poquito.', both),
+      there(3, `${h.name} se frotó las manos para calentarlas.`, [h.id]),
+      there(2, trialReason(trial), helper ? [helper.id] : both),
+      there(1, solveTrial(trial, pair), helper ? [helper.id] : both),
+      there(3, TRIALS[trial.id].after),
+      there(1, `Por fin, ${spotOf(place)}, encontraron la flor de hielo.`, both, flower),
+      there(2, 'Brillaba como si tuviera estrellas dentro.', [], flower),
+      there(3, `${f.name} contuvo la respiración al verla.`, [f.id]),
+    ],
+    [
+      there(1, `${h.name} la arrancó con mucho cuidado, sin romper ni un pétalo.`, [h.id], flower),
+      there(2, 'Estaba fría, pero no quemaba las manos.', [], flower),
+      there(3, 'Una gotita fresca resbaló por su tallo.', [], flower),
+      there(1, `${f.name} la envolvió en su bufanda para protegerla del sol.`, [f.id]),
+      there(2, 'Empezaron a bajar despacio, paso a paso.', both),
+      there(3, 'El camino de vuelta parecía más corto.', both),
+      atHome(1, `Volvieron ${toPlace(home)} justo cuando el sol estaba más alto.`, both),
+      atHome(2, 'Los vecinos salieron a mirar, llenos de curiosidad.'),
+      atHome(3, 'Nadie había visto nunca una flor así.'),
+    ],
+    [
+      atHome(1, thirst.fix, both, flower),
+      atHome(2, 'El aire se volvió fresco y agradable.'),
+      atHome(3, 'Los pájaros volvieron a cantar a pleno pulmón.'),
+      atHome(1, 'Todos aplaudieron y se mojaron las manos y la cara, riéndose.', both),
+      atHome(2, `${mentor.name} sonrió desde lejos, muy ${gendered(mentor, 'orgulloso', 'orgullosa')}.`, [mentor.id]),
+      atHome(3, 'Los más pequeños chapoteaban de alegría.'),
+      atHome(1, say([`${h.name} aprendió que un regalo pequeño, bien cuidado, puede ayudar a todos.`, `${h.name} aprendió que cuidar lo que se nos presta es la mejor forma de ayudar.`]), [h.id]),
+      atHome(2, 'Y que, a veces, el remedio está lejos y hay que ir a buscarlo.', [h.id]),
+      atHome(3, `${f.name} dijo que nunca olvidaría aquel viaje.`, [f.id]),
+    ],
+    [
+      atHome(1, 'Desde entonces, la flor de hielo cuidaba del agua todo el verano.', [], flower),
+      atHome(2, 'Y en invierno, descansaba bajo una manta de nieve.'),
+      atHome(3, 'Nadie volvió a pasar sed en aquel lugar.'),
+      atHome(1, `Esa noche, el aire estaba fresquito, y ${h.name} durmió de maravilla.`, [h.id]),
+      atHome(2, 'Por la ventana entraba una brisa suave.'),
+      atHome(3, 'Olía a agua fresca y a hierba.'),
+      atHome(2, `${h.name} soñó con montañas blancas y flores que brillaban.`, [h.id]),
+      atHome(3, `Y con ${f.name} riendo en la nieve.`, [h.id]),
+      atHome(1, `Y así, tranquil${gendered(h, 'o', 'a')} y content${gendered(h, 'o', 'a')}, siguió durmiendo hasta la mañana.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y la flor de hielo`, place, mentor, questId: `ice-${thirst.id}`, variantId: trial.id, beats, items: flower,
+    blockIds: { opening: home.id, goal: `ice-${thirst.id}`, obstacle: trial.id, strategy: mentor.id, discovery: place.id, ending: home.id },
+    roles: { home: home.id, destination: place.id, mentor: mentor.id, helper: helper?.id ?? null, ability: trial.ability ?? null },
+  };
+}
+
+/** Where a lost little cloud gets caught near home. */
+const CLOUD_SNAGS = ['en la veleta de un tejado', 'entre las ramas del árbol más alto', 'en lo alto de una chimenea', 'en las aspas de un molinillo'];
+
+/** A11 · La nube perdida: a dry season, a cloud lost close to the ground, a journey up and rain as a thank you. */
+function lostCloud({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const home = getScene(choose(random, homesFor(cast).filter(id => !['beach', 'harbor'].includes(id))));
+  const place = getScene('clouds');
+  const snag = choose(random, CLOUD_SNAGS);
+  const trial = abilityTrial(random, PLACE_INFO[place.id].trials, [f, h]);
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const atHome = at(home.id), there = at(place.id);
+  const { helper } = trial;
+  const cloud = ['cloud'];
+  const beats = [
+    [
+      atHome(1, `Hacía muchos días que no llovía ${inPlace(home)}.`),
+      atHome(2, home.detail),
+      atHome(3, 'Las plantas tenían las hojas mustias y tristes.'),
+      atHome(1, `Una tarde, ${named(h)} vio una nubecita enganchada ${snag}.`, [h.id], cloud),
+      atHome(2, 'Era pequeña, blanca y lloraba gotitas de pena.', [], cloud),
+      atHome(3, `${h.name} se frotó los ojos, sin creérselo.`, [h.id]),
+      atHome(1, `Llamó a su ${friendWord(f)} ${f.name}, y entre los dos la soltaron con cuidado.`, both, cloud),
+      atHome(2, `${f.name} la sujetó suavemente, como si fuera de algodón.`, [f.id]),
+      atHome(3, 'La nubecita se acurrucó entre ellos, temblando.', [], cloud),
+    ],
+    [
+      atHome(1, 'La nubecita les contó que se había perdido de su familia en un día de viento.', both, cloud),
+      atHome(2, 'Sin ella, las demás nubes no se atrevían a llover.', [], cloud),
+      atHome(3, 'Por eso hacía tanto tiempo que no caía ni una gota.'),
+      atHome(1, `${pair} prometieron llevarla de vuelta ${toPlace(place)}.`, both),
+      atHome(2, 'La nubecita dio un saltito de alegría en el aire.', [], cloud),
+      atHome(3, `${f.name} se rio al verla dar vueltas.`, [f.id]),
+      there(1, travelTo(place, cast, pair), both),
+      there(2, place.detail),
+      there(3, 'Todo era blando, blanco y silencioso.', both),
+    ],
+    [
+      there(1, `Pero ${low(TRIALS[trial.id].intro)}`),
+      there(2, 'La nubecita se escondió detrás de ellos, asustada.', [], cloud),
+      there(3, `${h.name} le dijo que no se preocupara.`, [h.id]),
+      there(2, trialReason(trial), helper ? [helper.id] : both),
+      there(1, solveTrial(trial, pair), helper ? [helper.id] : both),
+      there(3, TRIALS[trial.id].after),
+      there(1, 'Por fin vieron a una familia de nubes grandes y grises, muy preocupadas.', both),
+      there(2, 'Buscaban por todas partes, llamando a la pequeña.'),
+      there(3, 'La nubecita se puso a brillar de alegría.', [], cloud),
+    ],
+    [
+      there(1, 'La nubecita voló hacia su familia, y todas se abrazaron.', [], cloud),
+      there(2, 'Las nubes grandes se volvieron blanditas de felicidad.'),
+      there(3, `${f.name} se secó una lagrimita de emoción.`, [f.id]),
+      there(1, `Las nubes les dieron las gracias a ${pair} y les preguntaron qué podían hacer por ellos.`, both),
+      there(2, `${h.name} les contó que su tierra necesitaba lluvia.`, [h.id]),
+      there(3, 'Las nubes se miraron y asintieron a la vez.'),
+      there(1, 'Prometieron llover suave esa misma noche, como regalo.', both),
+      there(2, 'La nubecita prometió venir también con ellas.', [], cloud),
+      there(3, `${pair} se despidieron y volvieron a casa.`, both),
+    ],
+    [
+      atHome(1, 'Esa noche, empezó a llover despacito, con gotas suaves y tibias.'),
+      atHome(2, 'Las plantas levantaron sus hojas, agradecidas.'),
+      atHome(3, 'Olía a tierra mojada por todas partes.'),
+      atHome(1, `${pair} miraron la lluvia desde la ventana, muy contentos.`, both),
+      atHome(2, `Entre las nubes, ${f.name} vio una muy pequeñita que les guiñaba.`, [f.id], cloud),
+      atHome(3, `${h.name} la saludó con la mano.`, [h.id]),
+      atHome(1, say([`${h.name} aprendió que ayudar a alguien pequeño puede traer cosas grandes.`, `${h.name} aprendió que quien vuelve con su familia trae alegría para todos.`]), [h.id]),
+      atHome(2, 'Y que todos, hasta las nubes, necesitan a los suyos.', [h.id]),
+      atHome(3, 'Afuera, la lluvia seguía cantando su canción.'),
+    ],
+    [
+      atHome(1, 'A la mañana siguiente, todo estaba verde y brillante.'),
+      atHome(2, 'Las flores se habían abierto, y los charcos reflejaban el cielo.'),
+      atHome(3, 'Los vecinos salieron a mirar, sorprendidos.'),
+      atHome(1, `Desde entonces, cada vez que llovía, ${pair} buscaban a la nubecita en el cielo.`, both),
+      atHome(2, 'Siempre era la más pequeña y la más blanca.', [], cloud),
+      atHome(3, 'Y siempre parecía saludarlos desde allá arriba.', both),
+      atHome(2, `Aquella noche, ${h.name} se acostó escuchando la lluvia.`, [h.id]),
+      atHome(3, 'Las gotas tamborileaban suave sobre el tejado.'),
+      atHome(1, `Y así, con la nana de la lluvia, ${h.name} se durmió.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y la nube perdida`, place, questId: `cloud-${CLOUD_SNAGS.indexOf(snag)}`, variantId: trial.id, beats, items: cloud,
+    blockIds: { opening: home.id, goal: `cloud-${CLOUD_SNAGS.indexOf(snag)}`, obstacle: trial.id, strategy: 'promise', discovery: place.id, ending: home.id },
+    roles: { home: home.id, destination: place.id, helper: helper?.id ?? null, ability: trial.ability ?? null },
+  };
+}
+
+/** Eggs that could roll away from home, whose they are and what hatches. */
+const EGGS = [
+  { id: 'chick', parent: 'hen', who: 'la gallina del establo', place: 'farm', look: 'pequeño, blanco y calentito' },
+  { id: 'duckling', parentName: 'mamá pata', who: 'mamá pata', place: 'lake', look: 'verdoso y un poco alargado' },
+  { id: 'penguin-chick', parent: 'penguin', who: 'la familia de pingüinos', place: 'snowy-valley', look: 'grande, blanco y muy frío' },
+  { id: 'sea-turtle-hatchling', parent: 'turtle', who: 'la tortuga de la playa', place: 'beach', look: 'redondo, blando y lleno de arena' },
+];
+
+/** A12 · El huevo misterioso: an egg with no owner, two wrong guesses, the right family and a hatching. */
+function mysteryEgg({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const eggs = EGGS.filter(entry => fitsCast(cast, entry.place));
+  const egg = choose(random, eggs);
+  const wrong = [];
+  for (let i = 0; i < 2; i += 1) wrong.push(choose(random, eggs.filter(entry => entry !== egg && !wrong.includes(entry))));
+  const home = getScene(choose(random, homesFor(cast).filter(id => ![egg.place, ...wrong.map(entry => entry.place)].includes(id))));
+  const place = getScene(egg.place);
+  const parent = egg.parent && egg.parent !== h.id && egg.parent !== f.id ? copyCharacter(random, egg.parent) : null;
+  const baby = copySupporting(random, egg.id);
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const atHome = at(home.id), there = at(place.id), first = at(wrong[0].place), second = at(wrong[1].place);
+  const family = parent ? [parent.id] : [];
+  const beats = [
+    [
+      atHome(1, say([`Una mañana, ${named(h)} encontró un huevo solito ${spotOf(home)}.`, `Paseando, ${named(h)} se tropezó con un huevo ${spotOf(home)}.`]), [h.id]),
+      atHome(2, home.detail),
+      atHome(3, `Era ${egg.look}.`.replace(/^Era /, 'El huevo era ')),
+      atHome(1, `Llamó a su ${friendWord(f)} ${f.name}, y los dos se preguntaron de quién sería.`, both),
+      atHome(2, `${f.name} lo tapó con hojas para que no se enfriara.`, [f.id]),
+      atHome(3, 'Dentro se oía un toc, toc, muy suave.', both),
+      atHome(1, `${pair} decidieron buscar a su familia antes de que naciera.`, both),
+      atHome(2, 'Lo llevaron entre los dos, muy despacio.', both),
+      atHome(3, 'Cada pocos pasos comprobaban que seguía calentito.', both),
+    ],
+    [
+      first(1, `Primero fueron ${toPlace(getScene(wrong[0].place))} a preguntar a ${wrong[0].who}.`, both),
+      first(2, getScene(wrong[0].place).detail),
+      first(3, `${h.name} enseñó el huevo con mucho cuidado.`, [h.id]),
+      first(1, `Pero ${wrong[0].who} miró el huevo y dijo que no era suyo.`, both),
+      first(2, 'Les explicó que sus huevos eran muy distintos.'),
+      first(3, `${f.name} suspiró, un poco ${gendered(f, 'desanimado', 'desanimada')}, pero no se rindió.`, [f.id]),
+      second(1, `Después fueron ${toPlace(getScene(wrong[1].place))} a preguntar a ${wrong[1].who}.`, both),
+      second(2, getScene(wrong[1].place).detail),
+      second(3, 'El huevo se movió un poquito entre sus manos.', both),
+    ],
+    [
+      second(1, `Pero ${wrong[1].who} tampoco reconoció aquel huevo.`, both),
+      second(2, `Aun así, les dio una pista: un huevo ${egg.look} solo podía ser de un sitio.`),
+      second(3, `${h.name} y ${f.name} se miraron, con una idea en la cabeza.`, both),
+      there(1, `Así que fueron ${toPlace(place)}, lo más rápido que pudieron.`, both),
+      there(2, place.detail),
+      there(3, 'El toc, toc del huevo sonaba cada vez más fuerte.', both),
+      there(1, `Allí estaba ${egg.who}, buscando por todas partes con cara de preocupación.`, family),
+      there(2, 'Había contado sus huevos una y otra vez, y le faltaba uno.', family),
+      there(3, 'Al ver a los dos amigos, se quedó muy quieta.', family),
+    ],
+    [
+      there(1, `${pair} le enseñaron el huevo, y ${egg.who} dio un grito de alegría.`, [...both, ...family]),
+      there(2, 'Lo había perdido el día anterior, con el viento.', family),
+      there(3, 'Les dio las gracias una y otra vez.', family),
+      there(1, 'En ese mismo momento, el huevo hizo crac.', both),
+      there(2, 'Primero salió un piquito, y luego una cabecita.', both),
+      there(3, 'Todos contuvieron la respiración, sin hacer ruido.', both),
+      there(1, `Y del huevo salió ${baby.name}, ${gendered(baby, 'un', 'una')} ${baby.label} precios${gendered(baby, 'o', 'a')}.`, [baby.id, ...family]),
+      there(2, `${baby.name} miró a su alrededor, parpadeando.`, [baby.id]),
+      there(3, `${f.name} se tapó la boca, de pura emoción.`, [f.id]),
+    ],
+    [
+      there(1, `${baby.name} se acurrucó junto a su familia, muy a gusto.`, [baby.id, ...family]),
+      there(2, `${egg.who} les dijo que podían visitarl${gendered(baby, 'o', 'a')} cuando quisieran.`, family),
+      there(3, `${h.name} prometió volver muy pronto a visitarlos.`, [h.id]),
+      there(1, say([`${h.name} aprendió que cuidar de algo tan pequeño es una gran responsabilidad.`, `${h.name} aprendió que, si buscamos con paciencia, todo encuentra su casa.`]), [h.id]),
+      there(2, 'Y que no hay que rendirse aunque las primeras respuestas sean que no.', [h.id]),
+      there(3, `${f.name} dijo que había sido la mejor mañana de su vida.`, [f.id]),
+      atHome(1, `Volvieron ${toPlace(home)} hablando sin parar de ${baby.name}.`, both),
+      atHome(2, 'Imitaban su manera de parpadear, y se reían.', both),
+      atHome(3, 'El sol ya empezaba a bajar.'),
+    ],
+    [
+      atHome(1, `Desde entonces, ${pair} visitaban a ${baby.name} cada semana.`, both),
+      atHome(2, `${baby.name} crecía un poquito cada vez.`),
+      atHome(3, 'Y siempre corría a saludarlos al verlos llegar.'),
+      atHome(1, `Esa noche, ${h.name} dibujó a ${baby.name} saliendo del huevo.`, [h.id]),
+      atHome(2, 'Lo colgó junto a su cama.', [h.id]),
+      atHome(3, 'Afuera, la luna brillaba redonda como un huevo.'),
+      atHome(2, `${h.name} pensó en ${baby.name}, dormid${gendered(baby, 'o', 'a')} con su familia.`, [h.id]),
+      atHome(3, 'Todos estaban donde tenían que estar.'),
+      atHome(1, `Y ${h.name} se durmió con una sonrisa, como un pollito en su nido.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y el huevo misterioso`, place, extras: [...(parent ? [parent] : []), baby], questId: `egg-${egg.id}`, variantId: wrong.map(entry => entry.id).join('-'), beats, items: [],
+    blockIds: { opening: home.id, goal: `egg-${egg.id}`, obstacle: wrong[0].id, strategy: wrong[1].id, discovery: egg.place, ending: home.id },
+    roles: { home: home.id, destination: place.id, baby: baby.id, parent: parent?.id ?? null },
+  };
+}
+
 export const ADVENTURE_STRUCTURES = Object.freeze([
   { id: 'elixir', name: 'El elixir', generate: elixir },
   { id: 'rescue', name: 'El rescate', generate: rescue },
@@ -862,6 +1247,11 @@ export const ADVENTURE_STRUCTURES = Object.freeze([
   { id: 'big-question', name: 'La gran pregunta', accept: (h, f) => !needsWater([h, f]), generate: bigQuestion },
   { id: 'fallen-star', name: 'La estrella caída', accept: (h, f) => !needsWater([h, f]), generate: fallenStar },
   { id: 'dark-lighthouse', name: 'El faro apagado', accept: (h, f) => !needsWater([h, f]), generate: darkLighthouse },
+  { id: 'lost-letter', name: 'La carta perdida', accept: (h, f) => !needsWater([h, f]), generate: lostLetter },
+  { id: 'ice-flower', name: 'La flor de hielo', accept: (h, f) => !needsWater([h, f]), generate: iceFlower },
+  { id: 'lost-cloud', name: 'La nube perdida', accept: (h, f) => !needsWater([h, f]), generate: lostCloud },
+  { id: 'mystery-egg', name: 'El huevo misterioso', accept: (h, f) => !needsWater([h, f]) && EGGS.filter(entry => fitsCast([h, f], entry.place)).length >= 3, generate: mysteryEgg },
 ]);
 export const ADVENTURE_GOALS = [...ELIXIRS.map(entry => entry.id), ...LOST.map(entry => entry.id), ...TREASURES.map(entry => `map-${entry.item}`), ...PARCELS.map(entry => entry.id), ...STRAYS.map(entry => entry.id), ...QUESTIONS.map(entry => entry.id),
-  ...LIFTS.map(entry => `star-${entry.id}`), ...BEACONS.map(entry => `beacon-${entry.id}`)];
+  ...LIFTS.map(entry => `star-${entry.id}`), ...BEACONS.map(entry => `beacon-${entry.id}`),
+  ...LETTER_READERS.map(entry => `letter-${entry.id}`), ...THIRSTS.map(entry => `ice-${entry.id}`), ...CLOUD_SNAGS.map((_, index) => `cloud-${index}`), ...EGGS.map(entry => `egg-${entry.id}`)];

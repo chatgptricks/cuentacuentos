@@ -1,7 +1,7 @@
 import { getScene } from './world-catalog.js';
 import { getCharacter } from './character-catalog.js';
 import {
-  PLACE_INFO, TOOLS, TRIALS, cap, fitsCast, friendWord, inPlace, kind, named, needsWater, ofPhrase, placeName, spotOf,
+  PLACE_INFO, TOOLS, TRIALS, cap, fitsCast, friendWord, inPlace, kind, low, named, needsWater, ofPhrase, placeName, spotOf,
   toPhrase, toPlace, travelTo,
 } from './narrative-world.js';
 import { ADVENTURE_MENTORS, TARGETS, VILLAIN_PLOTS } from './quest-catalog.js';
@@ -838,8 +838,385 @@ function riddleGate({ random, hero: h, companion: f }) {
   return {
     title: `${h.name} y las tres adivinanzas`, place: lair, villain, questId: `riddle-${villainId}`, variantId: riddles.map(entry => entry.id).join('-'), beats,
     items: [],
-    blockIds: { opening: home.id, goal: `riddle-${villainId}`, obstacle: riddles[0].id, strategy: 'thinking-together', discovery: villainId, ending: home.id },
+    blockIds: { opening: home.id, goal: `riddle-${villainId}`, obstacle: riddles[0].id, strategy: riddles[1].id, discovery: villainId, ending: home.id },
     roles: { home: home.id, destination: lair.id, villain: villainId, riddles: riddles.map(entry => entry.id) },
+  };
+}
+
+const DRIFTERS = ['duckling', 'fawn', 'bear-cub', 'chick', 'kitten', 'puppy'];
+
+/** B9 · La balsa a la deriva: no villain, only the river; a little one adrift, a chase along the bank and a rescue. */
+function driftingRaft({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const home = getScene(choose(random, ['river', 'meadow', 'forest'].filter(id => fitsCast(cast, id))));
+  const place = getScene('waterfall');
+  const little = copySupporting(random, choose(random, DRIFTERS));
+  const trial = abilityTrial(random, ['current', 'crossing'], [f, h]);
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const atHome = at(home.id), there = at(place.id);
+  const { helper } = trial;
+  const it = gendered(little, 'lo', 'la');
+  const beats = [
+    [
+      atHome(1, say([`Aquella tarde, ${named(h)} y su ${friendWord(f)} ${f.name} jugaban cerca del río.`, `Una tarde de sol, ${named(h)} y su ${friendWord(f)} ${f.name} merendaban junto al río.`]), both),
+      atHome(2, home.detail),
+      atHome(3, 'El agua bajaba rápida, porque había llovido mucho.'),
+      atHome(1, `De pronto, oyeron un grito: ${little.name}, ${gendered(little, 'un', 'una')} ${little.label}, iba río abajo sobre una balsa de ramas.`, [little.id]),
+      atHome(2, `La balsa se había soltado de la orilla mientras ${little.name} jugaba.`, [little.id]),
+      atHome(3, `${little.name} se agarraba fuerte, con los ojos muy abiertos.`, [little.id]),
+      atHome(1, `${pair} echaron a correr por la orilla, sin perderl${gendered(little, 'o', 'a')} de vista.`, both),
+      atHome(2, `${f.name} gritaba que aguantara, que ya iban.`, [f.id]),
+      atHome(3, 'Las ramas de la orilla les rozaban las piernas.', both),
+    ],
+    [
+      atHome(1, `${h.name} sabía que, más adelante, el río caía por una cascada.`, [h.id]),
+      atHome(2, 'No había tiempo que perder, pero tampoco había que hacer locuras.', both),
+      atHome(3, `${h.name} respiró hondo para pensar con calma.`, [h.id]),
+      atHome(1, `${f.name} encontró una cuerda vieja junto a un árbol y la cogió.`, [f.id], ['rope']),
+      atHome(2, 'Era larga y fuerte, perfecta para lo que necesitaban.', [], ['rope']),
+      atHome(3, 'Siguieron corriendo, con la cuerda enrollada al hombro.', both),
+      there(1, `Llegaron ${toPlace(place)} justo antes que la balsa.`, both),
+      there(2, place.detail),
+      there(3, 'El ruido del agua era tan fuerte que casi no se oían.', both),
+    ],
+    [
+      there(1, `Pero ${low(TRIALS[trial.id].intro)}`),
+      there(2, `La balsa de ${little.name} se acercaba cada vez más.`, [little.id]),
+      there(3, `${little.name} llamaba a su familia, muy asustad${gendered(little, 'o', 'a')}.`, [little.id]),
+      there(2, trialReason(trial), helper ? [helper.id] : both),
+      there(1, solveTrial(trial, pair), helper ? [helper.id] : both),
+      there(3, TRIALS[trial.id].after),
+      there(1, `Desde una roca, ${h.name} lanzó la cuerda, y ${little.name} la agarró con fuerza.`, [h.id, little.id], ['rope']),
+      there(2, `${f.name} sujetaba a ${h.name} por la cintura para que no resbalara.`, both),
+      there(3, 'Tiraron los dos a la vez, despacio y sin soltar.', both),
+    ],
+    [
+      there(1, `Poco a poco, acercaron la balsa a la orilla, lejos de la cascada.`, both),
+      there(2, `${little.name} saltó a tierra firme, temblando de frío.`, [little.id]),
+      there(3, 'La balsa siguió su camino y cayó por la cascada, vacía.'),
+      there(1, `${f.name} envolvió a ${little.name} en su chaqueta para que entrara en calor.`, [f.id, little.id]),
+      there(2, `${little.name} dejó de temblar poco a poco.`, [little.id]),
+      there(3, `${h.name} se sentó en la hierba, con el corazón a mil.`, [h.id]),
+      there(1, `${little.name} les dio las gracias con un abrazo enorme.`, [little.id, ...both]),
+      there(2, 'Les contó que solo quería jugar a los barcos.', [little.id]),
+      there(3, `${h.name} le dijo que los barcos de verdad se juegan con alguien mayor cerca.`, [h.id]),
+    ],
+    [
+      atHome(1, `Volvieron ${toPlace(home)} con ${little.name}, despacito y de la mano.`, [...both, little.id]),
+      atHome(2, `Su familia l${gendered(little, 'o', 'a')} buscaba por todas partes, muy preocupada.`),
+      atHome(3, 'Al verlos llegar, todos corrieron hacia ellos.'),
+      atHome(1, `La familia de ${little.name} l${gendered(little, 'o', 'a')} abrazó y les dio las gracias a ${pair}.`, [little.id, ...both]),
+      atHome(2, `${little.name} prometió no volver a subirse a una balsa sin ayuda.`, [little.id]),
+      atHome(3, 'Todos se sentaron a merendar juntos para celebrarlo.', both),
+      atHome(1, say([`${h.name} aprendió que la valentía también es pensar antes de saltar.`, `${h.name} aprendió que, en un peligro, ayudar con calma es ayudar mejor.`]), [h.id]),
+      atHome(2, 'Y que dos amigos que se sujetan pueden con mucho.', both),
+      atHome(3, `${f.name} guardó la cuerda vieja como recuerdo.`, [f.id], ['rope']),
+    ],
+    [
+      atHome(1, `Desde entonces, ${pair} enseñaban a los pequeños a jugar seguros junto al río.`, both),
+      atHome(2, 'Les enseñaron dónde estaba la cascada y por dónde no había que ir.', both),
+      atHome(3, `${little.name} era quien mejor se lo sabía.`, [little.id]),
+      atHome(1, 'Esa noche, el río sonaba tranquilo, como si pidiera perdón.'),
+      atHome(2, `${h.name} estaba cansad${gendered(h, 'o', 'a')}, pero muy content${gendered(h, 'o', 'a')}.`, [h.id]),
+      atHome(3, 'Las estrellas se reflejaban en el agua.'),
+      atHome(2, `Pensó en ${little.name}, que ya dormiría calentit${gendered(little, 'o', 'a')} en casa.`, [h.id]),
+      atHome(3, `Y en lo bien que se habían sujetado ${f.name} y ${gendered(h, 'él', 'ella')}.`, [h.id]),
+      atHome(1, `Y así, con el murmullo del río, ${h.name} se durmió.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y la balsa a la deriva`, place, extras: [little], questId: `raft-${little.id}`, variantId: trial.id, beats, items: ['rope'],
+    blockIds: { opening: home.id, goal: `raft-${little.id}`, obstacle: trial.id, strategy: trial.ability ?? 'rope', discovery: place.id, ending: home.id },
+    roles: { home: home.id, destination: place.id, rescued: little.id, helper: helper?.id ?? null, ability: trial.ability ?? null },
+  };
+}
+
+/** Shiny things that go missing, one per night. */
+const SHINY = [
+  { id: 'bell', what: 'la campanilla de la escuela', items: ['bell'] },
+  { id: 'lantern', what: 'el farol de la plaza', items: ['lantern'] },
+  { id: 'key', what: 'la llave dorada del reloj', items: ['key'] },
+  { id: 'crystal', what: 'el cristal de colores de la ventana', items: ['crystal'] },
+];
+
+/** B10 · La rata ladrona: shiny things vanish, a trail of crumbs, a dark burrow and a lonely reason. */
+function ratThief({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const home = getScene(choose(random, ['village', 'farm', 'garden', 'orchard'].filter(id => fitsCast(cast, id))));
+  const place = getScene(choose(random, ['cave', 'mushroom-grove'].filter(id => fitsCast(cast, id))));
+  const missing = choose(random, SHINY);
+  const villain = copyVillain(random, 'thief-rat');
+  const { the } = villainWords(villain);
+  const trial = abilityTrial(random, PLACE_INFO[place.id].trials, [f, h]);
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const atHome = at(home.id), there = at(place.id);
+  const { helper } = trial;
+  const beats = [
+    [
+      atHome(1, `Una mañana, ${inPlace(home)}, desapareció ${missing.what}.`, [], missing.items),
+      atHome(2, home.detail),
+      atHome(3, 'Todos lo buscaron por todas partes, sin encontrarlo.'),
+      atHome(1, 'Al día siguiente, también faltaban las cucharas brillantes de la panadería.'),
+      atHome(2, 'Y al otro, los botones dorados de la costurera.'),
+      atHome(3, 'Los vecinos empezaron a preocuparse de verdad.'),
+      atHome(1, `${named(h)} y su ${friendWord(f)} ${f.name} decidieron averiguar qué pasaba.`, both),
+      atHome(2, `${f.name} sacó una lupa para buscar pistas.`, [f.id], ['magnifying-glass']),
+      atHome(3, `${h.name} se puso muy ${gendered(h, 'serio', 'seria')}, como un detective.`, [h.id]),
+    ],
+    [
+      atHome(1, 'Con la lupa encontraron un rastro de migas de queso y huellas pequeñitas.', both, ['magnifying-glass']),
+      atHome(2, 'Las huellas tenían cuatro dedos y una cola que arrastraba.'),
+      atHome(3, `${h.name} las dibujó para no olvidarlas.`, [h.id]),
+      atHome(1, `${pair} siguieron el rastro fuera del pueblo.`, both),
+      atHome(2, 'Las migas iban en línea recta, como si alguien tuviera prisa.'),
+      atHome(3, 'Cada pocos pasos, encontraban otra miga.', both),
+      there(1, `El rastro llegaba hasta ${placeName(place)}.`, both),
+      there(2, place.detail),
+      there(3, 'Todo estaba en silencio, y olía un poco a queso.', both),
+    ],
+    [
+      there(1, `Pero ${low(TRIALS[trial.id].intro)}`),
+      there(2, `${f.name} se acercó un poquito más a ${h.name}.`, both),
+      there(3, 'No querían perder el rastro ahora.', both),
+      there(2, trialReason(trial), helper ? [helper.id] : both),
+      there(1, solveTrial(trial, pair), helper ? [helper.id] : both),
+      there(3, TRIALS[trial.id].after),
+      there(1, `Al fondo encontraron una madriguera oscura, llena de cosas brillantes.`, both),
+      there(2, `Allí estaban las cucharas, los botones y ${missing.what}.`, [], missing.items),
+      there(3, 'Todo estaba colocado con mucho cuidado, como en un museo.'),
+    ],
+    [
+      there(1, `Entonces apareció ${the}, que se quedó helada al verlos.`, [villain.id]),
+      there(2, `${cap(the)} intentó esconder un botón detrás de la espalda.`, [villain.id]),
+      there(3, `${h.name} no gritó; le habló con mucha calma.`, [h.id]),
+      there(1, `${h.name} le preguntó por qué se llevaba las cosas de los demás.`, [h.id, villain.id]),
+      there(2, `${cap(the)} bajó las orejas y tardó un rato en contestar.`, [villain.id]),
+      there(3, `${f.name} esperó a su lado, sin decir nada.`, [f.id]),
+      there(1, `${cap(the)} confesó que su madriguera era tan oscura y fría que le daba pena.`, [villain.id]),
+      there(2, 'Las cosas brillantes la hacían sentir un poco menos sola.', [villain.id]),
+      there(3, 'Pero sabía que no estaba bien, y se sentía fatal.', [villain.id]),
+    ],
+    [
+      there(1, say([`${h.name} le propuso devolverlo todo y, a cambio, ayudarla a llenar su casa de luz.`, `${h.name} le propuso devolverlo todo, y que los vecinos la ayudaran a hacer su casa más bonita.`]), [h.id, villain.id]),
+      there(2, `A ${the} le brillaron los ojos.`, [villain.id]),
+      there(3, 'Nadie le había ofrecido ayuda nunca.', [villain.id]),
+      atHome(1, `Volvieron juntos ${toPlace(home)}, y ${the} devolvió cada cosa y pidió perdón.`, [villain.id, ...both], missing.items),
+      atHome(2, 'Los vecinos se sorprendieron mucho, pero la escucharon.'),
+      atHome(3, `La panadera le regaló un trozo de queso, por ser tan valiente.`, [villain.id]),
+      atHome(1, 'Esa tarde, todos ayudaron a llevar un farol viejo y una manta a su madriguera.', both, ['lantern']),
+      atHome(2, 'La madriguera se volvió cálida y luminosa.'),
+      atHome(3, `${cap(the)} no dejaba de dar las gracias.`, [villain.id]),
+    ],
+    [
+      atHome(1, say([`${h.name} aprendió que preguntar con calma descubre lo que hay detrás de un problema.`, `${h.name} aprendió que, a veces, quien se lleva las cosas solo necesita compañía.`]), [h.id]),
+      atHome(2, 'Y que una casa con amigos brilla más que cualquier tesoro.', [h.id]),
+      atHome(3, `${f.name} guardó la lupa, muy ${gendered(f, 'orgulloso', 'orgullosa')} del caso resuelto.`, [f.id], ['magnifying-glass']),
+      atHome(1, `Desde entonces, ${the} visitaba el pueblo cada tarde, y nunca volvió a llevarse nada.`, [villain.id]),
+      atHome(2, 'A veces traía piedrecitas bonitas para regalar.', [villain.id]),
+      atHome(3, 'Y todos se las agradecían con una sonrisa.'),
+      atHome(2, `Esa noche, ${h.name} pensó en la madriguera, ahora calentita.`, [h.id]),
+      atHome(3, 'Seguro que la rata dormía de maravilla.'),
+      atHome(1, `Y ${h.name} se durmió tranquilamente, como un buen detective después de resolver un caso.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y ${the}`, place, villain, questId: `rat-${missing.id}`, variantId: trial.id, beats, items: ['magnifying-glass', ...missing.items, 'lantern'].filter((id, index, list) => list.indexOf(id) === index),
+    blockIds: { opening: home.id, goal: `rat-${missing.id}`, obstacle: trial.id, strategy: 'magnifying-glass', discovery: place.id, ending: home.id },
+    roles: { home: home.id, destination: place.id, villain: 'thief-rat', helper: helper?.id ?? null, ability: trial.ability ?? null },
+  };
+}
+
+/** Gentle ways to wake a giant, and why the giant could not sleep at home. */
+const WAKERS = [
+  { id: 'feather', items: ['feather'], find: 'Encontró una pluma blanca en la orilla.', more: 'Era larga, ligera y muy suave.', act: the => `Con la pluma, le hizo cosquillas ${toPhrase(the)} en la nariz.`, wait: the => `${cap(the)} arrugó la nariz, una vez y otra vez.`, wake: the => `Y ${the} soltó un estornudo enorme y se despertó.`, keep: 'la pluma blanca' },
+  { id: 'flute', items: ['flute'], find: 'Sacó de su mochila una flauta pequeña.', more: 'Sonaba suave, como un pájaro por la mañana.', act: the => `Tocó la canción de los buenos días junto a la oreja ${ofPhrase(the)}.`, wait: the => `${cap(the)} movió los dedos de los pies, al ritmo.`, wake: the => `Y ${the} abrió un ojo, luego el otro, y se despertó sonriendo.`, keep: 'la flauta' },
+  { id: 'sunbeam', items: ['crystal'], find: 'Encontró un cristal brillante entre las piedras.', more: 'Con él podía atrapar un rayito de sol.', act: the => `Con el cristal, llevó un rayito de sol hasta los párpados ${ofPhrase(the)}.`, wait: the => `${cap(the)} frunció las cejas, un poco deslumbrado.`, wake: the => `Y ${the} parpadeó, bostezó y se despertó despacito.`, keep: 'el cristal' },
+];
+const GIANT_NIGHTS = [
+  { id: 'dark', why: 'su casa, allá en las nubes, estaba tan oscura que le daba miedo', gift: 'una lamparita de noche para que nunca más durmiera a oscuras', items: ['night-lamp'], hold: 'La lamparita parecía una luciérnaga en su mano.', after: 'Y les contaba que dormía de maravilla con su lamparita.' },
+  { id: 'thunder', why: 'los truenos de las nubes no le dejaban dormir', gift: 'una almohada blandita para taparse las orejas cuando tronara', items: ['pillow'], hold: 'La almohada parecía un caramelo en su mano.', after: 'Y les contaba que con su almohada ya no oía los truenos.' },
+  { id: 'alone', why: 'se sentía muy solo en una casa tan grande', gift: 'un osito de peluche para abrazar por las noches', items: ['teddy-bear'], hold: 'El osito parecía una miga en su mano enorme.', after: 'Y les contaba que dormía abrazado a su osito.' },
+];
+
+/** B11 · El gigante dormido: a giant asleep across the river floods the meadow; loud fails, gentle works. */
+function sleepingGiant({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const home = getScene(choose(random, ['meadow', 'farm', 'village', 'orchard'].filter(id => fitsCast(cast, id))));
+  const place = getScene('river');
+  const villain = copyVillain(random, 'giant');
+  const { the } = villainWords(villain);
+  const waker = choose(random, WAKERS);
+  const night = choose(random, GIANT_NIGHTS);
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const atHome = at(home.id), there = at(place.id);
+  const beats = [
+    [
+      atHome(1, say([`Una mañana, ${named(h)} y su ${friendWord(f)} ${f.name} vieron que el agua llegaba hasta el camino.`, `Al despertar, ${named(h)} y su ${friendWord(f)} ${f.name} encontraron charcos enormes por todas partes.`]), both),
+      atHome(2, home.detail),
+      atHome(3, 'Los patos nadaban donde antes había hierba.'),
+      atHome(1, 'El río se había salido de su sitio, y nadie sabía por qué.'),
+      atHome(2, 'Si seguía así, el agua llegaría a las casas.'),
+      atHome(3, `${f.name} se mojó los pies hasta los tobillos.`, [f.id]),
+      atHome(1, `${pair} siguieron el río hacia arriba para descubrir qué pasaba.`, both),
+      atHome(2, 'Caminaban por la orilla, saltando charcos.', both),
+      atHome(3, 'Cada vez se oía un ruido más raro, como un trueno lento.'),
+    ],
+    [
+      there(1, `Allí estaba ${the}, dormido como un tronco, tumbado de lado a lado del río.`, [villain.id]),
+      there(2, place.detail),
+      there(3, 'Su cuerpo hacía de presa, y el agua no podía pasar.', [villain.id]),
+      there(1, 'Y aquel ruido tan raro eran sus ronquidos, fuertes como truenos.', [villain.id]),
+      there(2, 'Cada ronquido hacía temblar las hojas de los árboles.'),
+      there(3, `${h.name} se tapó los oídos, riéndose.`, [h.id]),
+      there(1, `Primero, ${pair} gritaron con todas sus fuerzas para despertarlo.`, both),
+      there(2, `${cap(the)} se dio la vuelta, pero siguió durmiendo.`, [villain.id]),
+      there(3, 'Y el agua seguía subiendo, poco a poco.'),
+    ],
+    [
+      there(1, `Luego, ${f.name} tocó un tambor muy fuerte junto a su oreja.`, [f.id], ['drum']),
+      there(2, `${cap(the)} roncó todavía más alto, como si fuera una canción.`, [villain.id]),
+      there(3, `${f.name} dejó el tambor, sin saber qué más hacer.`, [f.id], ['drum']),
+      there(1, `Entonces ${h.name} pensó que el ruido no servía, y que había que probar algo suave.`, [h.id]),
+      there(2, waker.find, [h.id], waker.items),
+      there(3, waker.more, [], waker.items),
+      there(1, waker.act(the), [h.id, villain.id], waker.items),
+      there(2, waker.wait(the), [villain.id]),
+      there(3, 'Todos contuvieron la respiración, sin hacer ruido.', both),
+    ],
+    [
+      there(1, waker.wake(the), [villain.id]),
+      there(2, `${cap(the)} se sentó, muy confundido, y el agua del río volvió a correr.`, [villain.id]),
+      there(3, 'Se oyó un gran gluglú, y los charcos empezaron a bajar.'),
+      there(1, `Al ver lo que había pasado, ${the} se tapó la cara, avergonzado.`, [villain.id]),
+      there(2, 'Pidió perdón con una voz tan grande que hizo eco.', [villain.id]),
+      there(3, `${f.name} le dijo que no pasaba nada, que había sido sin querer.`, [f.id]),
+      there(1, `${h.name} le preguntó por qué se había dormido allí.`, [h.id, villain.id]),
+      there(2, `${cap(the)} les contó que llevaba tres noches sin dormir.`, [villain.id]),
+      there(3, 'Se le cerraban los ojos solos mientras hablaba.', [villain.id]),
+    ],
+    [
+      there(1, `${cap(the)} confesó que ${night.why}.`, [villain.id]),
+      there(2, 'Nadie sabía que los gigantes también tienen problemas para dormir.', [villain.id]),
+      there(3, `${h.name} pensó que a ${gendered(h, 'él', 'ella')} le pasaba lo mismo, a veces.`, [h.id]),
+      there(1, say([`${pair} le regalaron ${night.gift}.`, `${pair} le dieron ${night.gift}, y le enseñaron a respirar despacio.`]), [...both, villain.id], night.items),
+      there(2, `${cap(the)} cogió el regalo entre dos dedos, con muchísimo cuidado.`, [villain.id]),
+      there(3, night.hold, [], night.items),
+      atHome(1, `Luego ${the} ayudó a sacar el agua de los caminos con sus manos enormes.`, [villain.id]),
+      atHome(2, 'En un momento, todo quedó seco y ordenado.'),
+      atHome(3, 'Los vecinos no podían creer lo rápido que trabajaba.'),
+    ],
+    [
+      atHome(1, say([`${h.name} aprendió que a veces lo suave funciona mejor que lo fuerte.`, `${h.name} aprendió que la calma puede más que un grito.`]), [h.id]),
+      atHome(2, 'Y que hasta los más grandes tienen miedos pequeños.', [h.id]),
+      atHome(3, `${f.name} guardó ${waker.keep} como recuerdo.`, [f.id], waker.items),
+      atHome(1, `Desde entonces, ${the} visitaba a ${pair} cada domingo.`, [villain.id, ...both]),
+      atHome(2, night.after, [villain.id]),
+      atHome(3, 'Nunca más volvió a quedarse dormido en el río.', [villain.id]),
+      atHome(2, `Esa noche, ${h.name} miró hacia las nubes antes de dormir.`, [h.id]),
+      atHome(3, 'Allá arriba, las nubes estaban tranquilas.'),
+      atHome(1, `Y ${h.name} se durmió tranquil${gendered(h, 'o', 'a')}, sabiendo que el gigante también dormía bien.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y el gigante dormido`, place, villain, questId: 'giant-river', variantId: `${waker.id}-${night.id}`, beats, items: ['drum', ...waker.items, ...night.items],
+    blockIds: { opening: home.id, goal: 'giant-river', obstacle: night.id, strategy: waker.id, discovery: 'river', ending: home.id },
+    roles: { home: home.id, destination: place.id, villain: 'giant' },
+  };
+}
+
+/** B12 · La nube enfadada: a storm cloud spoils every party; a climb to the sky, a lonely reason and a rain that is welcome. */
+function angryCloud({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const home = getScene(choose(random, ['village', 'farm', 'meadow', 'garden'].filter(id => fitsCast(cast, id))));
+  const square = getScene('festival-square');
+  const place = getScene('clouds');
+  const villain = copyVillain(random, 'storm-cloud');
+  const { the } = villainWords(villain);
+  const trial = abilityTrial(random, PLACE_INFO[place.id].trials, [f, h]);
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const atHome = at(home.id), party = at(square.id), there = at(place.id);
+  const { helper } = trial;
+  const [thirstyId, thirsty] = choose(random, [['orchard', 'el huerto'], ['wheat', 'el campo de trigo'], ['forest', 'el bosque'], ['flowers', 'el jardín de las flores']]);
+  const beats = [
+    [
+      party(1, `En la plaza, todos preparaban la fiesta del verano, y ${named(h)} y su ${friendWord(f)} ${f.name} colgaban guirnaldas.`, both, ['garland']),
+      party(2, square.detail),
+      party(3, 'Había música, farolillos y mesas llenas de comida.'),
+      party(1, `De pronto, ${the} apareció sobre la plaza y empezó a llover a cántaros.`, [villain.id]),
+      party(2, 'Todos corrieron a esconderse, y la fiesta se suspendió.'),
+      party(3, 'Las guirnaldas se quedaron empapadas y tristes.', [], ['garland']),
+      party(1, `Al día siguiente pasó lo mismo, y al otro, también.`, [villain.id]),
+      party(2, `${cap(the)} solo llovía sobre la plaza, justo cuando había fiesta.`, [villain.id]),
+      party(3, `${f.name} miraba el cielo con el ceño fruncido.`, [f.id]),
+    ],
+    [
+      party(1, `${pair} decidieron subir a hablar con ${the}.`, both),
+      party(2, 'Los vecinos dijeron que era una locura, pero ellos estaban decididos.'),
+      party(3, `${h.name} cogió el paraguas grande, por si acaso.`, [h.id], ['umbrella']),
+      there(1, travelTo(place, cast, pair), both),
+      there(2, place.detail),
+      there(3, 'Desde allí, el pueblo parecía de juguete.'),
+      there(1, `Pero ${low(TRIALS[trial.id].intro)}`),
+      there(2, trialReason(trial), helper ? [helper.id] : both),
+      there(3, 'A lo lejos se oían truenos pequeñitos.'),
+    ],
+    [
+      there(1, solveTrial(trial, pair), helper ? [helper.id] : both),
+      there(3, TRIALS[trial.id].after),
+      there(2, 'Siguieron las gotas hasta encontrar la nube más gris de todas.', both),
+      there(1, `Allí estaba ${the}, con cara de pocos amigos.`, [villain.id]),
+      there(2, `${cap(the)} les preguntó qué querían, con un trueno.`, [villain.id]),
+      there(3, `${f.name} dio un paso atrás, pero ${h.name} se quedó.`, both),
+      there(1, `${h.name} le preguntó con calma por qué llovía siempre sobre la fiesta.`, [h.id, villain.id]),
+      there(2, `${cap(the)} se quedó callada un momento.`, [villain.id]),
+      there(3, 'Una gota grande le resbaló por la mejilla.', [villain.id]),
+    ],
+    [
+      there(1, `${cap(the)} confesó que todos huían cuando llegaba, y que nadie la invitaba nunca a nada.`, [villain.id]),
+      there(2, 'Por eso llovía sobre las fiestas: así nadie se divertía sin ella.', [villain.id]),
+      there(3, 'Pero eso tampoco la hacía feliz.', [villain.id]),
+      there(1, `Entonces ${f.name} le contó que ${thirsty} llevaba semanas esperando la lluvia.`, [f.id, villain.id]),
+      there(2, 'Allí, todos se alegrarían muchísimo de verla llegar.', [f.id]),
+      there(3, `${cap(the)} abrió mucho los ojos, sorprendida.`, [villain.id]),
+      there(1, say([`${h.name} le propuso llover donde la necesitaban, y luego venir a la fiesta como invitada.`, `${h.name} la invitó a la fiesta, si primero regaba ${thirsty}.`]), [h.id, villain.id]),
+      there(2, `${cap(the)} sonrió por primera vez, y se volvió un poco más blanca.`, [villain.id]),
+      there(3, 'Hasta dejó de tronar por un buen rato.', [villain.id]),
+    ],
+    [
+      atHome(1, `${cap(the)} llovió despacio sobre ${thirsty}, y todo se llenó de verde.`, [villain.id]),
+      atHome(2, 'Los vecinos salieron a aplaudir bajo la lluvia.'),
+      atHome(3, 'Olía a tierra mojada y a hierba fresca.'),
+      party(1, 'Esa tarde, por fin, la fiesta del verano pudo celebrarse.', both, ['garland']),
+      party(2, `Y ${the} llegó como invitada, flotando bajita y sin llover.`, [villain.id]),
+      party(3, 'Los niños jugaban a esconderse bajo su sombra fresquita.'),
+      party(1, `Al final, ${the} dejó caer unas gotitas, y un arcoíris enorme apareció sobre la plaza.`, [villain.id]),
+      party(2, 'Todos dijeron que era el mejor adorno de la fiesta.'),
+      party(3, `${cap(the)} se puso rosa de felicidad.`, [villain.id]),
+    ],
+    [
+      party(1, say([`${h.name} aprendió que nadie quiere estar solo, ni siquiera una nube de tormenta.`, `${h.name} aprendió que todos tenemos un sitio donde nos esperan con alegría.`]), [h.id]),
+      party(2, 'Y que una invitación puede cambiar un día gris.', [h.id]),
+      party(3, `${f.name} guardó el paraguas, ya sin ninguna prisa.`, [f.id], ['umbrella']),
+      party(1, `Desde entonces, ${the} llovía donde hacía falta y nunca se perdía una fiesta.`, [villain.id]),
+      party(2, 'Siempre llegaba la última, con un arcoíris de regalo.', [villain.id]),
+      party(3, 'Y todos la recibían con aplausos.'),
+      atHome(2, `Esa noche, ${h.name} escuchó una lluvia suave sobre el tejado.`, [h.id]),
+      atHome(3, `Seguro que era ${the}, dándole las buenas noches.`),
+      atHome(1, `Y así, con el sonido de la lluvia amiga, ${h.name} se durmió.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y la nube enfadada`, place, villain, questId: 'cloud-party', variantId: trial.id, beats, items: ['garland', 'umbrella'],
+    blockIds: { opening: home.id, goal: 'cloud-party', obstacle: trial.id, strategy: thirstyId, discovery: 'storm-cloud', ending: square.id },
+    roles: { home: home.id, destination: place.id, villain: 'storm-cloud', helper: helper?.id ?? null, ability: trial.ability ?? null },
   };
 }
 
@@ -852,6 +1229,11 @@ export const ACTION_STRUCTURES = Object.freeze([
   { id: 'false-villain', name: 'El falso villano', accept: (h, f) => !needsWater([h, f]), generate: falseVillain },
   { id: 'storm', name: 'La tormenta', accept: (h, f) => !needsWater([h, f]), generate: storm },
   { id: 'riddle-gate', name: 'Las tres adivinanzas', accept: (h, f) => !needsWater([h, f]), generate: riddleGate },
+  { id: 'drifting-raft', name: 'La balsa a la deriva', accept: (h, f) => !needsWater([h, f]), generate: driftingRaft },
+  { id: 'rat-thief', name: 'La rata ladrona', accept: (h, f) => !needsWater([h, f]) && h.id !== 'mouse' && f.id !== 'mouse', generate: ratThief },
+  { id: 'sleeping-giant', name: 'El gigante dormido', accept: (h, f) => !needsWater([h, f]), generate: sleepingGiant },
+  { id: 'angry-cloud', name: 'La nube enfadada', accept: (h, f) => !needsWater([h, f]), generate: angryCloud },
 ]);
 export const ACTION_GOALS = [...TARGETS.map(entry => entry.id), ...Object.keys(SPELLS).map(id => `spell-${id}`), ...Object.keys(CHEATS).map(id => `race-${id}`), ...Object.keys(KIDNAPPERS).map(id => `lair-${id}`), ...INCIDENTS.map(entry => `mystery-${entry.id}`),
-  ...STORMS.map(entry => `storm-${entry.id}`), ...Object.keys(GATEKEEPERS).map(id => `riddle-${id}`)];
+  ...STORMS.map(entry => `storm-${entry.id}`), ...Object.keys(GATEKEEPERS).map(id => `riddle-${id}`),
+  ...DRIFTERS.map(id => `raft-${id}`), ...SHINY.map(entry => `rat-${entry.id}`), 'giant-river', 'cloud-party'];

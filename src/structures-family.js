@@ -891,6 +891,193 @@ function handmadeGift({ random, hero: h, companion: c }) {
     roles: { home: home.id, destination: gift.scene },
   };
 }
+/** What there is to do at the grandparents', for an older companion or a baby. */
+const GRAND_PLANS = [
+  { id: 'bread', scene: 'kitchen', items: ['bread'], text: (h, c, baby) => baby ? `La abuela le enseñó a ${h.name} a hacer pan, mientras ${c.name} miraba desde la trona.` : 'La abuela les enseñó a hacer pan, con las manos llenas de harina.' },
+  { id: 'hens', scene: 'farm', items: [], text: (h, c, baby) => baby ? `El abuelo llevó a ${h.name} a dar de comer a las gallinas, y ${c.name} aplaudía.` : 'El abuelo les enseñó a dar de comer a las gallinas, que picoteaban muy contentas.' },
+  { id: 'stars', scene: 'porch', items: ['telescope'], text: (h, c, baby) => baby ? `Por la noche, ${h.name} miró las estrellas con el viejo telescopio del abuelo.` : 'Por la noche, miraron las estrellas con el viejo telescopio del abuelo.' },
+  { id: 'stories', scene: 'living-room', items: [], text: (h, c, baby) => baby ? `La abuela le contó a ${h.name} historias de cuando era pequeña, con ${c.name} en brazos.` : 'La abuela les contó historias de cuando era pequeña, junto a la chimenea.' },
+  { id: 'apples', scene: 'orchard', items: ['apple'], text: (h, c, baby) => baby ? `${h.name} recogió manzanas con el abuelo, y ${c.name} olía las flores.` : 'Recogieron manzanas del árbol más viejo del huerto, con el abuelo.' },
+];
+
+/** E11 · La visita a los abuelos: packing, a train ride, two days of grandparents' plans and the way home. */
+function grandparentsVisit({ random, hero: h, companion: c }) {
+  const baby = c.role === 'baby';
+  const say = sayer(random);
+  const plans = [];
+  for (let i = 0; i < 2; i += 1) plans.push(choose(random, GRAND_PLANS.filter(entry => !plans.includes(entry))));
+  const home = homeOf(random);
+  const both = [h.id, c.id];
+  const b = (adult, little) => baby ? little : adult;
+  const atHome = at(home.id), station = at('train-station'), farm = at('farm');
+  const [one, two] = plans.map(entry => at(entry.scene));
+  const beats = [
+    [
+      atHome(1, say([`Aquel fin de semana, ${h.name} y ${c.name} iban a visitar a los abuelos.`, `Por fin había llegado el día de ir a casa de los abuelos, y ${h.name} iría con ${c.name}.`]), both),
+      atHome(2, `${cap(inPlace(home))}, la maleta ya esperaba junto a la puerta.`),
+      atHome(3, `${h.name} no había podido dormir de la emoción.`, [h.id]),
+      atHome(1, b(`${h.name} y ${c.name} prepararon la maleta con lo más importante.`, `${h.name} preparó la maleta, y metió también el peluche de ${c.name}.`), both),
+      atHome(2, `${h.name} metió un dibujo para los abuelos.`, [h.id]),
+      atHome(3, b(`${c.name} comprobó dos veces que no faltaba nada.`, `${c.name} balbuceaba, como si diera instrucciones.`), [c.id]),
+      station(1, 'En la estación, subieron al tren y se sentaron junto a la ventanilla.', both),
+      station(2, getScene('train-station').detail),
+      station(3, 'El tren silbó y empezó a moverse, despacito.'),
+    ],
+    [
+      station(1, 'Por la ventanilla pasaban campos, puentes y ríos.', both),
+      station(2, b('Contaron vacas, hasta que perdieron la cuenta.', `${h.name} contaba vacas, y ${c.name} reía cada vez.`), both),
+      station(3, b(`${c.name} le enseñó a ${h.name} a buscar formas en las nubes.`, `${c.name} se quedó dormido con el traqueteo.`.replace('dormido', gendered(c, 'dormido', 'dormida'))), [c.id]),
+      farm(1, 'Por fin llegaron, y los abuelos los esperaban en la puerta con los brazos abiertos.', both),
+      farm(2, getScene('farm').detail),
+      farm(3, 'La casa olía a bizcocho recién hecho.'),
+      farm(1, `La abuela le dio a ${h.name} un abrazo tan fuerte que lo levantó del suelo.`.replace('lo levantó', gendered(h, 'lo levantó', 'la levantó')), [h.id]),
+      farm(2, b(`El abuelo le revolvió el pelo a ${c.name}, riéndose.`, `El abuelo cogió en brazos a ${c.name}, con mucho cuidado.`), [c.id]),
+      farm(3, 'Le dieron el dibujo, y lo colgaron en la nevera enseguida.', [h.id]),
+    ],
+    [
+      one(1, plans[0].text(h, c, baby), both, plans[0].items),
+      one(2, 'Allí todo olía a campo y a cosas ricas.'),
+      one(3, `${h.name} no paraba de hacer preguntas.`, [h.id]),
+      one(1, 'Todo en casa de los abuelos parecía más tranquilo y más lento.', both),
+      one(2, 'Allí nadie tenía prisa por nada.'),
+      one(3, b(`${c.name} dijo que allí el tiempo iba despacio.`, `${c.name} dormía la siesta en una cesta grande.`), [c.id]),
+      two(1, plans[1].text(h, c, baby), both, plans[1].items),
+      two(2, 'Los abuelos se reían con cada pregunta.'),
+      two(3, `${h.name} pensó que era el mejor día del mundo.`, [h.id]),
+    ],
+    [
+      farm(1, 'Por la noche, cenaron todos juntos alrededor de una mesa larga.', both),
+      farm(2, 'El abuelo contó chistes viejos que todavía hacían reír.'),
+      farm(3, b(`${c.name} se rio tanto que se le cayó la servilleta.`, `${c.name} se rio con su risa de bebé, y todos la imitaron.`), [c.id]),
+      farm(1, `${h.name} durmió en la cama de cuando su familia era pequeña.`, [h.id]),
+      farm(2, 'La abuela le contó un cuento antes de dormir.', [h.id]),
+      farm(3, 'Las sábanas olían a lavanda y a sol.', [h.id]),
+      farm(1, 'Al día siguiente, llegó la hora de volver a casa.', both),
+      farm(2, 'Los abuelos les dieron una cesta llena de regalos y de comida rica.', both, ['basket']),
+      farm(3, `${h.name} prometió volver muy pronto a visitarlos.`, [h.id]),
+    ],
+    [
+      station(1, 'Se despidieron con muchos besos y abrazos, y subieron al tren de vuelta.', both),
+      station(2, 'Los abuelos les dijeron adiós con la mano hasta que el tren dobló la curva.'),
+      station(3, `${h.name} pegó la nariz a la ventanilla.`, [h.id]),
+      station(1, b(`En el tren, ${h.name} y ${c.name} recordaron todo lo que habían hecho.`, `En el tren, ${h.name} le contó a ${c.name} todo lo que habían hecho.`), both),
+      station(2, b(`${c.name} dijo que lo mejor había sido estar todos juntos.`, `${c.name} escuchaba, medio dormido, con una sonrisa.`.replace('dormido', gendered(c, 'dormido', 'dormida'))), [c.id]),
+      station(3, 'El paisaje se volvía naranja con el atardecer.'),
+      atHome(1, say([`${h.name} aprendió que los abuelos guardan tiempo, historias y abrazos para regalar.`, `${h.name} aprendió que visitar a quien queremos es un regalo para todos.`]), [h.id]),
+      atHome(2, 'Y que las casas de los abuelos siempre huelen a algo rico.', [h.id]),
+      atHome(3, b(`${c.name} dijo que volverían en las próximas vacaciones.`, `${c.name} ya dormía en su cuna, muy a gusto.`), [c.id]),
+    ],
+    [
+      atHome(1, `Esa noche, ${h.name} abrió la cesta y encontró una nota de la abuela.`, [h.id], ['basket']),
+      atHome(2, 'Decía: «Te esperamos pronto, con el bizcocho preparado».', [h.id]),
+      atHome(3, `${h.name} la guardó junto a su cama.`, [h.id]),
+      atHome(1, `${h.name} se metió en la cama, cansad${gendered(h, 'o', 'a')} y feliz.`, [h.id]),
+      atHome(2, 'Todavía le parecía oír el traqueteo del tren.', [h.id]),
+      atHome(3, 'Tracatrá, tracatrá, cada vez más lejos.', [h.id]),
+      atHome(2, `Pensó en los abuelos, que también estarían durmiendo.`, [h.id]),
+      atHome(3, 'Afuera, la luna brillaba sobre todos los caminos.'),
+      atHome(1, `Y ${h.name} se durmió soñando con el próximo viaje en tren.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y ${c.name}: la visita a los abuelos`, place: getScene('farm'), questId: `grand-${plans[0].id}`, variantId: plans.map(entry => entry.id).join('-'), beats,
+    items: ['basket', ...plans.flatMap(entry => entry.items)],
+    blockIds: { opening: home.id, goal: `grand-${plans[0].id}`, obstacle: 'train', strategy: plans[1].id, discovery: 'farm', ending: home.id },
+    roles: { home: home.id, destination: 'farm', plans: plans.map(entry => entry.id) },
+  };
+}
+
+/** Stories a family can invent at bedtime, with the place where each one happens. */
+const INVENTED = [
+  { id: 'dragon', scene: 'cave', who: 'un dragón pequeño que tenía miedo de la oscuridad', problem: 'Cada noche, su cueva se quedaba tan oscura que no podía dormir.', short: 'el dragoncito', wish: 'unas luciérnagas le hicieran compañía con sus lucecitas', idea: 'unas luciérnagas le hicieron compañía con sus lucecitas', end: 'Desde entonces, el dragón dormía tranquilo, rodeado de amigas brillantes.' },
+  { id: 'turtle', scene: 'lookout-hill', who: 'una tortuga que soñaba con volar', problem: 'Lo intentaba desde la colina, pero siempre aterrizaba en la hierba.', short: 'la tortuga voladora', wish: 'unos pájaros la subieran con cuidado a una cometa enorme', idea: 'unos pájaros la subieron con cuidado a una cometa enorme', end: 'Desde arriba, la tortuga vio el mundo entero, y volvió feliz a casa.' },
+  { id: 'mouse', scene: 'kitchen', who: 'un ratón que vivía dentro de una tetera', problem: 'Un día, alguien quiso preparar té, y el ratón salió corriendo asustado.', short: 'el ratón de la taza', wish: 'el ratón pidiera perdón y le regalaran una taza vacía como casa nueva', idea: 'el ratón pidió perdón por el susto y le regalaron una taza vacía como casa nueva', end: 'Desde entonces, el ratón vivía en su taza, y cada tarde lo invitaban a merendar.' },
+  { id: 'cloud', scene: 'clouds', who: 'una nube que quería llover de colores', problem: 'Por más que lo intentaba, sus gotas siempre salían transparentes.', short: 'la nube de colores', wish: 'el sol le enseñara a llover mientras él brillaba', idea: 'el sol le enseñó a llover mientras él brillaba', end: 'Así apareció el primer arcoíris, y la nube pintó el cielo entero.' },
+  { id: 'star', scene: 'shooting-star-hill', who: 'una estrella que se quedaba despierta toda la noche', problem: 'Estaba tan cansada que casi no podía brillar.', short: 'la estrella dormilona', wish: 'la luna le prestara una nube blandita para dormir la siesta', idea: 'la luna le prestó una nube blandita para echarse la siesta de día', end: 'Desde entonces, la estrella brillaba más que ninguna cada noche.' },
+];
+
+/** E12 · El cuento inventado: at bedtime, the child and a relative make up a story together, taking turns, and sleep. */
+function inventedStory({ random, hero: h, companion: c }) {
+  const baby = c.role === 'baby';
+  const say = sayer(random);
+  const tale = choose(random, INVENTED);
+  const both = [h.id, c.id];
+  const b = (adult, little) => baby ? little : adult;
+  const bed = at('bedroom'), dream = at(tale.scene);
+  const beats = [
+    [
+      bed(1, say([`Esa noche, antes de dormir, ${h.name} no quería un cuento de los de siempre.`, `Aquella noche, ${h.name} se metió en la cama con ganas de un cuento nuevo.`]), [h.id]),
+      bed(2, getScene('bedroom').detail),
+      bed(3, 'Ya se sabía todos los libros de memoria.', [h.id]),
+      bed(1, b(`${c.name} le propuso inventar uno juntos, por turnos.`, `${h.name} decidió inventarle un cuento a ${c.name}, que lo miraba desde la cuna.`), both),
+      bed(2, b(`${h.name} aplaudió, muy content${gendered(h, 'o', 'a')} con la idea.`, `${c.name} hizo un ruidito, como si dijera que sí.`), both),
+      bed(3, 'Apagaron la luz grande y dejaron solo la lamparita.', both, ['night-lamp']),
+      bed(1, `${h.name} empezó: había una vez ${tale.who}.`, [h.id]),
+      bed(2, b(`${c.name} dijo que era un comienzo estupendo.`, `${c.name} abrió mucho los ojos, muy atent${gendered(c, 'o', 'a')}.`), [c.id]),
+      bed(3, 'La historia ya empezaba a tomar forma.', both),
+    ],
+    [
+      dream(1, tale.problem),
+      dream(2, getScene(tale.scene).detail),
+      dream(3, 'Y aquello le ponía muy triste.'),
+      bed(1, b(`${c.name} preguntó cómo podían ayudarle en el cuento.`, `${h.name} le preguntó a ${c.name} cómo podían ayudarle, y ${c.name} balbuceó.`), both),
+      bed(2, `${h.name} se quedó pensando, con la mirada en el techo.`, [h.id]),
+      bed(3, 'Inventar cuentos no siempre era fácil.', [h.id]),
+      bed(1, b(`Entonces ${c.name} propuso que ${tale.wish}.`, `${h.name} dijo que aquel balbuceo quería decir que ${tale.wish}.`), both),
+      bed(2, `${h.name} se rio, porque era una idea perfecta.`, [h.id]),
+      bed(3, 'Así el cuento podía seguir adelante.', both),
+    ],
+    [
+      dream(1, `Y así fue: ${tale.idea}.`),
+      dream(2, 'Todo salió despacito y con mucho cuidado.'),
+      dream(3, 'Nadie tuvo prisa en aquel cuento.'),
+      bed(1, `${h.name} añadió que, además, se hicieron amigos para siempre.`, [h.id]),
+      bed(2, b(`${c.name} dijo que esa era la mejor parte de todas.`, `${c.name} sonrió, con los ojitos medio cerrados.`), [c.id]),
+      bed(3, 'Los cuentos con amigos siempre terminan mejor.', both),
+      bed(1, `Ya solo faltaba el final, y le tocaba a ${h.name}.`, [h.id]),
+      bed(2, `${h.name} cerró los ojos para pensarlo bien.`, [h.id]),
+      bed(3, 'Quería un final bonito y tranquilo.', [h.id]),
+    ],
+    [
+      dream(1, tale.end),
+      dream(2, 'Y todo quedó en calma, como debe ser al final de un cuento.'),
+      dream(3, 'Hasta el viento se quedó quieto para escucharlo.'),
+      bed(1, b(`${c.name} aplaudió bajito: era el mejor cuento que habían inventado nunca.`, `${c.name} bostezó, y ${h.name} supo que el cuento le había gustado.`), both),
+      bed(2, b(`Le pusieron un título y prometieron contárselo a toda la familia.`, `${h.name} le puso un título y prometió contárselo a toda la familia.`), both),
+      bed(3, `${h.name} se lo repitió en voz baja para no olvidarlo.`, [h.id]),
+      bed(1, say([`${h.name} aprendió que los mejores cuentos se inventan juntos.`, `${h.name} aprendió que un cuento inventado en familia es un tesoro que no se gasta.`]), [h.id]),
+      bed(2, 'Y que cada uno puede poner un trocito de imaginación.', [h.id]),
+      bed(3, 'Todos los trocitos juntos hacían algo precioso.', both),
+    ],
+    [
+      bed(1, b(`${c.name} le dio un beso de buenas noches y apagó la lamparita.`, `${h.name} le dio un beso de buenas noches a ${c.name}, que ya dormía.`), both, ['night-lamp']),
+      bed(2, 'La habitación se quedó en una penumbra suave.'),
+      bed(3, 'Solo entraba un poquito de luz de luna.'),
+      bed(1, `${h.name} pensó en ${tale.short}, que ahora también estaría durmiendo.`, [h.id]),
+      bed(2, 'Seguro que soñaba con algo bonito.', [h.id]),
+      bed(3, `Igual que haría ${gendered(h, 'él', 'ella')} muy pronto.`, [h.id]),
+      bed(1, 'Respiró hondo y despacio, tres veces seguidas.', [h.id]),
+      bed(2, 'El cuerpo se le volvió blandito y calentito.', [h.id]),
+      bed(3, 'Los párpados le pesaban cada vez más.', [h.id]),
+    ],
+    [
+      bed(1, `Mañana inventarían otro cuento, y ${h.name} ya tenía alguna idea.`, [h.id]),
+      bed(2, 'Quizá con un barco, o con una montaña que hablaba.', [h.id]),
+      bed(3, 'Las ideas bailaban en su cabeza, cada vez más lentas.', [h.id]),
+      bed(1, 'Afuera, la noche estaba en silencio.'),
+      bed(2, 'La casa entera dormía en silencio.'),
+      bed(3, 'Solo el reloj seguía con su tictac.'),
+      bed(2, `${h.name} soñó que entraba en su propio cuento, de puntillas.`, [h.id]),
+      bed(3, 'Y que allí todos lo saludaban con una sonrisa.'.replace(' lo ', ` ${gendered(h, 'lo', 'la')} `), [h.id]),
+      bed(1, say([`Y así, dentro de su cuento inventado, ${h.name} se durmió.`, `Y así, con el cuento todavía dándole vueltas, ${h.name} se durmió.`]), [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y ${c.name}: el cuento inventado`, place: getScene(tale.scene), questId: `tale-${tale.id}`, variantId: tale.id, beats, items: ['night-lamp'],
+    blockIds: { opening: 'bedroom', goal: `tale-${tale.id}`, obstacle: tale.id, strategy: 'turns', discovery: tale.scene, ending: 'bedroom' },
+    roles: { home: 'bedroom', destination: tale.scene },
+  };
+}
 const gendered = (character, masculine, feminine) => character.gender === 'f' ? feminine : masculine;
 
 export const FAMILY_STRUCTURES = Object.freeze([
@@ -904,8 +1091,11 @@ export const FAMILY_STRUCTURES = Object.freeze([
   { id: 'pet-guest', name: 'El huésped peludo', generate: petGuest },
   { id: 'garden-camp', name: 'Acampada en el jardín', generate: gardenCamp },
   { id: 'handmade-gift', name: 'El regalo hecho a mano', generate: handmadeGift },
+  { id: 'grandparents-visit', name: 'La visita a los abuelos', generate: grandparentsVisit },
+  { id: 'invented-story', name: 'El cuento inventado', generate: inventedStory },
 ]);
 export const FAMILY_GOAL_IDS = [...FAMILY_GOALS.map(goal => goal.id), ...FIRSTS.map(entry => `first-${entry.id}`), ...CHORES.map(entry => `chore-${entry.id}`),
   ...CARES.map(entry => `care-${entry.id}`), `care-${BABY_CARE.id}`, ...MEMORIES.map(entry => `memory-${entry.item}`), ...WAITS.map(entry => `wait-${entry.id}`),
   ...ANGERS.map(entry => `anger-${entry.id}`), ...PETS.map(entry => `pet-${entry.id}`),
-  ...CAMP_VISITORS.map(entry => `camp-${entry.id}`), ...HANDMADE.map(entry => `gift-${entry.id}`)];
+  ...CAMP_VISITORS.map(entry => `camp-${entry.id}`), ...HANDMADE.map(entry => `gift-${entry.id}`),
+  ...GRAND_PLANS.map(entry => `grand-${entry.id}`), ...INVENTED.map(entry => `tale-${entry.id}`)];
