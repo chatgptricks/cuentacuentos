@@ -77,7 +77,13 @@ function planStory(pages) {
     if (!best) break;
     selected.add(best.index);
   }
-  return analyses.map((analysis, index) => composition(analysis, selected.has(index)));
+  return analyses.map((analysis, index) => {
+    if (selected.has(index) || analysis.characters.length || analysis.objects.length) return composition(analysis, selected.has(index));
+    // A page without a scene still needs a picture: borrow the nearest cast already on stage.
+    const nearest = analyses.map((other, at) => ({ other, distance: Math.abs(at - index) + Number(at > index) * 0.5 }))
+      .filter(({ other }) => other.characters.length).sort((left, right) => left.distance - right.distance)[0];
+    return composition(nearest ? { ...analysis, characters: [...nearest.other.characters] } : analysis, !nearest && Boolean(analysis.scene));
+  });
 }
 
 /** Derived presentation only; original pages, saved scenes and atlas-view continuity stay intact. */

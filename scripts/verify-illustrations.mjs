@@ -48,7 +48,10 @@ for(const book of BOOKS) for(const duration of [3,6,9]) for(let i=0;i<60;i++){
  }
  for(const [index,composition] of compositions.entries()){
   const page=story.pages[index];
-  assert(composition.characters.every(id=>page.characters.includes(id)));
+  const empty=!page.characters.length&&!page.objects.length;
+  // Only a page with nothing of its own borrows the nearest cast already in the story.
+  assert(composition.characters.every(id=>page.characters.includes(id)||(empty&&story.pages.some(other=>other.characters.includes(id)))));
+  assert(composition.showScene||composition.characters.length||composition.objects.length,`${book.id}/${duration}/${i}: page ${index+1} needs an illustration`);
   assert(composition.objects.every(id=>page.objects.includes(id)));
  }
  assert.equal(JSON.stringify(story),before,'Presentation must not mutate saved stories');

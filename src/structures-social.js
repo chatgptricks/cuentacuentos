@@ -353,7 +353,7 @@ function surprise({ random, hero: h, companion: c }) {
       there(2, `${c.name} se quedó con la boca abierta.`, [c.id]),
       there(3, 'Por un momento, no supo qué decir.', [c.id]),
       there(1, `Luego se le escapó una sonrisa enorme, y abrazó a ${h.name}.`, both),
-      there(2, `Le dijo a ${h.name} que aquel detalle le hacía mucha ilusión.`, both),
+      there(2, `${c.name} le dijo a ${h.name} que aquel detalle le hacía mucha ilusión.`, both),
       there(3, 'Hasta se le escapó una lagrimita de alegría.', [c.id]),
     ],
     [
