@@ -4,6 +4,9 @@ import { VILLAIN_NAMES, getVillain } from './villain-catalog.js';
 import { ABILITY_REASONS, TRIALS, abilityFor, namedItems } from './narrative-world.js';
 
 /** Shared tools for every story structure: seeded choice, sentence tiers and plans. */
+/** One of several equivalent tellings, chosen by the story's own random draw. */
+export const sayer = random => options => choose(random, options);
+
 export function choose(random, values) {
   if (!values.length) throw new Error('No compatible story element.');
   return values[Math.floor(random() * values.length)];

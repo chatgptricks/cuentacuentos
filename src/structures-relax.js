@@ -4,7 +4,7 @@ import { PLACE_INFO, fitsCast, friendWord, goesTo, inPlace, kind, low, named, ne
 import { RELAX_HOMES } from './quest-catalog.js';
 import { RELAX_GOALS, RELAX_OBSTACLES } from './story-blocks.js';
 import { applyStoryLanguage } from './story-language.js';
-import { at, choose, copyCharacter, gendered } from './story-kit.js';
+import { at, choose, sayer, copyCharacter, gendered } from './story-kit.js';
 
 // The feeling a fable names must match its trouble: a shadow brings fear, a still boat anger.
 const RELAX_FEELINGS = {
@@ -64,20 +64,20 @@ function hurry({ random, hero: h, companion: f }) {
       there(1, `Poco a poco, ${feeling} de ${h.name} se hizo ${smaller}.`, [h.id]),
     ],
     [
-      there(1, `Entonces ${f.name} le ayudó a pensar en un paso pequeño.`, [mentor.id]),
-      there(2, `${f.name} siguió a su lado, escuchando con mucha atención.`, [mentor.id, ...both]),
-      there(3, 'No hacía falta resolverlo todo de una vez.', [mentor.id]),
-      there(2, `${h.name} le contó lo que había pasado.`, [h.id, mentor.id]),
-      there(3, `${mentor.name} escuchó hasta el final, sin interrumpir.`, [mentor.id]),
-      there(1, `${mentor.name} le dijo con cariño: ${low(g.lesson)}`, [mentor.id, h.id], things),
+      there(1, `Entonces ${h.name} le contó a ${f.name} lo que había intentado.`, [h.id, mentor.id]),
+      there(2, `${mentor.name} escuchó hasta el final, sin interrumpir.`, [mentor.id]),
+      there(3, `Le recordó que no hacía falta resolverlo todo de una vez.`, [mentor.id]),
+      there(2, 'Después buscaron juntos un paso pequeño para empezar.', both),
       there(3, `${h.name} se quedó pensando un ratito.`, [h.id]),
+      there(1, `${mentor.name} le dijo con cariño: ${low(g.lesson)}`, [mentor.id, h.id], things),
+      there(3, `${h.name} repitió aquellas palabras en voz bajita.`, [h.id]),
       there(2, 'Le pareció una idea muy sabia, y quiso probarla.', [h.id]),
       there(1, `${h.name} decidió intentarlo de otra manera.`, [h.id]),
     ],
     [
       there(1, `${h.name} ${g.change}.`, [h.id], things),
       there(3, 'Esta vez lo hizo despacio, respirando con calma.', [h.id]),
-      there(2, `${f.name} se quedó cerca, sin hacerlo por ${h.name}.`, both),
+      there(2, `${f.name} se quedó cerca, pero dejó que ${h.name} lo hiciera a su manera.`, both),
       there(1, g.practice, [], things),
       there(3, `${h.name} sonrió por primera vez en todo el rato.`, [h.id]),
       there(2, 'No hacía falta que todo saliera perfecto, y eso le dio mucha calma.', both),
@@ -88,8 +88,8 @@ function hurry({ random, hero: h, companion: f }) {
     [
       atHome(1, `${night ? 'Cuando la luna estuvo alta' : 'Cuando empezó a oscurecer'}, ${h.name} volvió ${toPlace(home)}.`, [h.id]),
       atHome(3, `${f.name} se despidió con un abrazo y se fue a su casa.`, both),
-      atHome(2, 'Se prepararon para descansar y dejaron atrás las prisas del día.'),
-      bed(2, 'Aquel rincón se sentía cómodo, tranquilo y lleno de cariño.'),
+      atHome(2, `${h.name} cenó algo calentito y se puso el pijama.`, [h.id]),
+      bed(2, `Ya en la cama, pensó en ${f.name} y en aquel paso pequeño.`, [h.id]),
       bed(1, `Antes de dormir, recordó lo que había aprendido: ${low(g.moral)}.`, [h.id]),
       bed(3, 'Afuera, todo estaba en silencio y las estrellas brillaban.'),
       bed(2, 'Respiró despacio una vez más, como si oliera una flor.', [h.id]),
@@ -122,6 +122,7 @@ const GOODNIGHT_THINGS = [
 
 /** C2 · Buenas noches a todo: a sleepover, no sleep, good night to everything outside, and sleep. */
 function goodnight({ random, hero: h, companion: f }) {
+  const say = sayer(random);
   const home = getScene(choose(random, ['village', 'treehouse', 'garden', 'meadow', 'farm']));
   const friends = NIGHT_FRIENDS.filter(entry => entry.id !== h.id && entry.id !== f.id);
   const visitors = [];
@@ -133,29 +134,29 @@ function goodnight({ random, hero: h, companion: f }) {
   const pair = `${h.name} y ${f.name}`;
   const bed = at('bedroom'), porch = at('porch'), outside = at(home.id);
   const greet = (index, who) => index === 0 ? visitors[0].line(who, guests[0])
-    : index === 1 ? `${who} le deseó una noche tranquila a ${guests[0].name}, con una sonrisa.`
-      : `${who} escuchó el último saludo de ${guests[0].name} antes de volver a descansar.`;
+    : index === 1 ? `${who} le deseó a ${guests[0].name} una noche tranquila.`
+      : `${who} le prometió a ${guests[0].name} saludarle también mañana.`;
   const beats = [
     [
       bed(1, `Esa noche, ${named(f)} se quedó a dormir en casa de ${h.name}.`, both),
       bed(2, getScene('bedroom').detail),
-      bed(3, 'Habían terminado el día y ya podían descansar sin ninguna prisa.'),
-      bed(1, 'Terminaron de prepararse y se metieron en la cama con calma.', both),
-      bed(2, 'Recordaron su momento favorito y se quedaron con aquella sensación agradable.'),
+      bed(3, `${h.name} le prestó a ${f.name} su almohada más blandita.`, both),
+      bed(1, say(['Se pusieron el pijama y se metieron en la cama.', 'Se lavaron los dientes y se metieron bajo las sábanas.', 'Se pusieron el pijama más calentito y saltaron a la cama.']), both),
+      bed(2, 'Charlaron un rato en voz baja, tapados hasta la nariz.', both),
       bed(3, 'La lamparita de noche dibujaba estrellas en el techo.', [], ['night-lamp']),
-      bed(1, `Pero ${pair} no tenían nada de sueño.`, both),
-      bed(2, 'Aquel rincón se sentía cómodo, tranquilo y lleno de cariño.'),
+      bed(1, say([`Pero ${pair} no tenían nada de sueño.`, `Pero ${pair} no tenían nada de sueño, ni un poquito.`, `Pero, por más que lo intentaban, ${pair} no tenían nada de sueño.`]), both),
+      bed(2, 'Daban vueltas y más vueltas, con los ojos bien abiertos.', both),
       bed(3, `${f.name} contó ovejas, pero se le olvidó por cuál iba.`, [f.id]),
     ],
     [
       bed(1, `${h.name} propuso darle las buenas noches a todo lo que había fuera.`, [h.id]),
-      porch(2, 'Se movieron despacio, procurando no romper aquella calma tan agradable.'),
+      porch(2, 'Se pusieron las zapatillas y salieron al porche de puntillas.', both),
       porch(3, getScene('porch').detail),
       porch(1, things[0].line(h.name), [h.id], things[0].items || []),
       porch(2, 'El aire de la noche olía a hierba fresca.', both),
       porch(3, `${f.name} bostezó un poquito, aunque no quería admitirlo.`, [f.id]),
       outside(1, greet(0, f.name), [f.id, guests[0].id], visitors[0].items || []),
-      outside(2, `${guests[0].name} les deseó dulces sueños con una sonrisa.`, [guests[0].id]),
+      outside(2, `${guests[0].name} les devolvió el saludo en voz muy bajita.`, [guests[0].id]),
       outside(3, 'Todo se movía cada vez más despacio.'),
     ],
     [
@@ -163,19 +164,19 @@ function goodnight({ random, hero: h, companion: f }) {
       outside(2, 'Cada buenas noches los dejaba un poco más tranquilos.', both),
       outside(3, `${h.name} se frotó los ojos con las manos.`, [h.id]),
       outside(1, greet(1, h.name), [h.id, guests[0].id], visitors[0].items || []),
-      outside(2, `${guests[0].name} les dijo que la noche era para descansar.`, [guests[0].id]),
+      outside(2, `${guests[0].name} les contestó que la noche era su momento favorito.`, [guests[0].id]),
       outside(3, 'A lo lejos, una lechuza ululó suavemente.'),
       outside(1, greet(2, f.name), [f.id, guests[0].id], visitors[0].items || []),
-      outside(2, `${guests[0].name} les sonrió y se acurrucó en su rincón.`, [guests[0].id]),
+      outside(2, `${guests[0].name} siguió con lo suyo, sin hacer ruido.`, [guests[0].id]),
       outside(3, 'Ya casi todo a su alrededor estaba dormido.'),
     ],
     [
       porch(1, things[2].line(h.name), [h.id], things[2].items || []),
       porch(2, `Luego, ${pair} volvieron a entrar muy despacito.`, both),
-      porch(3, 'Entraron despacio y dejaron los saludos de la noche atrás.'),
-      bed(1, `${h.name} le dio las buenas noches al rincón donde iba a descansar.`, [h.id]),
-      bed(2, 'El cuerpo se fue aflojando un poquito más con cada respiración.'),
-      bed(3, 'Ya no había nada pendiente que les impidiera descansar.'),
+      porch(3, `${f.name} cerró la puerta sin hacer ruido.`, [f.id]),
+      bed(1, `${h.name} le dio las buenas noches a su almohada, que estaba fresquita.`, [h.id]),
+      bed(2, 'Se taparon hasta la barbilla, calentitos y contentos.', both),
+      bed(3, 'Ya no quedaba nadie a quien saludar.'),
       bed(1, `${h.name} apagó la lamparita de noche y le dio las gracias por su luz.`, [h.id], ['night-lamp']),
       bed(2, 'La habitación quedó en una penumbra suave.'),
       bed(3, 'Solo se oía el tictac lejano del reloj.'),
@@ -184,23 +185,23 @@ function goodnight({ random, hero: h, companion: f }) {
       bed(1, `${pair} respiraron hondo, como si olieran una flor.`, both),
       bed(2, 'Soltaron el aire muy despacio, como si apagaran una vela.', both),
       bed(3, 'Lo hicieron una, dos y tres veces.', both),
-      bed(1, `${f.name} le dio las buenas noches a ${h.name} en voz muy bajita.`, both),
+      bed(1, say([`${f.name} le dio las buenas noches a ${h.name} en voz muy bajita.`, `${f.name} le susurró buenas noches a ${h.name} desde su almohada.`, `${f.name} le dio las buenas noches a ${h.name} y le apretó la mano.`]), both),
       bed(2, `${h.name} le contestó con un bostezo enorme.`, [h.id]),
       bed(3, 'Los dos se rieron sin hacer ruido.', both),
-      bed(1, 'Los párpados les pesaban cada vez más.', both),
+      bed(1, say(['Los párpados les pesaban cada vez más.', 'Los ojos se les cerraban solos, como persianas.', 'Cada vez les costaba más mantener los ojos abiertos.']), both),
       bed(2, 'Los pies se relajaron, luego las piernas, y luego la barriga.', both),
-      bed(3, 'El cansancio del día se fue quedando muy lejos de allí.'),
+      bed(3, 'Fuera, ya nadie hacía ningún ruido.'),
     ],
     [
       bed(1, `${h.name} recordó aquel último saludo a ${guests[0].name} con una sonrisa.`, [h.id]),
       bed(2, 'Todos estaban a salvo y calentitos.'),
       bed(3, 'Afuera, la luna vigilaba el jardín.'),
-      bed(1, `${h.name} aprendió que la noche es más bonita cuando le decimos buenas noches con calma.`, [h.id]),
+      bed(1, say([`${h.name} aprendió que la noche es más bonita cuando le decimos buenas noches con calma.`, `${h.name} aprendió que decir buenas noches con calma ayuda a dormir mejor.`, `${h.name} aprendió que la noche se vuelve amable cuando la saludamos despacio.`]), [h.id]),
       bed(2, `${f.name} ya respiraba despacito, con la boca entreabierta.`, [f.id]),
-      bed(3, 'Todo lo que habían vivido seguía acompañándolos de una forma agradable.'),
+      bed(3, `${f.name} murmuró algo en sueños y sonrió.`, [f.id]),
       bed(2, `${h.name} susurró buenas noches una última vez.`, [h.id]),
       bed(3, 'Y la casa entera se quedó en silencio.'),
-      bed(1, `Y así, ${pair} se durmieron por fin, muy tranquilos.`, both),
+      bed(1, say([`Y así, ${pair} se durmieron por fin, muy tranquilos.`, `Y así, ${pair} se durmieron por fin, uno junto al otro.`, `Y, sin darse cuenta, ${pair} se durmieron por fin.`]), both),
     ],
   ];
   return {
@@ -225,6 +226,7 @@ const NOISES = [
 
 /** C3 · El ruido de la noche: a sound, a scary guess, breathing, a look together and the real cause. */
 function nightNoise({ random, hero: h, companion: f }) {
+  const say = sayer(random);
   const noise = choose(random, NOISES.filter(entry => entry.creature !== h.id && entry.creature !== f.id));
   const creature = noise.creature ? copyCharacter(random, noise.creature) : null;
   const items = noise.items || [];
@@ -235,22 +237,22 @@ function nightNoise({ random, hero: h, companion: f }) {
     [
       bed(1, `Esa noche, ${named(f)} se quedó a dormir en casa de ${h.name}.`, both),
       bed(2, getScene('bedroom').detail),
-      bed(3, 'El cuerpo se fue aflojando un poquito más con cada respiración.'),
-      bath(1, 'Se lavaron los dientes con el cepillo, uno al lado del otro.', both, ['toothbrush']),
+      bed(3, 'Se pusieron el pijama entre risas.', both),
+      bath(1, say(['Se lavaron los dientes con el cepillo, uno al lado del otro.', 'Se lavaron los dientes con el cepillo, haciendo muecas en el espejo.']), both, ['toothbrush']),
       bath(2, `${f.name} hizo burbujas con la pasta de dientes y se rieron.`, [f.id]),
       bath(3, getScene('bathroom').detail),
-      bed(1, 'Luego se metieron en la cama y apagaron la luz grande.', both),
+      bed(1, say(['Luego se metieron en la cama y apagaron la luz grande.', 'Luego se acurrucaron en la cama y apagaron la luz grande.']), both),
       bed(2, 'Solo quedó encendida la lamparita de noche.', [], ['night-lamp']),
-      bed(3, 'Recordaron su momento favorito y se quedaron con aquella sensación agradable.'),
+      bed(3, 'Se dieron las buenas noches y cerraron los ojos.', both),
     ],
     [
       bed(1, `De pronto, ${noise.sound}.`),
-      bed(2, 'Aquel rincón se sentía cómodo, tranquilo y lleno de cariño.'),
+      bed(2, `${h.name} abrió los ojos de golpe.`, [h.id]),
       bed(3, 'El sonido se repitió una vez más.'),
       bed(1, noise.seems),
       bed(2, `${h.name} sintió que el corazón le latía muy deprisa.`, [h.id]),
       bed(3, 'Ninguno de los dos se atrevía a moverse.', both),
-      bed(1, `Entonces ${h.name} recordó un truco para cuando tenía miedo: respirar despacio.`, [h.id]),
+      bed(1, say([`Entonces ${h.name} recordó un truco para cuando tenía miedo: respirar despacio.`, `Entonces ${h.name} recordó un truco que le habían enseñado en casa: respirar despacio.`]), [h.id]),
       bed(2, `Se lo explicó a ${f.name} en voz muy bajita.`, both),
       bed(3, 'Era mejor que quedarse quietos imaginando cosas.', both),
     ],
@@ -267,9 +269,9 @@ function nightNoise({ random, hero: h, companion: f }) {
     ],
     [
       bed(1, `${h.name} tomó la lamparita de noche para iluminar el camino.`, [h.id], ['night-lamp']),
-      bed(2, 'Se movieron despacio, procurando no romper aquella calma tan agradable.'),
+      bed(2, 'Caminaron de puntillas por el pasillo, muy pegaditos.', both),
       bed(3, 'El suelo estaba fresquito bajo sus pies.', both),
-      where(1, `Siguieron el sonido hasta ${placeName(getScene(noise.scene))}.`, both),
+      where(1, noise.scene === 'bedroom' ? 'Siguieron el sonido hasta la ventana del dormitorio.' : `Siguieron el sonido hasta ${placeName(getScene(noise.scene))}.`, both),
       where(2, ['bedroom', 'bathroom'].includes(noise.scene) ? 'A oscuras, todo parecía distinto de como era por el día.' : getScene(noise.scene).detail),
       where(3, 'El sonido se oía cada vez más cerca.', both),
       where(1, 'Levantaron la lamparita de noche para ver mejor.', both, ['night-lamp']),
@@ -284,11 +286,11 @@ function nightNoise({ random, hero: h, companion: f }) {
       where(2, `${h.name} dijo que la noche tenía muchos sonidos, pero casi todos eran amigos.`, [h.id]),
       where(3, `${f.name} estuvo de acuerdo, bostezando sin parar.`, [f.id]),
       bed(1, 'Volvieron a la cama de puntillas.', both),
-      bed(2, 'El cansancio del día se fue quedando muy lejos de allí.'),
-      bed(3, 'Un último bostezo anunció que ya podían descansar sin miedo.'),
+      bed(2, `${f.name} se tapó hasta las orejas, ya sin miedo.`, [f.id]),
+      bed(3, 'Los dos bostezaron a la vez, muy despacio.', both),
     ],
     [
-      bed(1, `${h.name} aprendió que mirar con calma hace pequeños los miedos de la noche.`, [h.id]),
+      bed(1, say([`${h.name} aprendió que mirar con calma hace pequeños los miedos de la noche.`, `${h.name} aprendió que los ruidos de la noche asustan menos cuando se miran con calma.`]), [h.id]),
       bed(2, `${f.name} se acurrucó y cerró los ojos.`, [f.id]),
       bed(3, 'La lamparita de noche brillaba suave en un rincón.', [], ['night-lamp']),
       bed(1, 'Respiraron despacio una última vez, juntos.', both),
@@ -296,7 +298,7 @@ function nightNoise({ random, hero: h, companion: f }) {
       bed(3, 'Solo se oía la respiración tranquila de los dos.', both),
       bed(2, `${h.name} le susurró a ${f.name} que había sido muy valiente.`, both),
       bed(3, 'Afuera, la luna lo vigilaba todo.'),
-      bed(1, `Y así, ${pair} se durmieron hasta la mañana.`, both),
+      bed(1, say([`Y así, ${pair} se durmieron hasta la mañana.`, `Y así, ${pair} se durmieron hasta que salió el sol.`, `Y así, ya sin ningún miedo, ${pair} se durmieron.`]), both),
     ],
   ];
   return {
@@ -516,8 +518,8 @@ function fable({ random, hero: h, companion: f, fable: id }) {
   story.beats.push([
     bed(1, `${h.name} recordó la enseñanza del día: ${low(story.moral)}.`, [h.id]),
     bed(2, 'La lamparita de noche brillaba suave en un rincón.', [], ['night-lamp']),
-    bed(3, 'Afuera, un grillo cantaba una nana.'),
-    bed(1, `${f.name} también estaba descansando, muy cerca.`, [f.id]),
+    bed(3, 'Afuera, la noche estaba quieta y oscura.'),
+    bed(1, `${f.name} también dormía ya, soñando con su propio día.`, [f.id]),
     bed(2, 'Todo estaba en silencio y en calma.'),
     bed(3, 'Los ojos se le cerraron poquito a poco.', [h.id]),
     bed(2, `${h.name} se tapó con su manta favorita.`, [h.id], ['blanket']),
@@ -541,14 +543,14 @@ const VEHICLES = [
   { scene: 'moon-boat', text: 'la luna, que se había convertido en barca' },
 ];
 const DREAMS = {
-  'cloud-sea': { feel: 'Las nubes eran blanditas y olían a algodón dulce.', breathe: 'Respiraron hondo, y el aire sabía a fresa.' },
-  'firefly-field': { feel: 'Las luciérnagas encendían caminitos de luz sobre la hierba.', breathe: 'Contaron diez lucecitas mientras respiraban despacio.' },
-  'lily-pond': { feel: 'Los nenúfares se mecían sobre el agua quieta.', breathe: 'Respiraron al ritmo de las ondas del agua.' },
-  'shooting-star-hill': { feel: 'Las estrellas fugaces cruzaban el cielo sin hacer ruido.', breathe: 'Por cada estrella, soltaron el aire muy despacio.' },
-  'snowy-night-forest': { feel: 'La nieve caía tan suave que no hacía ningún ruido.', breathe: 'Respiraron el aire frío y limpio del bosque.' },
-  'moon-boat': { feel: 'La barca de la luna se mecía entre nubes y estrellas.', breathe: 'Se mecieron con ella, respirando despacito.' },
-  'sunset-beach': { feel: 'Las olas llegaban a la orilla y se iban, una y otra vez.', breathe: 'Respiraron como las olas: llegar, quedarse y volver.' },
-  'dandelion-garden': { feel: 'Las semillas de diente de león flotaban como plumitas.', breathe: 'Soplaron muy suave, y las semillas bailaron a su alrededor.' },
+  'cloud-sea': { see: 'Las nubes formaban almohadas gigantes hasta donde alcanzaba la vista.', feel: 'Las nubes eran blanditas y olían a algodón dulce.', breathe: 'Respiraron hondo, y el aire sabía a fresa.' },
+  'firefly-field': { see: 'Algunas lucecitas se posaban en sus manos, como estrellas pequeñas.', feel: 'Las luciérnagas encendían caminitos de luz sobre la hierba.', breathe: 'Contaron diez lucecitas mientras respiraban despacio.' },
+  'lily-pond': { see: 'Una rana dormía sobre una hoja redonda, con la boca abierta.', feel: 'Los nenúfares se mecían sobre el agua quieta.', breathe: 'Respiraron al ritmo de las ondas del agua.' },
+  'shooting-star-hill': { see: 'La colina estaba cubierta de hierba suave y fresca.', feel: 'Las estrellas fugaces cruzaban el cielo sin hacer ruido.', breathe: 'Por cada estrella, soltaron el aire muy despacio.' },
+  'snowy-night-forest': { see: 'Los pinos llevaban gorros blancos y redondos.', feel: 'La nieve caía tan suave que no hacía ningún ruido.', breathe: 'Respiraron el aire frío y limpio del bosque.' },
+  'moon-boat': { see: 'Desde allí arriba, el mundo parecía un juguete dormido.', feel: 'La barca de la luna se mecía entre nubes y estrellas.', breathe: 'Se mecieron con ella, respirando despacito.' },
+  'sunset-beach': { see: 'El cielo se pintaba de naranja y de rosa.', feel: 'Las olas llegaban a la orilla y se iban, una y otra vez.', breathe: 'Respiraron como las olas: llegar, quedarse y volver.' },
+  'dandelion-garden': { see: 'El jardín estaba lleno de bolitas blancas y esponjosas.', feel: 'Las semillas de diente de león flotaban como plumitas.', breathe: 'Soplaron muy suave, y las semillas bailaron a su alrededor.' },
 };
 
 /** C5 · El viaje del sueño: in bed, a gentle vehicle visits three dream places, one breath at a time. */
@@ -567,18 +569,18 @@ function dreamJourney({ random, hero: h, companion: f }) {
   const beats = [
     [
       bed(1, `Esa noche, ${named(h)} se metió en la cama con mucho sueño.`, [h.id]),
-      bed(3, 'Se prepararon para descansar y dejaron atrás las prisas del día.'),
+      bed(3, 'Ya llevaba puesto su pijama favorito, el de las estrellas pequeñitas.', [h.id]),
       bed(2, 'Su osito de peluche estaba en la almohada, esperándolo.'.replace('esperándolo', `esperándo${gendered(h, 'lo', 'la')}`), [], ['teddy-bear', 'pillow']),
       bed(3, `Cerró los ojos y respiró despacio tres veces.`, [h.id]),
       bed(2, 'Con cada respiración, el cuerpo se le volvía más blandito.', [h.id]),
-      bed(3, 'La habitación estaba en calma y todo invitaba a descansar.'),
+      bed(3, 'Una luz suave de luna entraba por la ventana y lo llenaba todo de calma.'),
       ride(1, `Entonces soñó que llegaba ${vehicle.text}.`, [h.id], vehicleItems),
       ride(2, `Allí ya esperaba su ${friendWord(f)} ${f.name}, sonriendo.`, [f.id]),
       ride(1, `${h.name} se subió junto a su ${friendWord(f)} ${f.name}, y empezaron un viaje muy tranquilo.`, both, vehicleItems),
     ],
     [
       one(1, `Primero llegaron ${toPlace(place(stops[0]))}.`, both),
-      one(2, place(stops[0]).detail),
+      one(2, DREAMS[stops[0]].see),
       one(3, 'Todo se movía muy despacio, como en cámara lenta.'),
       one(1, DREAMS[stops[0]].feel, both),
       one(2, `${f.name} señaló algo bonito, y ${h.name} sonrió.`, both),
@@ -589,7 +591,7 @@ function dreamJourney({ random, hero: h, companion: f }) {
     ],
     [
       two(1, `Después, el viaje los llevó ${toPlace(place(stops[1]))}.`, both),
-      two(2, place(stops[1]).detail),
+      two(2, DREAMS[stops[1]].see),
       two(3, 'Una brisa tibia les acariciaba la cara.', both),
       two(1, DREAMS[stops[1]].feel, both),
       two(2, `${h.name} sintió los brazos pesados y calentitos.`, [h.id]),
@@ -600,7 +602,7 @@ function dreamJourney({ random, hero: h, companion: f }) {
     ],
     [
       three(1, `Por último, llegaron ${toPlace(place(stops[2]))}.`, both),
-      three(2, place(stops[2]).detail),
+      three(2, DREAMS[stops[2]].see),
       three(3, 'Era el lugar más tranquilo de todos.', both),
       three(1, DREAMS[stops[2]].feel, both),
       three(2, `${h.name} sintió las piernas pesadas y relajadas.`, [h.id]),
@@ -617,8 +619,8 @@ function dreamJourney({ random, hero: h, companion: f }) {
       ride(2, 'Le prometió que volverían a viajar otra noche.', [f.id]),
       ride(3, 'Luego se fue flotando hacia su propia casa.', [f.id]),
       bed(1, `${h.name} volvió a su cama, que estaba calentita.`, [h.id]),
-      bed(2, 'El cuerpo se fue aflojando un poquito más con cada respiración.'),
-      bed(3, 'Recordaron su momento favorito y se quedaron con aquella sensación agradable.'),
+      bed(2, 'Las sábanas olían a limpio y a sueño, como después de un buen viaje.'),
+      bed(3, `${h.name} todavía sonreía al recordar el viaje.`, [h.id]),
     ],
     [
       bed(1, `${h.name} respiró hondo una última vez.`, [h.id]),
@@ -626,7 +628,7 @@ function dreamJourney({ random, hero: h, companion: f }) {
       bed(3, 'Afuera, la noche estaba en silencio.'),
       bed(1, `${h.name} aprendió que la calma también puede llevarnos de viaje.`, [h.id]),
       bed(2, 'Y que los mejores viajes empiezan con los ojos cerrados.', [h.id]),
-      bed(3, 'Afuera, el mundo también parecía descansar un poquito con ellos.'),
+      bed(3, 'La almohada estaba blandita y fresca.'),
       bed(2, 'Todo su cuerpo descansaba, del pelo a los pies.', [h.id]),
       bed(3, 'Los sueños bonitos ya lo esperaban.'.replace(' lo ', ` ${gendered(h, 'lo', 'la')} `), [h.id]),
       bed(1, `Y así, muy tranquilamente, ${h.name} se durmió.`, [h.id]),
@@ -641,25 +643,24 @@ function dreamJourney({ random, hero: h, companion: f }) {
 }
 
 /** Moments of an ordinary day worth remembering at night. */
+// Each day keeps one place: the activity, a funny moment and a quiet one at the end.
 const MOMENTS = [
-  { scene: 'kitchen', text: 'cuando hicieron galletas y la masa se les pegó en la nariz', items: ['cookies'] },
-  { scene: 'meadow', text: 'cuando hicieron volar la cometa en el prado', items: ['kite'] },
-  { scene: 'lily-pond', text: 'cuando vieron una rana saltar al estanque' },
-  { scene: 'playroom', text: 'cuando construyeron una torre con cajas de cartón', items: ['cardboard-box'] },
-  { scene: 'market', text: 'cuando probaron una manzana nueva en el mercado', items: ['apple'] },
-  { scene: 'porch', text: 'cuando miraron caer la lluvia desde el porche' },
-  { scene: 'living-room', text: 'cuando leyeron un libro de cuentos en el sofá', items: ['storybook'] },
-  { scene: 'garden', text: 'cuando regaron las flores con la regadera', items: ['watering-can', 'flower'] },
-  { scene: 'playground', text: 'cuando jugaron a la pelota hasta cansarse', items: ['ball'] },
+  { scene: 'kitchen', text: 'cuando hicieron galletas en la cocina', items: ['cookies'], funny: 'cuando la masa se les pegó en la nariz', quiet: 'cuando compartieron la primera, todavía calentita' },
+  { scene: 'meadow', text: 'cuando hicieron volar la cometa en el prado', items: ['kite'], funny: 'cuando dio una voltereta en el aire y casi se enreda en un árbol', quiet: 'cuando se tumbaron en la hierba a mirar las nubes' },
+  { scene: 'lily-pond', text: 'cuando vieron una rana saltar al estanque', funny: 'cuando la rana los salpicó al saltar otra vez', quiet: 'cuando contaron los nenúfares, uno a uno' },
+  { scene: 'playroom', text: 'cuando construyeron una torre con cajas de cartón', items: ['cardboard-box'], funny: 'cuando la torre se cayó con un ruido enorme', quiet: 'cuando la levantaron otra vez, más alta que antes' },
+  { scene: 'market', text: 'cuando probaron una manzana nueva en el mercado', items: ['apple'], funny: 'cuando el jugo les chorreó hasta la barbilla', quiet: 'cuando volvieron a casa cantando por el camino' },
+  { scene: 'porch', text: 'cuando miraron caer la lluvia desde el porche', funny: 'cuando saltaron en el charco más grande', quiet: 'cuando salió el arcoíris por encima del tejado' },
+  { scene: 'living-room', text: 'cuando leyeron un libro de cuentos en el sofá', items: ['storybook'], funny: 'cuando pusieron voces graciosas a todos los personajes', quiet: 'cuando se quedaron un rato quietos entre los cojines' },
+  { scene: 'garden', text: 'cuando regaron las flores con la regadera', items: ['watering-can', 'flower'], funny: 'cuando se mojaron los pies sin querer', quiet: 'cuando una mariquita se posó en una hoja' },
+  { scene: 'playground', text: 'cuando jugaron a la pelota hasta cansarse', items: ['ball'], funny: 'cuando la pelota rebotó tan alto que casi llega al cielo', quiet: 'cuando descansaron en el columpio, meciéndose despacio' },
 ];
 
 /** C6 · Tres cosas bonitas: at bedtime, two friends remember three good moments and fall asleep grateful. */
 function threeThings({ random, hero: h, companion: f }) {
+  const say = sayer(random);
   const moment = choose(random, MOMENTS);
-  const picks = [moment,
-    { scene: moment.scene, text: 'cuando compartieron una sonrisa mientras disfrutaban de aquel momento' },
-    { scene: moment.scene, text: 'cuando se dieron las gracias por haberse hecho compañía' },
-  ];
+  const picks = [moment, { scene: moment.scene, text: moment.funny }, { scene: moment.scene, text: moment.quiet }];
   const both = [h.id, f.id];
   const pair = `${h.name} y ${f.name}`;
   const bed = at('bedroom');
@@ -669,11 +670,11 @@ function threeThings({ random, hero: h, companion: f }) {
     [
       bed(1, `Al final de un día largo, ${named(f)} se quedó a dormir en casa de ${h.name}.`, both),
       bed(2, getScene('bedroom').detail),
-      bed(3, 'Se prepararon para descansar y dejaron atrás las prisas del día.'),
+      bed(3, 'Se pusieron el pijama y se taparon hasta la barbilla.', both),
       bed(1, `${h.name} propuso un juego: recordar tres cosas bonitas del día.`, [h.id]),
       bed(2, `A ${f.name} le pareció una idea estupenda.`, [f.id]),
-      bed(3, 'Aquel rincón se sentía cómodo, tranquilo y lleno de cariño.'),
-      bed(2, 'La habitación estaba en calma y todo invitaba a descansar.'),
+      bed(3, 'Apagaron la luz grande y se quedaron a media luz.', both),
+      bed(2, 'Afuera ya era de noche, y todo estaba en silencio.'),
       bed(3, `${h.name} cerró los ojos para pensar mejor.`, [h.id]),
       bed(1, 'Cerraron los ojos y empezaron a recordar.', both),
     ],
@@ -681,23 +682,23 @@ function threeThings({ random, hero: h, companion: f }) {
       one(1, remember(0, h.name), both, picks[0].items || []),
       one(2, getScene(picks[0].scene).detail),
       one(3, 'Solo de pensarlo, les dio la risa.', both),
-      one(1, `${f.name} dijo que esa había sido su parte favorita.`, [f.id]),
+      one(1, say([`${f.name} dijo que esa había sido su parte favorita.`, `${f.name} dijo que todavía se reía al pensarlo.`, `${f.name} dijo que no se le olvidaría nunca.`]), [f.id]),
       one(2, 'Lo recordaron con todos los detalles, despacito.', both),
       one(3, 'Hasta parecía que podían oler el momento.', both),
-      bed(1, 'Respiraron hondo, dando las gracias por aquel ratito.', both),
+      bed(1, say(['Respiraron hondo, dando las gracias por aquel ratito.', 'Respiraron hondo y guardaron aquel recuerdo en el corazón.']), both),
       bed(2, 'Sus cuerpos se fueron relajando poco a poco.', both),
-      bed(3, 'Afuera, la noche estaba muy tranquila.'),
+      bed(3, `${f.name} se acurrucó un poquito más.`, [f.id]),
     ],
     [
       two(1, remember(1, f.name), both, picks[1].items || []),
-      two(2, `${f.name} había compartido ese rato sin pedir nada a cambio.`, [f.id]),
+      two(2, `${h.name} se rio bajito al recordarlo.`, [h.id]),
       two(3, `${h.name} sonrió con los ojos cerrados.`, [h.id]),
-      two(1, `${h.name} dijo que se había sentido muy feliz en ese momento.`, [h.id]),
+      two(1, say([`${h.name} dijo que se había sentido muy feliz en ese momento.`, `${h.name} dijo que ese había sido el momento más divertido.`]), [h.id]),
       two(2, 'Recordaron los colores, los sonidos y las risas.', both),
       two(3, `${f.name} imitó un sonido de aquel rato, muy bajito.`, [f.id]),
       bed(1, 'Volvieron a respirar hondo, despacio y sin prisa.', both),
       bed(2, 'Las manos y los pies se quedaron quietos y calentitos.', both),
-      bed(3, 'El cuerpo se fue aflojando un poquito más con cada respiración.'),
+      bed(3, 'La almohada se sentía cada vez más blandita.'),
     ],
     [
       three(1, remember(2, h.name), both, picks[2].items || []),
@@ -716,13 +717,13 @@ function threeThings({ random, hero: h, companion: f }) {
       bed(3, 'Los dos se rieron sin hacer ruido.', both),
       bed(1, 'Respiraron hondo por última vez, como si olieran una flor.', both),
       bed(2, 'Y soltaron el aire despacio, como si apagaran una vela.', both),
-      bed(3, 'Recordaron su momento favorito y se quedaron con aquella sensación agradable.'),
-      bed(1, 'Afuera, la luna brillaba sobre las casas dormidas.'),
-      bed(2, 'Afuera, el mundo también parecía descansar un poquito con ellos.'),
+      bed(3, 'Lo hicieron tres veces, sin ninguna prisa.', both),
+      bed(1, say(['Afuera, la luna brillaba sobre las casas dormidas.', 'Afuera, la luna asomaba entre las nubes, redonda y tranquila.', 'Afuera, solo se oía el canto lejano de un grillo.'])),
+      bed(2, 'La casa entera se había quedado dormida.'),
       bed(3, 'El reloj hacía tictac, tictac, muy lejos.'),
     ],
     [
-      bed(1, `${h.name} aprendió que un día lleno de cosas pequeñas y buenas es un gran día.`, [h.id]),
+      bed(1, say([`${h.name} aprendió que un día lleno de cosas pequeñas y buenas es un gran día.`, `${h.name} aprendió que las cosas pequeñas también hacen un gran día.`]), [h.id]),
       bed(2, 'Y que dar las gracias ayuda a dormir con una sonrisa.', [h.id]),
       bed(3, `${f.name} ya respiraba muy despacito, con los ojos cerrados.`, [f.id]),
       bed(1, `${h.name} pensó en las tres cosas una última vez.`, [h.id]),
@@ -730,7 +731,7 @@ function threeThings({ random, hero: h, companion: f }) {
       bed(3, 'Y cada una brillaba un poquito.', [h.id]),
       bed(2, 'Los párpados le pesaban como cortinas suaves.', [h.id]),
       bed(3, 'Todo estaba en calma en la habitación.'),
-      bed(1, `Y así, ${pair} se durmieron muy tranquilos.`, both),
+      bed(1, say([`Y así, ${pair} se durmieron muy tranquilos.`, `Y así, abrazados a sus recuerdos, ${pair} se durmieron.`]), both),
     ],
   ];
   return {
@@ -770,16 +771,16 @@ function worry({ random, hero: h, companion: f }) {
       bed(2, getScene('bedroom').detail),
       bed(3, 'Daba vueltas y más vueltas en la cama.', [h.id]),
       there(1, `${h.name} pensaba que ${item.worry}.`, [h.id], item.items),
-      there(2, getScene(item.scene).detail),
+      there(2, 'Se lo imaginaba una y otra vez, como una película.', [h.id]),
       there(3, item.fear, [h.id]),
       bed(1, 'La preocupación le pesaba en la barriga como una piedra.', [h.id]),
       bed(2, 'Cuanto más pensaba en ella, más grande se hacía.', [h.id]),
-      bed(3, 'La habitación estaba en calma y todo invitaba a descansar.'),
+      bed(3, 'Ni siquiera contar ovejas le ayudaba.', [h.id]),
     ],
     [
-      bed(1, `Entonces llegó ${named(mentor)} que había venido a darle las buenas noches.`, [mentor.id]),
+      bed(1, `Entonces ${named(mentor)} que se había quedado a dormir en su casa, le preguntó qué le pasaba.`, [mentor.id]),
       bed(2, `${mentor.name} se sentó en el borde de la cama.`, [mentor.id]),
-      bed(3, `Notó enseguida que algo le pasaba a ${h.name}.`, [mentor.id]),
+      bed(3, `Se frotó los ojos y se acercó un poquito más.`, [mentor.id]),
       bed(1, `${h.name} le contó su preocupación, muy bajito.`, [h.id, mentor.id]),
       bed(2, `${mentor.name} escuchó sin interrumpir, asintiendo despacio.`, [mentor.id]),
       bed(3, 'Afuera, el viento movía las hojas suavemente.'),
@@ -810,7 +811,7 @@ function worry({ random, hero: h, companion: f }) {
       there(3, 'Hasta el lugar parecía más amable que antes.'),
     ],
     [
-      bed(1, `${mentor.name} le dio un beso en la frente y apagó la luz grande.`, [mentor.id, h.id]),
+      bed(1, `${mentor.name} volvió a su cama y apagó la luz grande.`, [mentor.id, h.id]),
       bed(2, 'Le dijo que estaría cerca si lo necesitaba.'.replace(' lo ', ` ${gendered(h, 'lo', 'la')} `), [mentor.id]),
       bed(3, 'La puerta quedó entreabierta, con un hilito de luz.'),
       bed(1, `${h.name} se acomodó para descansar, con la respiración más tranquila.`, [h.id]),
@@ -818,7 +819,7 @@ function worry({ random, hero: h, companion: f }) {
       bed(3, 'Y soltó el aire, como si apagara una vela.', [h.id]),
       bed(1, 'La preocupación se había quedado quietecita en su rincón.', [h.id]),
       bed(2, 'Ya no daba miedo; solo era una cosita pequeña.', [h.id]),
-      bed(3, 'Afuera, el mundo también parecía descansar un poquito con ellos.'),
+      bed(3, `${mentor.name} ya respiraba despacito en la otra cama.`, [mentor.id]),
     ],
     [
       bed(1, `${h.name} aprendió que las preocupaciones se encogen cuando las compartimos.`, [h.id]),
@@ -828,7 +829,7 @@ function worry({ random, hero: h, companion: f }) {
       bed(2, 'Mañana sería un día nuevo, y estaría preparado.'.replace('preparado', gendered(h, 'preparado', 'preparada')), [h.id]),
       bed(3, 'Los ojos se le cerraron poquito a poco.', [h.id]),
       bed(2, 'Su respiración se volvió lenta y suave.', [h.id]),
-      bed(3, 'Recordaron su momento favorito y se quedaron con aquella sensación agradable.'),
+      bed(3, 'Pensó en su plan pequeño una vez más.', [h.id]),
       bed(1, `Y así, más tranquilo que nunca, ${h.name} se durmió.`.replace('tranquilo', gendered(h, 'tranquilo', 'tranquila')), [h.id]),
     ],
   ];

@@ -67,6 +67,10 @@ Cada cuento nuevo mantiene una pareja protagonista y un objetivo central. Los se
 
 Actividad juntos · La primera vez · Ayudantes de casa · El día al revés · Cuando era pequeño · La espera · El enfado y el abrazo · El huésped peludo (la mascota de un vecino). Si el familiar elegido es un bebé, cada frase en la que participa tiene su versión de bebé.
 
+## La voz de cada cuento
+
+Además de la trama, cada cuento elige su propia manera de contarse (`src/story-variation.js`): una descripción para cada lugar entre varias y una versión de las fórmulas que más se repiten («caminaron un largo rato», «como si olieran una flor», «Desde entonces»). Las estructuras de Relax, Amigos y Mi familia también tienen varias versiones de sus frases principales. La voz se elige antes de recortar la duración, así que las lecturas de 3, 6 y 9 minutos de una misma semilla dicen lo mismo con las mismas palabras. Las actividades tranquilas solo ocurren en lugares cotidianos: nunca en guaridas, fortalezas, sueños o pasos peligrosos.
+
 ## Duración
 
 Cada parte tiene nueve frases en orden de lectura y en tres niveles. Los cuentos de 3 minutos usan el nivel 1; los de 6 añaden el 2, y los de 9, el 3. Las versiones cortas solo quitan frases, nunca cambian el orden de las que quedan. Cada página tiene una frase de 6 a 24 palabras, y cada minuto de lectura suma entre 50 y 90 palabras.

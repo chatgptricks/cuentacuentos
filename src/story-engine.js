@@ -12,6 +12,7 @@ import { RELAX_STRUCTURES, RELAX_GOAL_IDS } from './structures-relax.js';
 import { FRIEND_STRUCTURES, FRIEND_GOAL_IDS } from './structures-social.js';
 import { FAMILY_STRUCTURES, FAMILY_GOAL_IDS } from './structures-family.js';
 import { choose, countWords, drawnIn, makeCast, planFor, unfold, unique } from './story-kit.js';
+import { voiceBeats } from './story-variation.js';
 
 /**
  * Offline picture books built from fixed narrative structures. Each book offers several
@@ -76,11 +77,13 @@ export function generateStory(bookId, duration = 3, seed, options = {}) {
   const cast = familyCast || (structure.cast ? structure.cast(random) : makeCast(random, CASTS[bookId], structure.accept));
   const story = structure.generate({ random, ...cast, family: familyCast?.family, duration: minutes, bookId });
   const id = `${bookId}-${minutes}-${encodeURIComponent(storySeed)}`;
-  const pages = unfold(story.beats, minutes).map((page, index) => ({ id: `${id}-page-${index + 1}`, ...page }));
+  // The voice is chosen before the duration cut, so shorter readings keep the same wording.
+  const beats = voiceBeats(story.beats, `${bookId}:${storySeed}`);
+  const pages = unfold(beats, minutes).map((page, index) => ({ id: `${id}-page-${index + 1}`, ...page }));
   const supporting = [story.mentor, story.guardian, story.villain, ...(story.extras || [])].filter(Boolean);
   const pair = familyCast?.characters || [cast.hero, cast.companion];
   const characters = [...pair, ...supporting].filter((character, index, list) => list.findIndex(other => other.id === character.id) === index);
-  const plan = planFor(structure.id, story.blockIds, story.place.id, drawnIn(story.beats, story.items), {
+  const plan = planFor(structure.id, story.blockIds, story.place.id, drawnIn(beats, story.items), {
     ...(story.lexicon ? { lexicon: story.lexicon } : {}), roles: story.roles,
     focus: { protagonists: pair.map(character => character.id), goal: story.blockIds.goal },
     ...(familyCast ? { family: { companionRole: cast.companion.role } } : {}),

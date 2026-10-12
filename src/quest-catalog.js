@@ -43,7 +43,7 @@ export const ELIXIRS = Object.freeze([
     earn: () => 'contó un chiste tan gracioso que todos se rieron', accept: 'el cristal despertó y se llenó de luz',
     magic: 'El cristal iluminó el camino de vuelta como un farol pequeño.',
     use: 'Acercaron el cristal a cada farol, y uno a uno se fueron encendiendo.',
-    result: 'Esa noche, las calles brillaron como nunca.',
+    result: 'Aquella noche, las calles brillaron como nunca.',
     result2: 'Los vecinos salieron a pasear bajo la luz de los faroles.',
     lesson: 'la alegría compartida ilumina hasta los días más oscuros',
     ending: 'Y desde entonces, ninguna noche volvió a ser demasiado oscura.',
@@ -381,7 +381,7 @@ Object.assign(VILLAIN_PLOTS, {
     threat: 'El espantapájaros agitó los brazos de paja y frunció el ceño.',
     hint: 'nadie debería pasar los días solo',
     motive: 'estaba cansado de pasar todo el día quieto y solo en el campo',
-    offer: 'lo invitó a pasear y a ver la fiesta', change: 'se le iluminó la cara de paja',
+    offer: 'lo invitó a pasear y a ver la fiesta', change: 'sonrió con toda su cara de paja',
     carry: 'cargó todo sobre sus hombros de madera', party: 'El espantapájaros bailó tanto que perdió un poco de paja.',
   },
   'envious-wizard': {

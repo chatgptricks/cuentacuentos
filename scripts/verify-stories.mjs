@@ -6,6 +6,7 @@ import { RELAX_GOALS, FRIEND_GOALS, FAMILY_GOALS } from '../src/story-blocks.js'
 import { createDefaultFamily } from '../src/family-characters.js';
 import { SOUND_ALIASES } from '../src/audio.js';
 import { SCENE_VIEW_LABELS, getSceneView, getSceneViewIndex } from '../src/world-catalog.js';
+import { sceneDescriptions } from '../src/story-variation.js';
 
 const countWords = text => (text.match(/[\p{L}\p{N}]+(?:[’'-][\p{L}\p{N}]+)*/gu) || []).length;
 const textOf = story => story.pages.flatMap(page => page.paragraphs).join('\n');
@@ -243,7 +244,7 @@ const ORDER = {
   'dream-journey': [[/soñó que llegaba/u, /Primero llegaron/u], [/Por último, llegaron/u, /se durmió/u]],
   'three-things': [[/propuso un juego/u, /recordó cuando/u], [/recordó cuando/u, /se durmieron/u]],
   worry: [[/no conseguía dormirse/u, /le contó su preocupación/u], [/le regaló/u, /se durmió/u]],
-  activity: [[/tuvo una idea:/u, /le contó su plan/u], [/pensó un momento y propuso/u, /probó la idea, y esta vez funcionó/u]],
+  activity: [[/tuvo una idea:/u, /le contó su plan/u], [/pensó un momento y propuso/u, /probó la idea, y funcionó/u]],
   'new-friend': [[/llegó a la escuela/u, /le propuso a/u], [/vio que/u, /sonrió/u], [/sonrió/u, /invitó a/u]],
   quarrel: [[/empezaron a discutir/u, /decidió ir a pedirle perdón/u], [/le pidió perdón/u, /Volvieron al parque/u]],
   surprise: [[/se dio cuenta de que/u, /Fue al mercado/u], [/Fue al mercado/u, /gritó sorpresa/u]],
@@ -333,7 +334,7 @@ for (const { id: bookId } of BOOKS) {
         page.objects.forEach(id => usedObjects.add(id));
         usedScenes.add(page.scene);
         const scene = getScene(page.scene);
-        if (page.paragraphs[0].includes(scene.name) || page.paragraphs[0] === scene.detail) describedScenes.add(scene.id);
+        if (page.paragraphs[0].includes(scene.name) || sceneDescriptions(scene.id).includes(page.paragraphs[0])) describedScenes.add(scene.id);
       }
 
       const roles = story.plan.roles;
@@ -428,7 +429,7 @@ assert.deepEqual([...describedScenes].sort(), [...sceneIds].sort(), 'Each illust
 
 const shortGame = generateStory('friends', 3, 'review-2');
 assert.equal(shortGame.structure, 'everyone-plays');
-assert.ok(shortGame.pages.findIndex(page => /Escondieron unas canicas/u.test(page.paragraphs[0])) < shortGame.pages.findIndex(page => /encontró tres canicas/u.test(page.paragraphs[0])), 'The short game introduces the canicas before searching for them.');
+assert.ok(shortGame.pages.findIndex(page => /escondió tres canicas/u.test(page.paragraphs[0])) < shortGame.pages.findIndex(page => /encontró las tres canicas/u.test(page.paragraphs[0])), 'The short game introduces the canicas before searching for them.');
 for (const duration of [3, 6]) {
   const map = generateStory('adventure', duration, 'review-8');
   assert.equal(map.structure, 'treasure-map');
