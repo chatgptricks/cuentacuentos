@@ -250,6 +250,16 @@ const ORDER = {
   surprise: [[/se dio cuenta de que/u, /Fue al mercado/u], [/Fue al mercado/u, /gritó sorpresa/u]],
   'everyone-plays': [[/invitó a su/u, /no podía/u], [/no podía/u, /tuvo una idea/u], [/tuvo una idea/u, /contaron las canicas/u]],
   contest: [[/anunciaron/u, /el concurso empezó/u], [/el concurso empezó/u, /Al final, /u], [/Al final, /u, /premio especial/u]],
+  'fallen-star': [[/encontraron una estrella/u, /prometieron llevarla/u], [/prometieron llevarla/u, /Por fin llegaron a lo más alto/u], [/no subía/u, /Al llegar arriba/u]],
+  'dark-lighthouse': [[/llegó sin aliento/u, /se ofrecieron a subir/u], [/les dio/u, /Por fin llegaron a la puerta del faro/u], [/Por fin llegaron a la puerta del faro/u, /los barcos dieron la vuelta/u]],
+  storm: [[/se acercaba/u, /corrieron a avisar/u], [/oyeron un ruidito/u, /Encontraron a/u], [/Encontraron a/u, /la tormenta pasó/u]],
+  'riddle-gate': [[/les propuso un trato/u, /^Primero, /u], [/^Por último, /u, /respondieron a la vez/u], [/confesó que se sentía/u, /pidió perdón/u]],
+  sleepers: [[/no conseguía|sin poder dormirse|como dos lunas/u, /^Primero, /u], [/^Por último, /u, /se durmieron/u]],
+  'rainy-day': [[/empezó a llover/u, /carreras de gotas/u], [/la lluvia se volvió muy fina/u, /se durmieron/u]],
+  'borrowed-toy': [[/le prestó el juguete/u, /pensó en esconderlo/u], [/decidió contarle la verdad/u, /decidieron intentar arreglarlo/u]],
+  'secret-club': [[/solo había sitio para dos/u, /preguntó si podía entrar/u], [/no era justa/u, /lo invitó|la invitó/u], [/la invitó|lo invitó/u, /sitio para uno más/u]],
+  'garden-camp': [[/Montaron|montó una tienda/u, /^De pronto, /u], [/^De pronto, /u, /^Era /u], [/^Era /u, /se durmió/u]],
+  'handmade-gift': [[/se enteró de que/u, /eligieron hacer/u], [/eligieron hacer/u, /abrió el regalo/u]],
 };
 const reached = { structures: {}, goals: {}, villains: new Set(), trials: new Set(), tools: new Set(), mentors: new Set(), abilities: new Set(), supporting: new Set() };
 
@@ -427,15 +437,23 @@ assert.ok(usedObjects.size >= 70, 'The reusable catalogue still supplies broad v
 assert.deepEqual([...usedScenes].sort(), [...sceneIds].sort(), 'All locations must appear in generated stories.');
 assert.deepEqual([...describedScenes].sort(), [...sceneIds].sort(), 'Each illustrated location must also be named or described on its page.');
 
-const shortGame = generateStory('friends', 3, 'review-2');
+// Fixed seeds shift whenever a book gains structures, so each review story finds its own seed.
+const storyWith = (bookId, duration, structure, prefix, options) => {
+  for (let index = 0; index < 5_000; index += 1) {
+    const story = generateStory(bookId, duration, `${prefix}-${index}`, options);
+    if (story.structure === structure) return story;
+  }
+  throw new Error(`No ${structure} story found.`);
+};
+const shortGame = storyWith('friends', 3, 'everyone-plays', 'review');
 assert.equal(shortGame.structure, 'everyone-plays');
 assert.ok(shortGame.pages.findIndex(page => /escondió tres canicas/u.test(page.paragraphs[0])) < shortGame.pages.findIndex(page => /encontró las tres canicas/u.test(page.paragraphs[0])), 'The short game introduces the canicas before searching for them.');
 for (const duration of [3, 6]) {
-  const map = generateStory('adventure', duration, 'review-8');
+  const map = storyWith('adventure', duration, 'treasure-map', 'review');
   assert.equal(map.structure, 'treasure-map');
   assert.ok(textOf(map).includes('La piedra tenía letras:'), 'Even a short map explains where its clue is written.');
 }
-const babyHelper = generateStory('family', 9, 'review-baby-53', { companionRole: 'baby' });
+const babyHelper = storyWith('family', 9, 'helpers', 'review-baby', { companionRole: 'baby' });
 assert.equal(babyHelper.structure, 'helpers');
 assert.ok(!/Amasaron|Cerraron la ventana|cantaban una canción|Hasta silbaron/u.test(textOf(babyHelper)), 'The baby watches while the protagonist works with tools.');
 

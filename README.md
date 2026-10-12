@@ -13,7 +13,7 @@ Cinco libros en un estante: Aventura, Acción, Relax, Amigos y **Mi familia**. U
 - 76 escenarios con tres encuadres cada uno (228 vistas): naturaleza, pueblo, casa, caminos, guaridas y paisajes de sueño
 - 116 elementos: exploración, creación, tesoros, hora de dormir, cocina, fiestas, búsquedas, juegos, recuerdos, primeras veces, calma, ruidos de la noche y herramientas
 - 18, 36 o 54 páginas, según la duración elegida
-- 33 estructuras de seis partes: 6 de Aventura, 6 de Acción, 7 de Relax, 6 de Amigos y 8 de Mi familia, con huecos para protagonista, amigo, consejero, villano, lugares, pruebas, regalos, elixires y objetivos
+- 43 estructuras de seis partes: 8 de Aventura, 8 de Acción, 9 de Relax, 8 de Amigos y 10 de Mi familia, con huecos para protagonista, amigo, consejero, villano, lugares, pruebas, regalos, elixires y objetivos
 - Cada hueco se llena con un valor compatible: las habilidades del amigo resuelven pruebas posibles en ese terreno, el regalo se usa después de entregarse, cada villano tiene un motivo y una redención que responde a él, y cada página dibuja solo lo que nombra
 - La app evita repetir la misma estructura en dos cuentos seguidos del mismo libro
 - Detalles en [docs/story-structures.md](docs/story-structures.md)
@@ -54,7 +54,7 @@ El lote adicional de `public/art/` contiene 40 lugares nuevos desde tres ángulo
 - `src/world-catalog.js`: los 76 escenarios y 116 elementos, posiciones de atlas, vistas, sonidos y compatibilidad narrativa
 - `src/story-engine.js`: elige la estructura con semilla y monta el cuento
 - `src/story-kit.js`: herramientas comunes de las estructuras: frases por niveles, reparto, pruebas y planes
-- `src/structures-adventure.js`, `structures-action.js`, `structures-relax.js`, `structures-social.js` y `structures-family.js`: las 33 estructuras narrativas
+- `src/structures-adventure.js`, `structures-action.js`, `structures-relax.js`, `structures-social.js` y `structures-family.js`: las 43 estructuras narrativas
 - `src/narrative-world.js`: habilidades de cada personaje, terreno y pruebas de cada lugar, regalos y gramática compartida
 - `src/quest-catalog.js`: elixires de Aventura, fiestas y objetos de Acción, villanos con su motivo y su redención, consejeros y hogares
 - `src/villain-catalog.js`: los 16 villanos, sus atlas y el registro de arte pendiente

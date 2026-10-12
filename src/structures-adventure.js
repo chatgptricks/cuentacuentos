@@ -1,10 +1,10 @@
 import { getScene } from './world-catalog.js';
 import {
-  PLACE_INFO, TOOLS, TRIALS, cap, fitsCast, friendWord, inPlace, kind, low, named,
+  ABILITIES, PLACE_INFO, TOOLS, TRIALS, cap, fitsCast, friendWord, inPlace, kind, low, named,
   needsWater, ofPhrase, placeName, spotOf, toPlace, travelTo,
 } from './narrative-world.js';
 import { ADVENTURE_MENTORS, ELIXIRS } from './quest-catalog.js';
-import { abilityTrial, at, choose, copyCharacter, copySupporting, gendered, planFor, solveTrial, trialReason, unfold } from './story-kit.js';
+import { abilityTrial, at, choose, copyCharacter, copySupporting, gendered, planFor, sayer, solveTrial, trialReason, unfold } from './story-kit.js';
 
 /** Hero homes where neighbors live and a problem can affect everyone. */
 const HOMES = ['garden', 'meadow', 'orchard', 'treehouse', 'village', 'playground', 'harbor', 'windmill', 'beach', 'farm'];
@@ -653,6 +653,205 @@ function bigQuestion({ random, hero: h, companion: f, duration }) {
   };
 }
 
+/** Ways a tired fallen star can be sent back to the sky; flight needs a flyer in the pair. */
+const LIFTS = [
+  { id: 'kite', items: ['kite'], idea: 'usar la cometa para que el viento la subiera', prep: 'Desenrollaron la cuerda despacio, esperando una brisa.', how: 'Ataron la estrella a la cometa con un lazo flojo, y el viento la llevó hacia arriba.' },
+  { id: 'song', items: [], idea: 'cantarle una nana para darle fuerzas', prep: 'Se sentaron juntos y buscaron la canción más suave que conocían.', how: 'Cantaron muy bajito, y la estrella empezó a flotar hacia arriba como una burbuja.' },
+  { id: 'lantern', items: ['lantern'], idea: 'calentarla junto al farol para que recuperara su luz', prep: 'Encendieron el farol y lo dejaron a su lado, con cuidado.', how: 'Junto al farol, la estrella se llenó de luz y salió volando hacia el cielo.' },
+  { id: 'wish', items: [], idea: 'pedir un deseo los dos a la vez', prep: 'Cerraron los ojos y se dieron la mano con fuerza.', how: 'Desearon con todas sus fuerzas, y la estrella subió dando vueltas hacia el cielo.' },
+  { id: 'flight', items: [], flyer: true, idea: 'llevarla volando hasta donde las nubes se hacen finas', prep: 'Comprobaron que el viento soplaba hacia arriba, suave y tranquilo.', how: name => `${name} voló con la estrella hasta lo más alto, y allí la soltó con cuidado.` },
+];
+const STAR_PEAKS = ['lookout-hill', 'mountain', 'star-observatory'];
+
+/** A7 · La estrella caída: a star falls near home, the pair carries it to a peak and sends it home. */
+function fallenStar({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const place = getScene(choose(random, STAR_PEAKS.filter(id => fitsCast(cast, id))));
+  const home = getScene(choose(random, homesFor(cast).filter(id => id !== place.id)));
+  // The story already happens at night, so darkness is never its obstacle.
+  const trial = abilityTrial(random, PLACE_INFO[place.id].trials.filter(id => id !== 'night'), [f, h]);
+  const flyer = [f, h].find(person => (ABILITIES[person.id] || []).includes('fly'));
+  const lift = choose(random, LIFTS.filter(entry => !entry.flyer || flyer));
+  const how = typeof lift.how === 'function' ? lift.how(flyer.name) : lift.how;
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const atHome = at(home.id), there = at(place.id);
+  const { helper } = trial;
+  const star = ['fallen-star'];
+  const beats = [
+    [
+      atHome(1, say([`Una noche, ${named(h)} vio caer una lucecita del cielo, muy cerca de su casa.`, `Una noche de verano, ${named(h)} vio una lucecita que caía del cielo dando vueltas.`]), [h.id]),
+      atHome(2, 'Todo estaba oscuro y tranquilo, y solo cantaban los grillos.'),
+      atHome(3, `${h.name} se frotó los ojos, por si lo había soñado.`, [h.id]),
+      atHome(1, `Corrió a buscar a su ${friendWord(f)} ${f.name}, y juntos fueron a mirar.`, both),
+      atHome(2, 'Caminaban de puntillas, con el corazón dando saltitos.', both),
+      atHome(3, `${f.name} iba delante, mirando cada rincón.`, [f.id]),
+      atHome(1, `${cap(spotOf(home))}, encontraron una estrella pequeñita que brillaba muy poco.`, both, star),
+      atHome(2, 'La estrella temblaba, como si tuviera frío.', [], star),
+      atHome(3, `${f.name} se agachó para mirarla de cerca.`, [f.id]),
+    ],
+    [
+      atHome(1, 'La estrella les contó que se había caído mientras jugaba con las demás.', both, star),
+      atHome(2, 'Si no volvía al cielo antes del amanecer, perdería su brillo.', [], star),
+      atHome(3, `${h.name} sintió un nudo en la barriga.`, [h.id]),
+      atHome(1, `${pair} prometieron llevarla al sitio más alto que conocían: ${placeName(place)}.`, both),
+      atHome(2, `${f.name} la llevó con mucho cuidado, para que no se enfriara.`, [f.id]),
+      atHome(3, 'La estrella les iluminaba el camino con su poquita luz.', both),
+      there(1, travelTo(place, cast, pair), both),
+      there(2, place.detail),
+      there(3, 'El cielo estaba lleno de estrellas que parecían esperarla.'),
+    ],
+    [
+      there(1, `Pero ${low(TRIALS[trial.id].intro)}`),
+      there(2, 'La estrella brillaba cada vez un poco menos.', [], star),
+      there(3, `${f.name} miró a ${h.name}, sin saber qué hacer.`, both),
+      there(2, trialReason(trial), helper ? [helper.id] : both),
+      there(1, solveTrial(trial, pair), helper ? [helper.id] : both),
+      there(3, TRIALS[trial.id].after),
+      there(1, 'Por fin llegaron a lo más alto, muy cerca del cielo.', both),
+      there(2, 'Desde allí, las casas parecían pequeñitas y dormidas.'),
+      there(3, 'El viento soplaba suave y fresco.'),
+    ],
+    [
+      there(1, `${h.name} levantó la estrella hacia el cielo, pero no subía.`, [h.id], star),
+      there(2, 'Estaba demasiado cansada para volar sola.'),
+      there(3, `${f.name} se rascó la cabeza, pensando.`, [f.id]),
+      there(1, `Entonces ${f.name} propuso ${lift.idea}.`, [f.id], lift.items),
+      there(2, lift.prep, both, lift.items),
+      there(3, 'La estrella parpadeó, como si sonriera.', [], star),
+      there(1, how, lift.flyer ? [flyer.id] : both, [...star, ...lift.items].slice(0, 2)),
+      there(2, 'Subió despacito, cada vez más alto y cada vez más brillante.'),
+      there(3, `${pair} contuvieron la respiración.`, both),
+    ],
+    [
+      there(1, 'Al llegar arriba, la estrella brilló más fuerte que todas las demás.', both, star),
+      there(2, 'Parecía que les guiñaba un ojo desde el cielo.'),
+      there(3, 'Las otras estrellas parpadearon a su alrededor, contentas.'),
+      there(1, say([`${pair} se quedaron mirándola un buen rato, sin decir nada.`, `${pair} se sentaron a mirarla un buen rato, muy juntitos.`]), both),
+      there(2, `${f.name} dijo que nunca había visto nada tan bonito.`, [f.id]),
+      there(3, 'Por el horizonte empezaba a clarear.'),
+      atHome(1, `Volvieron ${toPlace(home)} justo cuando salía el sol.`, both),
+      atHome(2, 'Estaban muy cansados, pero también muy felices.', both),
+      atHome(3, `${h.name} bostezó tres veces seguidas, sin poder evitarlo.`, [h.id]),
+    ],
+    [
+      atHome(1, `Desde entonces, cada noche ${h.name} buscaba su estrella en el cielo.`, [h.id]),
+      atHome(2, 'Siempre la encontraba, porque era la que más brillaba.', [h.id]),
+      atHome(3, `${f.name} decía que los saludaba solo a ellos.`, [f.id]),
+      atHome(1, say([`${h.name} aprendió que ayudar a alguien a volver a casa es un regalo muy grande.`, `${h.name} aprendió que hasta lo más pequeño merece que lo ayudemos a volver a casa.`]), [h.id]),
+      atHome(2, 'Aunque ese alguien sea tan pequeño como una estrella.', [h.id]),
+      atHome(3, 'Y aunque haya que caminar toda la noche.', [h.id]),
+      atHome(1, `Aquella noche, ${h.name} se durmió mirando por la ventana.`, [h.id]),
+      atHome(2, 'La estrella brillaba justo encima de su tejado.'),
+      atHome(3, `Y soñó que volaba entre las estrellas junto a ${f.name}.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y la estrella caída`, place, questId: `star-${lift.id}`, variantId: trial.id, beats,
+    items: [...star, ...lift.items],
+    blockIds: { opening: home.id, goal: `star-${lift.id}`, obstacle: trial.id, strategy: lift.id, discovery: place.id, ending: home.id },
+    roles: { home: home.id, destination: place.id, helper: helper?.id ?? null, ability: trial.ability ?? null, flyer: lift.flyer ? flyer.id : null },
+  };
+}
+
+/** Why the lighthouse went dark, what the keeper hands over and how the light returns. */
+const BEACONS = [
+  { id: 'lamp', cause: 'la gran luz del faro se había apagado de repente', gift: 'un farol que nunca se apagaba', items: ['lantern'], fix: 'Pusieron el farol encendido delante del gran espejo del faro.', glow: 'El espejo multiplicó su luz, y el faro volvió a brillar sobre el mar.' },
+  { id: 'crystal', cause: 'el cristal de la lámpara se había rajado con el frío', gift: 'un cristal nuevo, redondo y brillante', items: ['crystal'], fix: 'Colocaron el cristal nuevo en la lámpara, con mucho cuidado.', glow: 'La luz atravesó el cristal y se extendió sobre las olas.' },
+  { id: 'bell', cause: 'la niebla era tan espesa que nadie veía la luz del faro', gift: 'una campana de mano', items: ['bell'], fix: 'Tocaron la campana una y otra vez, desde lo alto del faro.', glow: 'Los barcos siguieron el sonido de la campana entre la niebla.' },
+  { id: 'key', cause: 'el viento había cerrado de golpe la puerta del faro', gift: 'la llave de repuesto', items: ['key'], fix: 'Abrieron la puerta con la llave y subieron hasta la lámpara.', glow: 'Giraron la manivela, y la luz volvió a dar vueltas sobre el mar.' },
+];
+
+/** A8 · El faro apagado: the keeper asks for help, the pair climbs the cliff and guides the boats home. */
+function darkLighthouse({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const home = getScene(choose(random, ['harbor', 'beach'].filter(id => fitsCast(cast, id))));
+  const place = getScene('lighthouse-cliff');
+  const beacon = choose(random, BEACONS);
+  const keeper = copySupporting(random, 'lighthouse-keeper');
+  const trial = abilityTrial(random, PLACE_INFO[place.id].trials, [f, h]);
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const atHome = at(home.id), there = at(place.id);
+  const { helper } = trial;
+  const beats = [
+    [
+      atHome(1, say([`Al caer la tarde, ${named(h)} y su ${friendWord(f)} ${f.name} miraban el mar.`, `Una tarde de viento, ${named(h)} y su ${friendWord(f)} ${f.name} jugaban junto al agua.`]), both),
+      atHome(2, home.detail),
+      atHome(3, 'A lo lejos, los barcos de pesca volvían despacio hacia la orilla.'),
+      atHome(1, `De repente, ${keeper.name}, el guardián del faro, llegó sin aliento: ${beacon.cause}.`, [keeper.id]),
+      atHome(2, 'Sin la luz del faro, los barcos no encontrarían el camino de vuelta.'),
+      atHome(3, 'A lo lejos, el viento silbaba entre las rocas.'),
+      atHome(1, `${keeper.name} ya no podía subir deprisa la cuesta del acantilado, porque le dolían las rodillas.`, [keeper.id]),
+      atHome(2, 'Miraba el mar muy preocupado, frotándose las manos.', [keeper.id]),
+      atHome(3, `${f.name} le tomó la mano para tranquilizarlo.`, [f.id, keeper.id]),
+    ],
+    [
+      atHome(1, `${pair} se ofrecieron a subir en su lugar.`, both),
+      atHome(2, `${keeper.name} sonrió, aliviado, y les dio las gracias.`, [keeper.id]),
+      atHome(3, 'Les explicó el camino con mucho detalle.', [keeper.id]),
+      atHome(1, `${keeper.name} les dio ${beacon.gift}.`, [keeper.id, ...both], beacon.items),
+      atHome(2, `${h.name} lo guardó con mucho cuidado.`, [h.id]),
+      atHome(3, 'El cielo se oscurecía cada vez más.'),
+      there(1, travelTo(place, cast, pair), both),
+      there(2, place.detail),
+      there(3, 'Las olas golpeaban las rocas allá abajo.'),
+    ],
+    [
+      there(1, `Pero ${low(TRIALS[trial.id].intro)}`),
+      there(2, 'Tenían que darse prisa, pero sin correr peligro.', both),
+      there(3, `${h.name} respiró hondo para pensar con calma.`, [h.id]),
+      there(2, trialReason(trial), helper ? [helper.id] : both),
+      there(1, solveTrial(trial, pair), helper ? [helper.id] : both),
+      there(3, TRIALS[trial.id].after),
+      there(1, 'Por fin llegaron a la puerta del faro.', both),
+      there(2, 'La torre era alta, blanca y estaba completamente a oscuras.'),
+      there(3, 'Subieron la escalera de caracol, escalón a escalón.', both),
+    ],
+    [
+      there(1, beacon.fix, both, beacon.items),
+      there(2, `${f.name} sujetaba la barandilla con fuerza.`, [f.id]),
+      there(3, 'El corazón les latía muy deprisa.', both),
+      there(1, beacon.glow, [], beacon.items),
+      there(2, 'Desde lo alto, la luz llegaba muy lejos.'),
+      there(3, `${h.name} soltó un suspiro enorme de alivio.`, [h.id]),
+      there(1, 'Uno a uno, los barcos dieron la vuelta hacia el puerto.'),
+      there(2, `${pair} los contaron en voz alta, para no perder ninguno.`, both),
+      there(3, 'Los marineros saludaban con sus gorros desde las barcas.'),
+    ],
+    [
+      atHome(1, `Cuando bajaron, ${keeper.name} los esperaba ${inPlace(home)}.`, [keeper.id, ...both]),
+      atHome(2, 'Todos los barcos estaban ya a salvo en la orilla.'),
+      atHome(3, 'Los marineros les dieron las gracias con abrazos y aplausos.', both),
+      atHome(1, `${keeper.name} les dijo que aquella noche habían sido los guardianes del faro.`, [keeper.id]),
+      atHome(2, `${h.name} y ${f.name} se miraron, muy orgullosos.`, both),
+      atHome(3, `${f.name} le devolvió lo que les había prestado.`, [f.id, keeper.id]),
+      atHome(1, say([`${h.name} aprendió que una luz pequeña puede guiar a muchos.`, `${h.name} aprendió que ayudar a tiempo puede traer a todos a casa.`]), [h.id]),
+      atHome(2, 'Y que ser valiente también es pedir calma cuando hay prisa.', [h.id]),
+      atHome(3, 'La luz del faro seguía girando sobre el mar.'),
+    ],
+    [
+      atHome(1, `Desde entonces, ${pair} visitaban a ${keeper.name} cada domingo.`, [...both, keeper.id]),
+      atHome(2, 'Él les enseñaba a cuidar la lámpara y a leer el mar.', [keeper.id]),
+      atHome(3, 'Y les contaba historias de barcos y de tormentas.', [keeper.id]),
+      atHome(1, `Aquella noche, ${h.name} miró el faro desde su ventana.`, [h.id]),
+      atHome(2, 'La luz pasaba una y otra vez, como un saludo.'),
+      atHome(3, 'Allá lejos, el mar estaba tranquilo.'),
+      atHome(2, `${h.name} pensó en los barcos que habían vuelto a casa.`, [h.id]),
+      atHome(3, `Y en lo bien que lo había hecho con ${f.name}.`, [h.id]),
+      atHome(1, `Y así, con la luz del faro en la ventana, ${h.name} se durmió.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y el faro apagado`, place, extras: [keeper], questId: `beacon-${beacon.id}`, variantId: trial.id, beats,
+    items: beacon.items,
+    blockIds: { opening: home.id, goal: `beacon-${beacon.id}`, obstacle: trial.id, strategy: beacon.id, discovery: place.id, ending: home.id },
+    roles: { home: home.id, destination: place.id, keeper: keeper.id, helper: helper?.id ?? null, ability: trial.ability ?? null },
+  };
+}
+
 export const ADVENTURE_STRUCTURES = Object.freeze([
   { id: 'elixir', name: 'El elixir', generate: elixir },
   { id: 'rescue', name: 'El rescate', generate: rescue },
@@ -661,5 +860,8 @@ export const ADVENTURE_STRUCTURES = Object.freeze([
   { id: 'errand', name: 'El encargo', accept: (h, f) => !needsWater([h, f]), generate: errand },
   { id: 'far-from-home', name: 'Lejos de casa', generate: farFromHome },
   { id: 'big-question', name: 'La gran pregunta', accept: (h, f) => !needsWater([h, f]), generate: bigQuestion },
+  { id: 'fallen-star', name: 'La estrella caída', accept: (h, f) => !needsWater([h, f]), generate: fallenStar },
+  { id: 'dark-lighthouse', name: 'El faro apagado', accept: (h, f) => !needsWater([h, f]), generate: darkLighthouse },
 ]);
-export const ADVENTURE_GOALS = [...ELIXIRS.map(entry => entry.id), ...LOST.map(entry => entry.id), ...TREASURES.map(entry => `map-${entry.item}`), ...PARCELS.map(entry => entry.id), ...STRAYS.map(entry => entry.id), ...QUESTIONS.map(entry => entry.id)];
+export const ADVENTURE_GOALS = [...ELIXIRS.map(entry => entry.id), ...LOST.map(entry => entry.id), ...TREASURES.map(entry => `map-${entry.item}`), ...PARCELS.map(entry => entry.id), ...STRAYS.map(entry => entry.id), ...QUESTIONS.map(entry => entry.id),
+  ...LIFTS.map(entry => `star-${entry.id}`), ...BEACONS.map(entry => `beacon-${entry.id}`)];

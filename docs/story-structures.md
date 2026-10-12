@@ -16,9 +16,9 @@ Cada cuento nuevo mantiene una pareja protagonista y un objetivo central. Los se
 | Pruebas y regalos | 14 pruebas, 10 regalos | Un regalo solo se usa después de entregarse; una habilidad solo la usa quien la tiene. |
 | Elementos | 116 objetos | Una página dibuja únicamente los objetos que nombra su frase (`ITEM_WORDS`). |
 
-## Las 33 estructuras
+## Las 43 estructuras
 
-### Aventura (6)
+### Aventura (8)
 
 | Estructura | Partes |
 | --- | --- |
@@ -28,8 +28,10 @@ Cada cuento nuevo mantiene una pareja protagonista y un objetivo central. Los se
 | El encargo | Un vecino pide llevar algo frágil · el camino y el cruce · una prueba · el objeto corre peligro y se salva · entrega a otro vecino · regreso y gratitud |
 | Lejos de casa | Una criatura lejos de su hábitat · cómo transportarla · prueba en el camino · su familia la recibe · un regalo de su mundo · cartas y amistad |
 | La gran pregunta | Una pregunta en casa · el consejero indica dónde mirar · prueba · observación · respuesta sencilla y verdadera · una pregunta nueva |
+| La estrella caída | Una estrella cae cerca de casa · la promesa de llevarla al lugar más alto · prueba en el camino · no puede subir sola · una cometa, una nana, un farol, un deseo o el vuelo de un amigo la devuelven · cada noche la buscan en el cielo |
+| El faro apagado | El guardián pide ayuda · la llave, el farol, el cristal o la campana · prueba en el acantilado · la luz vuelve · los barcos regresan · visitas cada domingo |
 
-### Acción (6)
+### Acción (8)
 
 | Estructura | Partes |
 | --- | --- |
@@ -39,8 +41,10 @@ Cada cuento nuevo mantiene una pareja protagonista y un objetivo central. Los se
 | La carrera tramposa | Reto de un rival presumido · entrenamiento · la trampa · la trampa se vuelve contra quien la hizo · el héroe se para a ayudar · medallas para todos |
 | El rescate en la guarida | Un villano solitario se lleva a una cría · viaje y prueba · entrar sin hacer ruido · la huida y el llanto del villano · una amistad prometida · reencuentro |
 | El falso villano | Algo raro pasa en casa · todos culpan al vecino «raro» · pistas con la lupa · vigilancia nocturna · la causa real · disculpas y amistad |
+| La tormenta | Sin villano: la señal del cielo · avisar a los vecinos y prepararse · refugio · rescatar a una cría o mascota · el arcoíris y recoger juntos · calma |
+| Las tres adivinanzas | Un recado al otro lado · un villano cierra el paso · tres adivinanzas resueltas por cada uno y por los dos · el villano confiesa su soledad · un camino abierto para todos |
 
-### Relax (7)
+### Relax (9)
 
 | Estructura | Partes |
 | --- | --- |
@@ -51,8 +55,10 @@ Cada cuento nuevo mantiene una pareja protagonista y un objetivo central. Los se
 | El viaje del sueño | En la cama · una nube, un barquito, un avión de papel o la luna llevan a tres paisajes de sueño, con una respiración en cada uno · de vuelta a la cama |
 | Tres cosas bonitas | Pijamada · una actividad compartida, su sonrisa y su gratitud, en el mismo lugar · gratitud · sueño |
 | La preocupación que se encoge | Una preocupación para mañana · compañía del amigo · una caja, piedra lisa o tarro de la calma · un plan pequeño · sueño |
+| Cómo duermen los demás | Una noche sin sueño · tres animales que duermen a su manera, imaginados y copiados en la cama · cada uno descansa a su manera · sueño |
+| La tarde de lluvia | Un plan al aire libre que se estropea · escuchar la lluvia · dos juegos tranquilos dentro · charcos y la primera estrella · dormir con la lluvia |
 
-### Amigos (6)
+### Amigos (8)
 
 | Estructura | Partes |
 | --- | --- |
@@ -62,10 +68,12 @@ Cada cuento nuevo mantiene una pareja protagonista y un objetivo central. Los se
 | La sorpresa | Un motivo para celebrar al compañero · solo dos cosas elegidas para ese motivo · un imprevisto con esas mismas cosas · la sorpresa · celebración juntos · gratitud |
 | Todos juegan | Un juego que necesita una habilidad que el amigo no tiene · tristeza · un juego nuevo donde cada habilidad encuentra algo · todos juegan |
 | La competición amistosa | Concurso · ventaja · tropieza el amigo · ayudar en vez de ganar · premio a la amistad |
+| El juguete prestado | Un préstamo · el juguete se rompe · la tentación de esconderlo · la verdad · perdón · lo arreglan juntos |
+| El club secreto | Fundan un club solo para dos · alguien quiere entrar y se va triste · la regla no es justa · lo buscan · su talento ayuda al club · siempre hay sitio para uno más |
 
-### Mi familia (8)
+### Mi familia (10)
 
-Actividad juntos · La primera vez · Ayudantes de casa · El día al revés · Cuando era pequeño · La espera · El enfado y el abrazo · El huésped peludo (la mascota de un vecino). Si el familiar elegido es un bebé, cada frase en la que participa tiene su versión de bebé.
+Actividad juntos · La primera vez · Ayudantes de casa · El día al revés · Cuando era pequeño · La espera · El enfado y el abrazo · El huésped peludo (la mascota de un vecino) · Acampada en el jardín (un ruido en la noche que resulta ser un vecino pequeño) · El regalo hecho a mano (un pequeño desastre salvado y una entrega feliz). Si el familiar elegido es un bebé, cada frase en la que participa tiene su versión de bebé.
 
 ## La voz de cada cuento
 
@@ -79,7 +87,7 @@ Cada parte tiene nueve frases en orden de lectura y en tres niveles. Los cuentos
 
 `npm test` genera más de 40.000 cuentos y comprueba, entre otras cosas, lo siguiente:
 
-- Las 33 estructuras y todos sus objetivos son alcanzables.
+- Las 43 estructuras y todos sus objetivos son alcanzables.
 - Cada estructura cuenta sus causas antes que sus efectos.
 - El regalo se entrega antes de usarse, y las habilidades pertenecen a quien las usa.
 - Los villanos aparecen en las páginas donde actúan y cuentan su motivo.

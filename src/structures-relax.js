@@ -841,6 +841,201 @@ function worry({ random, hero: h, companion: f }) {
   };
 }
 
+/** How other creatures sleep, where, and how two friends can try it in bed. */
+const SLEEPERS = [
+  { id: 'bat', scene: 'cave', how: 'los murciélagos duermen boca abajo, colgados como farolillos', copy: 'Imaginaron que colgaban del techo, muy quietos, con las alas cerradas.' },
+  { id: 'dormouse', scene: 'forest', how: 'los lirones se hacen una bolita en su nido y duermen todo el invierno', copy: 'Se hicieron una bolita bajo las sábanas, calentitos como dos lirones.' },
+  { id: 'flamingo', scene: 'lake', how: 'los flamencos duermen sobre una sola pata, sin caerse', copy: 'Levantaron una pierna bajo las sábanas, y se rieron al imaginarse flamencos.' },
+  { id: 'otter', scene: 'river', how: 'las nutrias duermen flotando y dándose la mano para no separarse', copy: 'Se dieron la mano, como dos nutrias que flotan juntas en el río.' },
+  { id: 'bear', scene: 'snowy-valley', how: 'los osos duermen todo el invierno en una cueva calentita', copy: 'Se taparon hasta las orejas, como dos osos en su cueva.' },
+  { id: 'pony', scene: 'farm', how: 'los ponis pueden dormir de pie, sin tumbarse', copy: 'Se quedaron muy quietos, imaginando que dormían de pie en el establo.' },
+  { id: 'sloth', scene: 'forest', how: 'los perezosos duermen abrazados a una rama, muchas horas seguidas', copy: 'Se abrazaron a la almohada como dos perezosos a su rama.' },
+  { id: 'penguin', scene: 'snowy-valley', how: 'los pingüinos duermen muy juntitos para no pasar frío', copy: 'Se acurrucaron muy juntitos, como dos pingüinos en la nieve.' },
+];
+
+/** C8 · Cómo duermen los demás: a sleepless night, three sleepers imagined and tried, and sleep. */
+function sleepers({ random, hero: h, companion: f }) {
+  const say = sayer(random);
+  const pool = SLEEPERS.filter(entry => entry.id !== h.id && entry.id !== f.id);
+  const picks = [];
+  for (let i = 0; i < 3; i += 1) picks.push(choose(random, pool.filter(entry => !picks.includes(entry))));
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const bed = at('bedroom');
+  const [one, two, three] = picks.map(entry => at(entry.scene));
+  const beats = [
+    [
+      bed(1, `Esa noche, ${named(f)} se quedó a dormir en casa de ${h.name}.`, both),
+      bed(2, getScene('bedroom').detail),
+      bed(3, 'Se pusieron el pijama y se lavaron los dientes.', both),
+      bed(1, say([`Pero ${h.name} daba vueltas y más vueltas, sin poder dormirse.`, `Pero ${h.name} tenía los ojos abiertos como dos lunas.`]), [h.id]),
+      bed(2, `Le preguntó a ${f.name} cómo dormían otros animales del mundo.`, both),
+      bed(3, `${f.name} se rio bajito y dijo que sabía muchas cosas.`, [f.id]),
+      bed(1, `${f.name} propuso imaginar juntos cómo duermen otros animales, con los ojos cerrados.`, both),
+      bed(2, 'Apagaron la luz grande y se taparon hasta la barbilla.', both),
+      bed(3, 'Solo quedó encendida la lamparita de noche.', [], ['night-lamp']),
+    ],
+    [
+      one(1, `Primero, ${f.name} le contó que ${picks[0].how}.`, [f.id]),
+      one(2, `${h.name} se lo imaginó con todo detalle, sin abrir los ojos.`, [h.id]),
+      one(3, 'Todo estaba quieto y en silencio, como en un cuadro.'),
+      bed(1, picks[0].copy, both),
+      bed(2, 'Respiraron despacio, como hacen los animales cuando descansan.', both),
+      bed(3, `${h.name} soltó una risita bajo la sábana.`, [h.id]),
+      bed(1, `${h.name} sintió que el cuerpo se le volvía más blandito.`, [h.id]),
+      bed(2, 'Los pies se quedaron quietos y calentitos.', both),
+      bed(3, 'Afuera, una brisa suave movía las hojas.'),
+    ],
+    [
+      two(1, `Después, ${f.name} le contó que ${picks[1].how}.`, [f.id]),
+      two(2, `${h.name} preguntó si de verdad podían dormir así.`, [h.id]),
+      two(3, `${f.name} dijo que sí, y que lo hacían cada noche.`, [f.id]),
+      bed(1, picks[1].copy, both),
+      bed(2, 'Tomaron aire por la nariz y lo soltaron muy despacio.', both),
+      bed(3, 'El reloj hacía tictac, cada vez más lejos.'),
+      bed(1, `A ${h.name} empezaron a pesarle los párpados.`, [h.id]),
+      bed(2, 'Los brazos se quedaron sueltos sobre la manta.', [h.id]),
+      bed(3, `${f.name} bostezó, y ${h.name} también, sin querer.`, both),
+    ],
+    [
+      three(1, `Por último, ${f.name} le contó que ${picks[2].how}.`, [f.id]),
+      three(2, `${h.name} sonrió con los ojos cerrados.`, [h.id]),
+      three(3, 'Era la forma de dormir más bonita de todas.', [h.id]),
+      bed(1, picks[2].copy, both),
+      bed(2, 'Respiraron una vez más, todavía más despacio.', both),
+      bed(3, 'La lamparita parecía brillar más suave.'),
+      bed(1, `Entonces ${h.name} preguntó, muy bajito, cómo dormían ellos dos.`, [h.id]),
+      bed(2, `${f.name} pensó un momento, casi dormid${gendered(f, 'o', 'a')}.`, [f.id]),
+      bed(3, 'Afuera ya no se oía nada.'),
+    ],
+    [
+      bed(1, `${f.name} le dijo que ellos dormían a su manera: tapados, juntitos y tranquilos.`, both),
+      bed(2, `${h.name} pensó que era la mejor manera de todas.`, [h.id]),
+      bed(3, 'Se acomodaron un poquito más en la almohada.', both),
+      bed(1, `${pair} respiraron hondo por última vez.`, both),
+      bed(2, 'Soltaron el aire despacio, como una brisa pequeña.', both),
+      bed(3, 'Ya no hacía falta imaginar nada más.', both),
+      bed(1, say([`${h.name} aprendió que cada uno descansa a su manera, y que todas valen.`, `${h.name} aprendió que hay mil maneras de dormir, y que la suya también era buena.`]), [h.id]),
+      bed(2, `${f.name} ya respiraba muy despacito, con los ojos cerrados.`, [f.id]),
+      bed(3, 'La casa entera estaba en silencio.'),
+    ],
+    [
+      bed(1, `${h.name} pensó en los tres animales una última vez.`, [h.id]),
+      bed(2, 'Todos dormían ya, cada uno en su rincón del mundo.'),
+      bed(3, 'Y cada uno, a su manera, estaba tranquilo.'),
+      bed(1, 'Los ojos se le cerraron poquito a poco.', [h.id]),
+      bed(2, 'La almohada estaba blandita y calentita.', [h.id]),
+      bed(3, 'Afuera, la luna lo vigilaba todo.'),
+      bed(2, `Soñó que dormía junto a ${f.name} en un nido enorme.`, [h.id]),
+      bed(3, 'Un nido que flotaba despacio entre las nubes.'),
+      bed(1, say([`Y así, tranquilamente, ${pair} se durmieron.`, `Y así, ${pair} se durmieron, cada uno a su manera.`]), both),
+    ],
+  ];
+  return {
+    title: `${h.name} y cómo duermen los demás`, place: getScene('bedroom'), moral: 'Cada uno descansa a su manera, y todas valen.',
+    questId: `sleepers-${picks[0].id}`, variantId: picks.map(entry => entry.id).join('-'), beats, items: ['night-lamp'],
+    blockIds: { opening: 'bedroom', goal: `sleepers-${picks[0].id}`, obstacle: picks[0].scene, strategy: picks[1].scene, discovery: picks[2].scene, ending: 'bedroom' },
+    roles: { home: 'bedroom', destination: 'bedroom', sleepers: picks.map(entry => entry.id) },
+  };
+}
+
+/** Outdoor plans spoiled by rain, and calm things to do indoors instead. */
+const RAIN_PLANS = [
+  'hacer volar la cometa en el prado', 'ir al parque a jugar a la pelota', 'hacer una merienda en el jardín', 'buscar conchitas en la playa',
+];
+const RAIN_PLAYS = [
+  { id: 'story', items: ['storybook'], text: 'Leyeron un libro de cuentos, poniendo voces graciosas.' },
+  { id: 'puzzle', items: ['puzzle'], text: 'Armaron un rompecabezas de un barco en el mar, pieza a pieza.' },
+  { id: 'drawing', items: ['crayons'], text: 'Dibujaron con crayones todo lo que harían cuando saliera el sol.' },
+  { id: 'milk', items: ['glass-of-milk'], text: 'Merendaron despacito, con un vaso de leche tibia para cada uno.' },
+  { id: 'den', items: ['blanket'], text: 'Hicieron una cabaña con una manta y cojines en medio de la sala.' },
+];
+
+/** C9 · La tarde de lluvia: a spoiled plan, disappointment, quiet indoor joys and the sound of rain at bedtime. */
+function rainyDay({ random, hero: h, companion: f }) {
+  const say = sayer(random);
+  const plan = choose(random, RAIN_PLANS);
+  const plays = [];
+  for (let i = 0; i < 2; i += 1) plays.push(choose(random, RAIN_PLAYS.filter(entry => !plays.includes(entry))));
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const room = at('living-room'), porch = at('porch'), bed = at('bedroom');
+  const beats = [
+    [
+      room(1, `Aquella tarde, ${named(h)} y su ${friendWord(f)} ${f.name} iban a ${plan}.`, both),
+      room(2, getScene('living-room').detail),
+      room(3, 'Lo tenían todo preparado desde por la mañana.', both),
+      room(1, 'Pero justo antes de salir, empezó a llover sin parar.'),
+      room(2, 'Las gotas golpeaban la ventana, tip, tip, tip.'),
+      room(3, `${f.name} pegó la nariz al cristal, muy ${gendered(f, 'serio', 'seria')}.`, [f.id]),
+      room(1, say([`${h.name} se dejó caer en el sofá, muy ${gendered(h, 'desilusionado', 'desilusionada')}.`, `${h.name} suspiró tan fuerte que hasta se movieron las cortinas.`]), [h.id]),
+      room(2, 'Le parecía que la tarde ya no serviría para nada.', [h.id]),
+      room(3, 'La lluvia seguía cayendo, sin ninguna prisa.'),
+    ],
+    [
+      room(1, `${f.name} se sentó a su lado y le dijo que la lluvia también podía ser bonita.`, both),
+      room(2, `${h.name} no estaba muy convencid${gendered(h, 'o', 'a')} de eso.`, [h.id]),
+      room(3, `${f.name} le propuso escuchar la lluvia un momento, sin hacer nada.`, [f.id]),
+      room(1, 'Cerraron los ojos y escucharon con mucha atención.', both),
+      room(2, 'Había gotas grandes y gotas pequeñas, rápidas y lentas.', both),
+      room(3, 'Sonaban como una canción que nadie había escrito.'),
+      room(1, 'Luego jugaron a las carreras de gotas en el cristal de la ventana.', both),
+      room(2, `La gota de ${f.name} ganó por muy poquito.`, [f.id]),
+      room(3, `${h.name} pidió la revancha, riéndose a carcajadas.`, [h.id]),
+    ],
+    [
+      room(1, plays[0].text, both, plays[0].items),
+      room(2, 'El tiempo empezó a pasar sin que se dieran cuenta.', both),
+      room(3, `${h.name} ya no se acordaba de estar ${gendered(h, 'enfadado', 'enfadada')}.`, [h.id]),
+      room(1, plays[1].text, both, plays[1].items),
+      room(2, 'Afuera, la lluvia seguía cantando su canción.'),
+      room(3, `${f.name} tarareaba bajito, siguiendo el ritmo.`, [f.id]),
+      room(1, `${h.name} dijo que aquella tarde estaba siendo muy distinta, pero muy bonita.`, [h.id]),
+      room(2, `${f.name} sonrió, porque eso era justo lo que esperaba.`, [f.id]),
+      room(3, 'Hasta la sala parecía más calentita que nunca.'),
+    ],
+    [
+      porch(1, 'Al caer la tarde, la lluvia se volvió muy fina.'),
+      porch(2, 'Salieron al porche a mirar, bien abrigados.', both),
+      porch(3, 'Todo olía a tierra mojada y a hierba fresca.'),
+      porch(1, 'Los charcos brillaban como espejos pequeñitos.', both),
+      porch(2, `${f.name} saltó en uno, y ${h.name} también.`, both),
+      porch(3, 'Se salpicaron las piernas, riéndose sin parar.', both),
+      porch(1, 'En el cielo, entre las nubes, asomó la primera estrella.'),
+      porch(2, `${h.name} la señaló con el dedo, muy ${gendered(h, 'contento', 'contenta')}.`, [h.id]),
+      porch(3, 'El aire estaba fresco y limpio.'),
+    ],
+    [
+      bed(1, `Esa noche, ${pair} se metieron en la cama, cansados y contentos.`, both),
+      bed(2, 'Afuera, las nubes se juntaron otra vez sobre el tejado.'),
+      bed(3, 'Pronto empezó a llover de nuevo, suave como una nana.'),
+      bed(1, say([`${h.name} aprendió que los días de lluvia también guardan cosas bonitas.`, `${h.name} aprendió que, cuando un plan cambia, puede aparecer otro igual de bonito.`]), [h.id]),
+      bed(2, 'Solo hacía falta mirar con otros ojos.', [h.id]),
+      bed(3, `${f.name} dijo que la próxima tarde de lluvia ya tenía ideas nuevas.`, [f.id]),
+      bed(1, 'Afuera volvía a llover, y escucharon la lluvia con los ojos cerrados.', both),
+      bed(2, 'Tip, tip, tip, cada vez más despacio.'),
+      bed(3, 'El cuerpo se les volvió blandito y pesado.', both),
+    ],
+    [
+      bed(1, 'Respiraron hondo, al ritmo de las gotas.', both),
+      bed(2, 'Soltaron el aire despacio, como el agua que resbala por el cristal.', both),
+      bed(3, 'Una, dos y tres veces, sin ninguna prisa.', both),
+      bed(1, `${f.name} le dio las buenas noches a ${h.name} en voz bajita.`, both),
+      bed(2, `${h.name} le contestó con un bostezo enorme.`, [h.id]),
+      bed(3, 'Ya casi no podían mantener los ojos abiertos.', both),
+      bed(2, 'La lluvia seguía cantando, cada vez más lejos.'),
+      bed(3, 'Y la casa entera se quedó dormida con ella.'),
+      bed(1, `Y así, escuchando la lluvia, ${pair} se durmieron.`, both),
+    ],
+  ];
+  return {
+    title: `${h.name} y la tarde de lluvia`, place: getScene('living-room'), moral: 'Los días de lluvia también guardan cosas bonitas.',
+    questId: `rain-${plays[0].id}`, variantId: plays.map(entry => entry.id).join('-'), beats, items: plays.flatMap(entry => entry.items),
+    blockIds: { opening: 'living-room', goal: `rain-${plays[0].id}`, obstacle: 'rain', strategy: plays[0].id, discovery: plays[1].id, ending: 'bedroom' },
+    roles: { home: 'living-room', destination: 'living-room', plays: plays.map(entry => entry.id) },
+  };
+}
+
 const land = (h, f) => !needsWater([h, f]);
 export const RELAX_STRUCTURES = Object.freeze([
   { id: 'hurry', name: 'La prisa', generate: hurry },
@@ -850,6 +1045,9 @@ export const RELAX_STRUCTURES = Object.freeze([
   { id: 'dream-journey', name: 'El viaje del sueño', accept: land, generate: dreamJourney },
   { id: 'three-things', name: 'Tres cosas bonitas', accept: land, generate: threeThings },
   { id: 'worry', name: 'La preocupación que se encoge', accept: land, generate: worry },
+  { id: 'sleepers', name: 'Cómo duermen los demás', accept: land, generate: sleepers },
+  { id: 'rainy-day', name: 'La tarde de lluvia', accept: land, generate: rainyDay },
 ]);
 export const RELAX_GOAL_IDS = [...RELAX_GOALS.map(goal => goal.id), 'goodnight', ...NOISES.map(entry => `noise-${entry.id}`), ...Object.keys(FABLES).map(id => `fable-${id}`),
-  ...VEHICLES.map(entry => `dream-${entry.item || entry.scene}`), 'three-things', ...WORRIES.map(entry => `worry-${entry.id}`)];
+  ...VEHICLES.map(entry => `dream-${entry.item || entry.scene}`), 'three-things', ...WORRIES.map(entry => `worry-${entry.id}`),
+  ...SLEEPERS.map(entry => `sleepers-${entry.id}`), ...RAIN_PLAYS.map(entry => `rain-${entry.id}`)];

@@ -5,7 +5,7 @@ import {
   toPhrase, toPlace, travelTo,
 } from './narrative-world.js';
 import { ADVENTURE_MENTORS, TARGETS, VILLAIN_PLOTS } from './quest-catalog.js';
-import { abilityTrial, at, choose, copyCharacter, copySupporting, copyVillain, gendered, solveTrial, trialReason } from './story-kit.js';
+import { abilityTrial, at, choose, copyCharacter, copySupporting, copyVillain, gendered, sayer, solveTrial, trialReason } from './story-kit.js';
 
 const villainWords = villain => ({
   the: `${villain.article} ${villain.label}`,
@@ -635,6 +635,214 @@ function falseVillain({ random, hero: h, companion: f }) {
   };
 }
 
+/** Storms a village can weather together: the sign, the blow, how to prepare and what is left. */
+const STORMS = [
+  { id: 'rain', name: 'una gran tormenta de lluvia', sign: 'Unas nubes negras y enormes se acercaban por el horizonte.', hit: 'La lluvia cayó con fuerza, y los truenos retumbaban a lo lejos.', secure: 'Cerraron las ventanas y guardaron las macetas bajo el tejado.', after: 'Los charcos brillaban por todas partes, y olía a tierra mojada.', items: ['umbrella'], gear: 'Sacaron el paraguas grande para salir un momento.' },
+  { id: 'wind', name: 'un vendaval', sign: 'Las hojas empezaron a girar en remolinos, y los árboles se doblaban.', hit: 'El viento soplaba tan fuerte que las ramas silbaban como flautas.', secure: 'Ataron con una cuerda todo lo que podía salir volando.', after: 'Había hojas y ramitas por todas partes, pero nada se había roto.', items: ['rope'], gear: 'Se ataron una cuerda a la cintura para no separarse.' },
+  { id: 'hail', name: 'una granizada', sign: 'El cielo se puso de un gris muy raro, y de repente hizo mucho frío.', hit: 'Empezaron a caer bolitas de hielo que rebotaban por el suelo.', secure: 'Taparon las plantas del huerto con sacos para protegerlas.', after: 'Las bolitas de hielo se derritieron al sol, y las plantas seguían en pie.', items: ['sack'], gear: 'Se cubrieron la cabeza con un saco doblado para salir un momento.' },
+];
+const STORM_HOMES = ['village', 'farm', 'meadow', 'orchard', 'garden', 'windmill'];
+const STRANDED = ['chick', 'duckling', 'kitten', 'puppy', 'lop-rabbit', 'foal'];
+
+/** B7 · La tormenta: no villain, only weather; warning, preparing, a rescue in the storm and helping after. */
+function storm({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const home = getScene(choose(random, STORM_HOMES.filter(id => fitsCast(cast, id))));
+  const weather = choose(random, STORMS);
+  const little = copySupporting(random, choose(random, STRANDED));
+  const shelter = at('living-room'), atHome = at(home.id);
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const soaked = gendered(little, 'empapado', 'empapada');
+  const beats = [
+    [
+      atHome(1, say([`Aquella tarde, ${named(h)} y su ${friendWord(f)} ${f.name} jugaban ${inPlace(home)}.`, `Una tarde de otoño, ${named(h)} y su ${friendWord(f)} ${f.name} paseaban ${inPlace(home)}.`]), both),
+      atHome(2, home.detail),
+      atHome(3, 'Los pájaros dejaron de cantar de repente.'),
+      atHome(1, weather.sign),
+      atHome(2, `${f.name} señaló el cielo con los ojos muy abiertos.`, [f.id]),
+      atHome(3, 'El aire olía distinto, como antes de algo grande.'),
+      atHome(1, `${h.name} se dio cuenta enseguida: se acercaba ${weather.name}.`, [h.id]),
+      atHome(2, 'Tenían poco tiempo, pero no había que asustarse.', both),
+      atHome(3, `${h.name} respiró hondo para pensar con calma.`, [h.id]),
+    ],
+    [
+      atHome(1, `${pair} corrieron a avisar a todos los vecinos, puerta por puerta.`, both),
+      atHome(2, 'Algunos todavía no se habían dado cuenta de nada.'),
+      atHome(3, `${f.name} llamaba con fuerza, y ${h.name} explicaba lo que pasaba.`, both),
+      atHome(1, weather.secure, both, weather.items),
+      atHome(2, 'Los mayores cargaban lo pesado, y los pequeños lo ligero.'),
+      atHome(3, 'Ningún vecino se quedó sin ayuda.'),
+      atHome(1, `Terminaron justo a tiempo, porque enseguida ${weather.hit[0].toLocaleLowerCase('es')}${weather.hit.slice(1)}`),
+      atHome(2, 'Todos se refugiaron en sus casas, bien juntitos.'),
+      atHome(3, 'Las ventanas temblaban un poquito con cada ráfaga.'),
+    ],
+    [
+      shelter(1, `${pair} se refugiaron en la sala de estar, muy cerca el uno del otro.`, both),
+      shelter(2, 'Cuando se fue la luz, encendieron un farol pequeño.', both, ['lantern']),
+      shelter(3, `${f.name} contaba los segundos entre un ruido y otro.`, [f.id]),
+      shelter(1, `De pronto, oyeron un ruidito afuera: era ${little.name}, ${gendered(little, 'un', 'una')} ${little.label} que se había quedado fuera.`, [little.id]),
+      shelter(2, `${h.name} se asomó a la ventana con cuidado.`, [h.id]),
+      shelter(3, 'No podían dejarlo allí solito, en medio de la tormenta.'.replace('lo', gendered(little, 'lo', 'la')).replace('solito', gendered(little, 'solito', 'solita'))),
+      atHome(1, `${pair} salieron un momento, muy juntos y sin soltarse.`, both),
+      atHome(2, weather.gear, both, weather.items),
+      atHome(3, 'Cada paso costaba el doble que de costumbre.', both),
+    ],
+    [
+      atHome(1, `Encontraron a ${little.name} debajo de un banco, ${soaked} y temblando.`, [little.id]),
+      atHome(2, `${f.name} le habló con voz suave para que no se asustara.`, [f.id, little.id]),
+      atHome(3, `${little.name} dejó de temblar un poquito.`, [little.id]),
+      shelter(1, `${h.name} l${gendered(little, 'o', 'a')} llevó a la sala de estar y l${gendered(little, 'o', 'a')} envolvió en una manta.`, [h.id, little.id], ['blanket']),
+      shelter(2, `${little.name} se acurrucó entre los dos, ya más tranquil${gendered(little, 'o', 'a')}.`, [...both, little.id]),
+      shelter(3, `${f.name} le cantó una canción muy bajito.`, [f.id]),
+      shelter(1, 'Poco a poco, el ruido de afuera se fue haciendo más pequeño.'),
+      shelter(2, `${little.name} se quedó dormid${gendered(little, 'o', 'a')} con la cabeza apoyada en ${h.name}.`, [little.id, h.id]),
+      shelter(3, 'Hasta el farol parecía brillar más tranquilo.', [], ['lantern']),
+    ],
+    [
+      atHome(1, 'Al fin, la tormenta pasó, y un arcoíris enorme apareció en el cielo.'),
+      atHome(2, weather.after),
+      atHome(3, 'Los vecinos fueron saliendo de sus casas, uno a uno.'),
+      atHome(1, `La familia de ${little.name} llegó corriendo a buscarl${gendered(little, 'o', 'a')}, y le dio las gracias a ${pair}.`, [little.id, ...both]),
+      atHome(2, `${little.name} se despidió con un saltito de alegría.`, [little.id]),
+      atHome(3, `${f.name} se rio al verl${gendered(little, 'o', 'a')} tan content${gendered(little, 'o', 'a')}.`, [f.id]),
+      atHome(1, 'Después, todos ayudaron a recoger y a dejarlo todo como antes.', both),
+      atHome(2, 'Barrieron hojas, levantaron macetas y secaron bancos.', both),
+      atHome(3, 'Trabajando todos juntos, se terminó enseguida.', both),
+    ],
+    [
+      atHome(1, say([`${h.name} aprendió que ser valiente es mantener la calma y ayudar a los demás.`, `${h.name} aprendió que, en una tormenta, lo más fuerte es cuidarse unos a otros.`]), [h.id]),
+      atHome(2, 'Y que avisar a tiempo también es una forma de cuidar.', [h.id]),
+      atHome(3, 'Los vecinos dijeron que habían estado muy atentos.'),
+      atHome(1, 'Esa noche, el cielo quedó limpio y lleno de estrellas.'),
+      atHome(2, `${pair} se despidieron con un abrazo largo.`, both),
+      atHome(3, 'Todavía olía a tierra mojada por todas partes.'),
+      atHome(2, `${h.name} pensó en ${little.name}, que ya dormiría en su casa.`, [h.id]),
+      atHome(3, 'Afuera, todo estaba en calma otra vez.'),
+      atHome(1, `Y ${h.name} se durmió tranquilamente, como después de una gran aventura.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y la tormenta`, place: home, extras: [little], questId: `storm-${weather.id}`, variantId: little.id, beats,
+    items: [...weather.items, 'lantern', 'blanket'],
+    blockIds: { opening: home.id, goal: `storm-${weather.id}`, obstacle: weather.id, strategy: 'warning', discovery: little.id, ending: home.id },
+    roles: { home: home.id, destination: home.id, rescued: little.id },
+  };
+}
+
+/** Riddles a lonely guardian might ask, and their answers. */
+const GATE_RIDDLES = [
+  { id: 'shadow', ask: 'qué cosa te sigue a todas partes, pero desaparece cuando se apaga la luz', answer: 'la sombra' },
+  { id: 'echo', ask: 'qué cosa repite todo lo que dices sin tener boca', answer: 'el eco' },
+  { id: 'wind', ask: 'qué cosa mueve las hojas, pero nadie la puede ver', answer: 'el viento' },
+  { id: 'hole', ask: 'qué cosa se hace más grande cuanto más le quitas', answer: 'un agujero' },
+  { id: 'egg', ask: 'qué cosa hay que romper antes de poder usarla', answer: 'un huevo' },
+  { id: 'map', ask: 'qué cosa tiene ríos sin agua y caminos sin piedras', answer: 'un mapa' },
+  { id: 'stairs', ask: 'qué cosa sube y baja sin moverse nunca de su sitio', answer: 'una escalera' },
+  { id: 'clock', ask: 'qué cosa tiene manos, pero nunca aplaude', answer: 'un reloj' },
+];
+const GATEKEEPERS = { troll: 'troll-bridge', spider: 'web-corner', imp: 'imp-mushroom', 'winter-witch': 'ice-castle', ogre: 'ogre-cave' };
+const ERRANDS = [
+  'llevarle fruta a su abuela, que vivía al otro lado',
+  'ver los fuegos de colores del festival del otro lado',
+  'devolverle a una amiga el libro que le había prestado',
+  'visitar a unos primos que vivían al otro lado',
+];
+
+/** B8 · Las tres adivinanzas: a guardian blocks the way with riddles, because nobody ever stops to talk. */
+function riddleGate({ random, hero: h, companion: f }) {
+  const cast = [h, f];
+  const say = sayer(random);
+  const villainId = choose(random, Object.keys(GATEKEEPERS).filter(id => fitsCast(cast, GATEKEEPERS[id])));
+  const lair = getScene(GATEKEEPERS[villainId]);
+  const home = getScene(choose(random, ['village', 'meadow', 'garden', 'farm', 'orchard', 'treehouse'].filter(id => fitsCast(cast, id))));
+  const villain = copyVillain(random, villainId);
+  const errand = choose(random, ERRANDS);
+  const riddles = [];
+  for (let i = 0; i < 3; i += 1) riddles.push(choose(random, GATE_RIDDLES.filter(entry => !riddles.includes(entry))));
+  const { the } = villainWords(villain);
+  const both = [h.id, f.id];
+  const pair = `${h.name} y ${f.name}`;
+  const atHome = at(home.id), there = at(lair.id);
+  const lonely = gendered(villain, 'solo', 'sola');
+  const ask = (riddle, number) => `${number}, ${the} preguntó ${riddle.ask}.`;
+  const beats = [
+    [
+      atHome(1, `Una mañana, ${named(h)} y su ${friendWord(f)} ${f.name} querían ${errand}.`, both),
+      atHome(2, home.detail),
+      atHome(3, `${f.name} preparó todo antes de salir.`, [f.id]),
+      atHome(1, `El camino más corto pasaba por ${placeName(lair)}, donde vivía ${the}.`, both),
+      atHome(2, 'Todos decían que allí nadie podía pasar.'),
+      atHome(3, `${h.name} tragó saliva, pero no quiso echarse atrás.`, [h.id]),
+      there(1, travelTo(lair, cast, pair), both),
+      there(2, lair.detail),
+      there(3, 'Todo estaba en silencio, y se oía su propia respiración.', both),
+    ],
+    [
+      there(1, `De pronto, ${the} les cerró el paso con los brazos cruzados.`, [villain.id]),
+      there(2, `${cap(the)} dijo que nadie pasaba sin acertar sus adivinanzas.`, [villain.id]),
+      there(3, `${f.name} se puso detrás de ${h.name}, un poco ${gendered(f, 'asustado', 'asustada')}.`, both),
+      there(1, `${cap(the)} les propuso un trato: tres adivinanzas, y podrían pasar.`, [villain.id]),
+      there(2, `${pair} se miraron y aceptaron el trato.`, both),
+      there(3, 'Pensar juntos siempre se les había dado bien.', both),
+      there(1, ask(riddles[0], 'Primero'), [villain.id]),
+      there(2, `${h.name} pensó un momento, mirando al suelo.`, [h.id]),
+      there(3, `${f.name} cruzó los dedos detrás de la espalda.`, [f.id]),
+    ],
+    [
+      there(1, `${h.name} respondió que era ${riddles[0].answer}, y acertó.`, [h.id]),
+      there(2, `${cap(the)} gruñó, muy sorprendid${gendered(villain, 'o', 'a')} de oírlo.`, [villain.id]),
+      there(3, 'Nadie había acertado nunca la primera.'),
+      there(1, ask(riddles[1], 'Después'), [villain.id]),
+      there(2, 'Esta era más difícil, y tardaron un buen rato.', both),
+      there(3, `${h.name} se rascó la cabeza, sin encontrar la respuesta.`, [h.id]),
+      there(1, `Esta vez fue ${f.name} quien respondió: ${riddles[1].answer}.`, [f.id]),
+      there(2, `${cap(the)} abrió mucho los ojos, porque también era correcta.`, [villain.id]),
+      there(3, `${h.name} chocó la mano de ${f.name}, muy content${gendered(h, 'o', 'a')}.`, both),
+    ],
+    [
+      there(1, ask(riddles[2], 'Por último'), [villain.id]),
+      there(2, `${cap(the)} sonrió, segur${gendered(villain, 'o', 'a')} de que esta no la sabrían.`, [villain.id]),
+      there(3, 'El silencio se hizo larguísimo, como una tarde sin juegos.'),
+      there(1, `${pair} lo pensaron juntos y respondieron a la vez: ${riddles[2].answer}.`, both),
+      there(2, `${cap(the)} se quedó sin palabras.`, [villain.id]),
+      there(3, 'Luego, muy despacio, se apartó del camino.', [villain.id]),
+      there(1, `Pero en lugar de alegrarse, ${the} se sentó en una piedra con la cabeza baja.`, [villain.id]),
+      there(2, `${h.name} se acercó despacio y le preguntó qué le pasaba.`, [h.id, villain.id]),
+      there(3, `${f.name} se sentó a su lado, sin decir nada.`, [f.id, villain.id]),
+    ],
+    [
+      there(1, `${cap(the)} confesó que se sentía ${lonely}, porque nadie se paraba nunca a hablar con ${gendered(villain, 'él', 'ella')}.`, [villain.id]),
+      there(2, 'Las adivinanzas eran su manera de tener un poco de compañía.', [villain.id]),
+      there(3, 'Por eso nunca dejaba pasar a nadie deprisa.', [villain.id]),
+      there(1, say([`${h.name} le propuso contarse adivinanzas cada tarde, sin cerrarle el camino a nadie.`, `${h.name} le propuso inventar adivinanzas juntos cada tarde, con el camino abierto para todos.`]), [h.id, villain.id]),
+      there(2, `${cap(the)} sonrió por primera vez en mucho tiempo.`, [villain.id]),
+      there(3, `${f.name} le enseñó una adivinanza nueva, y se rio.`, [f.id, villain.id]),
+      there(1, `${cap(the)} pidió perdón por asustar a los que pasaban.`, [villain.id]),
+      there(2, 'Y prometió que su camino estaría abierto para todos.', [villain.id]),
+      there(3, 'Hasta les acompañó un trecho, contando chistes.', [villain.id, ...both]),
+    ],
+    [
+      atHome(1, `Por fin, ${pair} pudieron ${errand.split(',')[0]}.`, both),
+      atHome(2, 'Llegaron justo a tiempo, y todos se alegraron de verlos.', both),
+      atHome(3, 'Les contaron la historia de las tres adivinanzas.', both),
+      atHome(1, say([`${h.name} aprendió que, a veces, quien cierra el camino solo quiere compañía.`, `${h.name} aprendió que una conversación puede abrir cualquier camino.`]), [h.id]),
+      atHome(2, 'Y que pensar juntos es mejor que tener miedo.', [h.id]),
+      atHome(3, `${f.name} ya estaba inventando adivinanzas para el día siguiente.`, [f.id]),
+      atHome(1, `Desde entonces, ${the} esperaba cada tarde a sus nuevos amigos con una adivinanza nueva.`, [villain.id]),
+      atHome(2, 'Y nadie volvió a pasar por allí con miedo.'),
+      atHome(3, `Esa noche, ${h.name} se durmió pensando en la adivinanza más difícil del mundo.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y las tres adivinanzas`, place: lair, villain, questId: `riddle-${villainId}`, variantId: riddles.map(entry => entry.id).join('-'), beats,
+    items: [],
+    blockIds: { opening: home.id, goal: `riddle-${villainId}`, obstacle: riddles[0].id, strategy: 'thinking-together', discovery: villainId, ending: home.id },
+    roles: { home: home.id, destination: lair.id, villain: villainId, riddles: riddles.map(entry => entry.id) },
+  };
+}
+
 export const ACTION_STRUCTURES = Object.freeze([
   { id: 'theft', name: 'El robo y la redención', generate: theft },
   { id: 'defense', name: 'La defensa del hogar', accept: (h, f) => !needsWater([h, f]), generate: defense },
@@ -642,5 +850,8 @@ export const ACTION_STRUCTURES = Object.freeze([
   { id: 'race', name: 'La carrera tramposa', accept: (h, f) => !needsWater([h, f]), generate: race },
   { id: 'lair-rescue', name: 'El rescate en la guarida', accept: (h, f) => !needsWater([h, f]), generate: lairRescue },
   { id: 'false-villain', name: 'El falso villano', accept: (h, f) => !needsWater([h, f]), generate: falseVillain },
+  { id: 'storm', name: 'La tormenta', accept: (h, f) => !needsWater([h, f]), generate: storm },
+  { id: 'riddle-gate', name: 'Las tres adivinanzas', accept: (h, f) => !needsWater([h, f]), generate: riddleGate },
 ]);
-export const ACTION_GOALS = [...TARGETS.map(entry => entry.id), ...Object.keys(SPELLS).map(id => `spell-${id}`), ...Object.keys(CHEATS).map(id => `race-${id}`), ...Object.keys(KIDNAPPERS).map(id => `lair-${id}`), ...INCIDENTS.map(entry => `mystery-${entry.id}`)];
+export const ACTION_GOALS = [...TARGETS.map(entry => entry.id), ...Object.keys(SPELLS).map(id => `spell-${id}`), ...Object.keys(CHEATS).map(id => `race-${id}`), ...Object.keys(KIDNAPPERS).map(id => `lair-${id}`), ...INCIDENTS.map(entry => `mystery-${entry.id}`),
+  ...STORMS.map(entry => `storm-${entry.id}`), ...Object.keys(GATEKEEPERS).map(id => `riddle-${id}`)];

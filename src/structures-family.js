@@ -1,9 +1,9 @@
 import { getScene } from './world-catalog.js';
-import { cap, inPlace, toPlace } from './narrative-world.js';
+import { cap, inPlace, ofPhrase, toPhrase, toPlace } from './narrative-world.js';
 import { FAMILY_HOMES } from './quest-catalog.js';
 import { FAMILY_GOALS } from './story-blocks.js';
 import { familyActivity } from './structures-social.js';
-import { at, choose, sayer, copySupporting } from './story-kit.js';
+import { at, choose, sayer, copyCharacter, copySupporting } from './story-kit.js';
 
 /**
  * Mi familia: the child leads, one relative shares the story. A baby cannot talk or help
@@ -693,6 +693,204 @@ function petGuest({ random, hero: h, companion: c }) {
     roles: { home: home.id, destination: care.search, owner: null, pet: pet.id },
   };
 }
+/** Night visitors of a garden camp: the sound they make and what they turn out to be. */
+const CAMP_VISITORS = [
+  { id: 'hedgehog', sound: 'algo hizo ras, ras, entre las hojas secas', reveal: 'que buscaba caracoles para cenar' },
+  { id: 'owl', sound: 'algo dijo uuu, uuu, desde lo alto del árbol', reveal: 'que vigilaba la noche con sus ojos redondos' },
+  { id: 'frog', sound: 'algo hizo croac, croac, muy cerca de la tienda', reveal: 'que cantaba junto a la regadera' },
+  { id: 'cricket', sound: 'algo empezó a cantar cri, cri, sin parar', reveal: 'que daba su concierto de cada noche' },
+  { id: 'firefly', sound: 'una lucecita verde se encendió entre las flores', reveal: 'que paseaba su farolillo por el jardín' },
+];
+
+/** E9 · Acampada en el jardín: a blanket tent, the night sky, a mysterious sound, a small visitor and sleep outdoors. */
+function gardenCamp({ random, hero: h, companion: c }) {
+  const baby = c.role === 'baby';
+  const say = sayer(random);
+  const visit = choose(random, CAMP_VISITORS);
+  const visitor = copyCharacter(random, visit.id);
+  const a = gendered(visitor, 'un', 'una');
+  const both = [h.id, c.id];
+  const garden = at('garden'), porch = at('porch');
+  const b = (adult, little) => baby ? little : adult;
+  const beats = [
+    [
+      porch(1, say([`Aquel sábado, ${h.name} y ${c.name} iban a acampar en el jardín.`, `Aquella tarde de verano, ${h.name} y ${c.name} decidieron dormir en el jardín.`]), both),
+      porch(2, getScene('porch').detail),
+      porch(3, `${h.name} llevaba toda la semana pensando en ello.`, [h.id]),
+      garden(1, b('Montaron una tienda con una manta grande y cuatro palos.', `${h.name} montó una tienda con una manta grande, mientras ${c.name} miraba.`), both, ['blanket']),
+      garden(2, b(`${c.name} sujetaba las esquinas, y ${h.name} ataba los nudos.`, `${c.name} aplaudía cada vez que una esquina quedaba sujeta.`), both),
+      garden(3, 'Dentro pusieron almohadas, cojines y un montón de cuentos.', both),
+      garden(1, 'Cuando se hizo de noche, encendieron un farol pequeño.', both, ['lantern']),
+      garden(2, 'La luz hacía la tienda más cálida y acogedora.', both),
+      garden(3, b(`${c.name} preparó una merienda de fruta para los dos.`, `${c.name} miraba el farol con los ojos muy abiertos.`), [c.id]),
+    ],
+    [
+      garden(1, b(`${h.name} y ${c.name} se tumbaron a mirar el cielo con el telescopio.`, `${h.name} miró el cielo con el telescopio, con ${c.name} acurrucado a su lado.`.replace('acurrucado', gendered(c, 'acurrucado', 'acurrucada'))), both, ['telescope']),
+      garden(2, 'El cielo estaba lleno de estrellas, más que nunca.'),
+      garden(3, `${h.name} buscó la estrella más brillante de todas.`, [h.id]),
+      garden(1, b(`${c.name} le enseñó a encontrar dibujos entre las estrellas.`, `${h.name} le enseñó a ${c.name} las estrellas, una a una.`), both),
+      garden(2, b('Encontraron un cazo, un dragón y una cometa.', `${h.name} encontró un cazo, un dragón y una cometa.`), both),
+      garden(3, b(`${c.name} inventó un nombre para una estrella pequeñita.`, `${c.name} balbuceó, como si saludara a las estrellas.`), [c.id]),
+      garden(1, b('Luego se metieron en la tienda y contaron cuentos a la luz del farol.', `Luego se metieron en la tienda, y ${h.name} contó cuentos a la luz del farol.`), both, ['lantern']),
+      garden(2, 'Afuera, la noche era fresca y tranquila.'),
+      garden(3, 'Las hojas de los árboles se movían muy despacio.'),
+    ],
+    [
+      garden(1, `De pronto, ${visit.sound}.`),
+      garden(2, `${h.name} se quedó muy quiet${gendered(h, 'o', 'a')}, sin hacer ruido.`, [h.id]),
+      garden(3, b(`${c.name} le apretó la mano para tranquilizarle.`, `${c.name} se agarró a ${h.name} con su manita.`), both),
+      garden(1, `${h.name} sintió un poco de miedo, pero respiró hondo tres veces.`, [h.id]),
+      garden(2, 'El miedo se hizo un poquito más pequeño.', [h.id]),
+      garden(3, 'El sonido se repitió, muy cerca.'),
+      garden(1, b('Decidieron asomarse juntos con el farol para ver qué era.', `${h.name} levantó el farol, con ${c.name} bien abrazado, para ver qué era.`.replace('abrazado', gendered(c, 'abrazado', 'abrazada'))), both, ['lantern']),
+      garden(2, 'La luz iluminó la hierba poco a poco.', both),
+      garden(3, 'Y entonces, por fin, lo vieron.', both),
+    ],
+    [
+      garden(1, `Era ${a} ${visitor.label} pequeñit${gendered(visitor, 'o', 'a')} ${visit.reveal}.`),
+      garden(2, `${h.name} soltó una risita de alivio.`, [h.id]),
+      garden(3, b(`${c.name} se rio también, sin hacer ruido.`, `${c.name} hizo un ruidito de alegría.`), [c.id]),
+      garden(1, `Se quedaron mirando ${gendered(visitor, 'al', 'a la')} ${visitor.label} un buen rato, sin molestar.`, both),
+      garden(2, b(`${c.name} le explicó que el jardín también era su casa.`, `${h.name} le susurró a ${c.name} que el jardín también era su casa.`), both),
+      garden(3, `${h.name} decidió llamarl${gendered(visitor, 'o', 'a')} ${visitor.name}, en voz bajita.`, [h.id]),
+      garden(1, `Al rato, ${gendered(visitor, 'el', 'la')} ${visitor.label} siguió su camino entre las flores.`),
+      garden(2, `${h.name} le dijo adiós con la mano.`, [h.id]),
+      garden(3, 'El jardín volvió a quedarse en silencio.'),
+    ],
+    [
+      garden(1, 'Volvieron a la tienda y se taparon con la manta hasta la barbilla.', both, ['blanket']),
+      garden(2, 'El farol brillaba bajito en un rincón.', [], ['lantern']),
+      garden(3, b(`${c.name} bostezó muy despacio, con los ojos medio cerrados.`, `${c.name} ya cerraba los ojitos, muy a gusto.`), [c.id]),
+      garden(1, say([`${h.name} aprendió que la noche está llena de vecinos pequeños y tranquilos.`, `${h.name} aprendió que mirar con calma convierte un ruido extraño en un amigo.`]), [h.id]),
+      garden(2, 'Y que dormir fuera es una aventura que se recuerda siempre.', [h.id]),
+      garden(3, 'Se oía el cri, cri de los grillos a lo lejos.'),
+      garden(1, b(`${c.name} le dio un beso de buenas noches a ${h.name}.`, `${h.name} le dio un beso de buenas noches a ${c.name}.`), both),
+      garden(2, b(`${c.name} le dijo que había sido una noche perfecta.`, `${c.name} suspiró, ya casi en sueños.`), [c.id]),
+      garden(3, 'Las estrellas los miraban desde arriba.'),
+    ],
+    [
+      garden(1, `${h.name} miró las estrellas una última vez por la puerta de la tienda.`, [h.id]),
+      garden(2, 'Pensó en el visitante de la noche, que ya estaría en su casa.', [h.id]),
+      garden(3, 'Y en la estrella pequeñita que tenía nombre nuevo.', [h.id]),
+      garden(1, 'Respiró hondo el aire fresco del jardín.', [h.id]),
+      garden(2, 'Olía a hierba y a flores dormidas.'),
+      garden(3, 'El farol se apagó solito, muy despacio.'),
+      garden(2, `${h.name} se acurrucó junto a ${c.name}, calentit${gendered(h, 'o', 'a')}.`, both),
+      garden(3, 'Afuera, todo el jardín descansaba en silencio.'),
+      garden(1, say([`Y así, bajo las estrellas, ${h.name} se durmió.`, `Y así, en su tienda de manta, ${h.name} se durmió.`]), [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y ${c.name}: acampada en el jardín`, place: getScene('garden'), questId: `camp-${visit.id}`, variantId: visit.id, beats,
+    items: ['blanket', 'lantern', 'telescope'],
+    blockIds: { opening: 'porch', goal: `camp-${visit.id}`, obstacle: visit.id, strategy: 'calm-look', discovery: visit.id, ending: 'garden' },
+    roles: { home: 'porch', destination: 'garden', visitor: visit.id },
+  };
+}
+
+/** Handmade gifts, where they are made, what goes wrong and how it is saved. */
+const HANDMADE = [
+  { id: 'card', scene: 'playroom', items: ['crayons'], what: 'una tarjeta dibujada', make: 'Dibujaron una tarjeta con crayones y escribieron un mensaje bonito.', oops: 'Se cayó una gota de agua sobre la tarjeta y se corrió un color.', fix: 'Convirtieron la mancha en una flor, y la tarjeta quedó todavía más bonita.' },
+  { id: 'cookies', scene: 'kitchen', items: ['cookies', 'dough-bowl'], what: 'unas galletas caseras', make: 'Prepararon la masa de las galletas en un bol grande.', oops: 'Las primeras galletas salieron un poco quemadas por los bordes.', fix: 'Hicieron otra bandeja de galletas y vigilaron el horno sin moverse.' },
+  { id: 'crown', scene: 'garden', items: ['flower-crown'], what: 'una corona de flores', make: 'Recogieron flores caídas para tejer una corona de flores.', oops: 'La corona de flores se deshacía cada vez que la levantaban.', fix: 'Ataron cada flor de la corona con un hilo, una a una.' },
+  { id: 'stars', scene: 'playroom', items: ['paper-star'], what: 'un móvil de estrellas de papel', make: 'Recortaron estrellas de papel para colgarlas de un hilo.', oops: 'Al colgar las estrellas de papel, los hilos se enredaron.', fix: 'Desenredaron los hilos con paciencia y colgaron cada estrella de papel por separado.' },
+  { id: 'puzzle', scene: 'living-room', items: ['puzzle'], what: 'un rompecabezas pintado', make: 'Pintaron un dibujo grande y lo recortaron en piezas para hacer un rompecabezas.', oops: 'Una pieza del rompecabezas desapareció debajo del sofá.', fix: 'Buscaron la pieza del rompecabezas por todas partes hasta encontrarla.' },
+];
+const GIFT_FOR = [
+  { who: 'la abuela', why: 'la abuela cumplía años' },
+  { who: 'el abuelo', why: 'el abuelo volvía de un largo viaje' },
+  { who: 'la vecina nueva', why: 'una vecina nueva acababa de llegar al barrio' },
+  { who: 'la maestra', why: 'la maestra se despedía de la escuela' },
+];
+
+/** E10 · El regalo hecho a mano: someone to celebrate, a gift made together, a small disaster saved and a happy delivery. */
+function handmadeGift({ random, hero: h, companion: c }) {
+  const baby = c.role === 'baby';
+  const say = sayer(random);
+  const gift = choose(random, HANDMADE);
+  const to = choose(random, GIFT_FOR);
+  const home = homeOf(random);
+  const both = [h.id, c.id];
+  const atHome = at(home.id), make = at(gift.scene), visit = at('village');
+  const b = (adult, little) => baby ? little : adult;
+  const mine = text => baby ? text.replace(/^Dibujaron/, `${h.name} dibujó`).replace(/^Prepararon/, `${h.name} preparó`).replace(/^Recogieron/, `${h.name} recogió`)
+    .replace(/^Recortaron/, `${h.name} recortó`).replace(/^Inventaron/, `${h.name} inventó`).replace(/^Hicieron/, `${h.name} hizo`).replace(/^Convirtieron/, `${h.name} convirtió`)
+    .replace(/^Ataron/, `${h.name} ató`).replace(/^Pintaron/, `${h.name} pintó`).replace(/^Buscaron/, `${h.name} buscó`).replace(/y lo recortaron/, 'y lo recortó').replace(/^Desenredaron/, `${h.name} desenredó`).replace(/y escribieron/, 'y escribió').replace(/y vigilaron/, 'y vigiló')
+    .replace(/y colgaron/, 'y colgó').replace(/y la ensayaron/, 'y la ensayó').replace(/se les olvidaba/, 'se le olvidaba').replace(/la levantaban/, 'la levantaba') : text;
+  const beats = [
+    [
+      atHome(1, `Aquella mañana, ${h.name} se enteró de que ${to.why}.`, [h.id]),
+      atHome(2, `${cap(inPlace(home))}, todos hablaban de ello.`),
+      atHome(3, `${h.name} quería hacer algo especial para celebrarlo.`, [h.id]),
+      atHome(1, say([`${h.name} decidió hacerle un regalo con sus propias manos.`, `${h.name} pensó que el mejor regalo sería uno hecho en casa.`]), [h.id]),
+      atHome(2, b(`${c.name} dijo que era una idea preciosa.`, `${c.name} sonrió, como si le pareciera una gran idea.`), [c.id]),
+      atHome(3, 'Pensaron juntos qué podían preparar en casa.', both),
+      atHome(1, `Al final, eligieron hacer ${gift.what} para ${to.who}.`, both),
+      atHome(2, 'Buscaron todo lo necesario por la casa.', both),
+      atHome(3, `${h.name} no podía esperar para empezar.`, [h.id]),
+    ],
+    [
+      make(1, mine(gift.make), both, gift.items),
+      make(2, getScene(gift.scene).detail),
+      make(3, b(`${c.name} explicaba cada paso con mucha paciencia.`, `${c.name} miraba desde su mantita, sin perderse nada.`), [c.id]),
+      make(1, b(`${c.name} ayudaba con lo difícil, y ${h.name} con todo lo demás.`, `${h.name} trabajaba despacio mientras ${c.name} hacía palmas.`), both),
+      make(2, 'El regalo empezaba a parecerse a lo que habían imaginado.', both, gift.items),
+      make(3, `${h.name} sacaba la lengua de tanto concentrarse.`, [h.id]),
+      make(1, mine(gift.oops), both, gift.items),
+      make(2, `${h.name} se quedó mirándolo, a punto de llorar.`, [h.id]),
+      make(3, 'Parecía que todo el trabajo se había estropeado.', [h.id]),
+    ],
+    [
+      make(1, b(`${c.name} le dijo que los regalos hechos a mano no tienen que ser perfectos.`, `${c.name} le tocó la mejilla con su manita, y ${h.name} sonrió.`), both),
+      make(2, b('Solo tenían que estar hechos con cariño.', `${h.name} pensó que lo importante era hacerlo con cariño.`), [h.id]),
+      make(3, `${h.name} se secó los ojos y respiró hondo.`, [h.id]),
+      make(1, mine(gift.fix), both, gift.items),
+      make(2, b('Esta vez fueron más despacio, sin ninguna prisa.', `Esta vez, ${h.name} fue más despacio, sin ninguna prisa.`), both),
+      make(3, b(`${c.name} le guiñó un ojo, muy orgullos${gendered(c, 'o', 'a')}.`, `${c.name} dio un gritito de alegría.`), [c.id]),
+      make(1, 'Por fin, el regalo estuvo terminado.', both, gift.items),
+      make(2, `${h.name} lo miró de arriba abajo, muy content${gendered(h, 'o', 'a')}.`, [h.id]),
+      make(3, 'Era único en el mundo, y eso lo hacía especial.', both),
+    ],
+    [
+      atHome(1, 'Lo envolvieron en un papel de colores con un lazo grande.', both),
+      atHome(2, `${h.name} dibujó un corazón en la etiqueta.`, [h.id]),
+      atHome(3, b(`${c.name} hizo el lazo con mucho cuidado.`, `${c.name} intentó agarrar el lazo, y se rieron.`), both),
+      visit(1, `Después, fueron juntos a llevarle el regalo ${toPhrase(to.who)}.`, both),
+      visit(2, getScene('village').detail),
+      visit(3, `${h.name} llevaba el paquete con las dos manos.`, [h.id]),
+      visit(1, `Cuando ${to.who} abrió el regalo, se le llenaron los ojos de alegría.`, both, gift.items),
+      visit(2, 'Dijo que era el regalo más bonito que le habían hecho nunca.'),
+      visit(3, `${h.name} se puso roj${gendered(h, 'o', 'a')} de felicidad.`, [h.id]),
+    ],
+    [
+      visit(1, `${h.name} le contó lo del pequeño desastre, y todos se rieron.`, [h.id]),
+      visit(2, 'A todos les gustó todavía más el regalo al conocer su historia.'),
+      visit(3, b(`${c.name} le dio un abrazo a ${h.name}.`, `${c.name} se quedó en calma, muy a gusto en sus brazos.`), both),
+      visit(1, say([`${h.name} aprendió que un regalo hecho con cariño vale más que uno perfecto.`, `${h.name} aprendió que lo mejor de un regalo es el cariño que lleva dentro.`]), [h.id]),
+      visit(2, 'Y que los errores también pueden hacerlo más especial.', [h.id]),
+      visit(3, 'Volvieron a casa con una sonrisa enorme.', both),
+      atHome(1, `Esa noche, ${h.name} ya estaba pensando en el próximo regalo.`, [h.id]),
+      atHome(2, b(`${c.name} le dijo que sería un placer ayudarle otra vez.`, `${c.name} ya dormía, después de un día tan largo.`), [c.id]),
+      atHome(3, 'Afuera, las estrellas brillaban como lazos de colores.'),
+    ],
+    [
+      atHome(1, `Antes de dormir, ${h.name} le dio las gracias a ${c.name} por su ayuda.`, both),
+      atHome(2, 'Hacer algo juntos había sido lo mejor del día.', both),
+      atHome(3, 'La casa estaba tranquila y en silencio.'),
+      atHome(1, `${h.name} se tapó con su manta favorita.`, [h.id]),
+      atHome(2, `Recordó la cara ${ofPhrase(to.who)} al abrir el paquete.`, [h.id]),
+      atHome(3, 'Y sonrió con los ojos cerrados.', [h.id]),
+      atHome(2, 'Respiró despacio, una, dos y tres veces.', [h.id]),
+      atHome(3, 'Los párpados le pesaban cada vez más.', [h.id]),
+      atHome(1, `Y se durmió soñando con regalos hechos a mano para toda la familia.`, [h.id]),
+    ],
+  ];
+  return {
+    title: `${h.name} y ${c.name}: el regalo hecho a mano`, place: getScene(gift.scene), questId: `gift-${gift.id}`, variantId: to.who, beats, items: gift.items,
+    blockIds: { opening: home.id, goal: `gift-${gift.id}`, obstacle: gift.id, strategy: gift.scene, discovery: 'village', ending: home.id },
+    roles: { home: home.id, destination: gift.scene },
+  };
+}
 const gendered = (character, masculine, feminine) => character.gender === 'f' ? feminine : masculine;
 
 export const FAMILY_STRUCTURES = Object.freeze([
@@ -704,7 +902,10 @@ export const FAMILY_STRUCTURES = Object.freeze([
   { id: 'the-wait', name: 'La espera', generate: theWait },
   { id: 'anger-hug', name: 'El enfado y el abrazo', generate: angerHug },
   { id: 'pet-guest', name: 'El huésped peludo', generate: petGuest },
+  { id: 'garden-camp', name: 'Acampada en el jardín', generate: gardenCamp },
+  { id: 'handmade-gift', name: 'El regalo hecho a mano', generate: handmadeGift },
 ]);
 export const FAMILY_GOAL_IDS = [...FAMILY_GOALS.map(goal => goal.id), ...FIRSTS.map(entry => `first-${entry.id}`), ...CHORES.map(entry => `chore-${entry.id}`),
   ...CARES.map(entry => `care-${entry.id}`), `care-${BABY_CARE.id}`, ...MEMORIES.map(entry => `memory-${entry.item}`), ...WAITS.map(entry => `wait-${entry.id}`),
-  ...ANGERS.map(entry => `anger-${entry.id}`), ...PETS.map(entry => `pet-${entry.id}`)];
+  ...ANGERS.map(entry => `anger-${entry.id}`), ...PETS.map(entry => `pet-${entry.id}`),
+  ...CAMP_VISITORS.map(entry => `camp-${entry.id}`), ...HANDMADE.map(entry => `gift-${entry.id}`)];
